@@ -15,10 +15,12 @@ import { RemoteManager } from "./RemoteManager";
 import { GitWorktreePanel } from "./GitWorktreePanel";
 import { GitBisectWizard } from "./GitBisectWizard";
 import { GitBranchCompare } from "./GitBranchCompare";
+import { MergeDialog } from "./MergeDialog";
+import { CloneDialog } from "./CloneDialog";
 import { GitHubPanel } from "@/components/github/GitHubPanel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { RefreshCw, GitBranch, ArrowUp, ArrowDown, Download } from "lucide-react";
+import { RefreshCw, GitBranch, ArrowUp, ArrowDown, Download, GitMerge } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 type Tab = "changes" | "graph" | "github" | "compare";
@@ -44,6 +46,8 @@ export function GitSidebar() {
   const [diffPath, setDiffPath] = useState<string | null>(null);
   const [diffStaged, setDiffStaged] = useState(false);
   const [tab, setTab] = useState<Tab>("changes");
+  const [mergeOpen, setMergeOpen] = useState(false);
+  const [cloneOpen, setCloneOpen] = useState(false);
 
   const leftDockVisible = useUiStore((s) => s.zones.left.isVisible);
 
@@ -172,6 +176,13 @@ export function GitSidebar() {
                 >
                   <Download className={cn("h-2.5 w-2.5", fetching && "animate-bounce")} />
                 </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setMergeOpen(true); }}
+                  className="flex items-center gap-0.5 hover:text-foreground transition-colors ml-0.5"
+                  title="Merge branch"
+                >
+                  <GitMerge className="h-2.5 w-2.5" />
+                </button>
               </div>
             )}
           </div>
@@ -200,6 +211,8 @@ export function GitSidebar() {
       ) : (
         <GitHubPanel />
       )}
+      <MergeDialog open={mergeOpen} onOpenChange={setMergeOpen} />
+      <CloneDialog open={cloneOpen} onOpenChange={setCloneOpen} />
     </div>
   );
 }

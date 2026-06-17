@@ -18,6 +18,7 @@ import type {
   GraphData,
   LineSelection,
   LogOptions,
+  MergeOptions,
   PushOptions,
   PullOptions,
   FetchOptions,
@@ -279,4 +280,24 @@ export async function gitBisectLog(root: string): Promise<string> {
 
 export async function gitBisectReset(root: string): Promise<void> {
   return invoke("git_bisect_reset", { root });
+}
+
+export async function gitMerge(root: string, branch: string, options?: MergeOptions): Promise<void> {
+  return invoke("git_merge", { root, branch, options: options ?? null });
+}
+
+export async function gitMergeAbort(root: string): Promise<void> {
+  return invoke("git_merge_abort", { root });
+}
+
+export async function gitClone(url: string, path: string, depth?: number): Promise<void> {
+  return invoke("git_clone", { url, path, depth: depth ?? null });
+}
+
+export async function gitBranchRename(root: string, oldName: string, newName: string): Promise<void> {
+  return invoke("git_branch_rename", { root, oldName, newName });
+}
+
+export async function gitBranchSetUpstream(root: string, branch: string, upstream: string): Promise<void> {
+  return invoke("git_branch_set_upstream", { root, branch, upstream });
 }

@@ -9,11 +9,14 @@ import {
   gitBranchCreate,
   gitBranchDelete,
   gitBranchList,
+  gitBranchRename as gitBranchRenameCmd,
+  gitBranchSetUpstream as gitBranchSetUpstreamCmd,
   gitCheckout,
   gitCherryPick as gitCherryPickCmd,
   gitCherryPickAbort,
   gitCherryPickContinue,
   gitCherryPickDetect,
+  gitClone as gitCloneCmd,
   gitCommit,
   gitCommitDetail as gitCommitDetailCmd,
   gitConfigGet,
@@ -24,6 +27,8 @@ import {
   gitIsRepo,
   gitLog,
   gitLogGraph as gitLogGraphCmd,
+  gitMerge as gitMergeCmd,
+  gitMergeAbort as gitMergeAbortCmd,
   gitPull,
   gitPush,
   gitRebaseAbort,
@@ -56,7 +61,6 @@ import {
   gitTagPush,
   gitUnstageHunk as gitUnstageHunkCmd,
   gitWorktreeAdd as gitWorktreeAddCmd,
-
   gitWorktreePrune as gitWorktreePruneCmd,
   gitWorktreeRemove as gitWorktreeRemoveCmd,
 } from "@/tauri/git";
@@ -80,6 +84,7 @@ import type {
   FetchOptions,
   LineSelection,
   LogOptions,
+  MergeOptions,
   PullOptions,
   PushOptions,
   RebaseStatus,
@@ -197,6 +202,11 @@ interface GitActions {
   bisectSkip: (hash?: string) => Promise<void>;
   bisectReset: () => Promise<void>;
   refreshBisectLog: () => Promise<void>;
+  mergeBranch: (branch: string, options?: MergeOptions) => Promise<void>;
+  abortMerge: () => Promise<void>;
+  renameBranch: (oldName: string, newName: string) => Promise<void>;
+  setUpstream: (branch: string, upstream: string) => Promise<void>;
+  cloneRepo: (url: string, path: string, depth?: number) => Promise<void>;
 }
 
 interface GitStoreState {
@@ -1124,6 +1134,65 @@ export const useGitStore = create<GitStore>()(
             bisectStatus: s.bisectStatus ? { ...s.bisectStatus, log } : null,
           }));
         } catch { /* ignore */ }
+      },
+
+      mergeBranch: async (branch, options) => {
+        const { repoRoot } = get();
+        if (!repoRoot) return;
+        set({ error: null });
+        try {
+          await gitMergeCmd(repoRoot, branch, options);
+          sendInvalidate("status");
+          await get().refreshStatus();
+        } catch (err) {
+          set({ error: parseGitError(err) });
+        }
+      },
+
+      abortMerge: async () => {
+        const { repoRoot } = get();
+        if (!repoRoot) return;
+        set({ error: null });
+        try {
+          await gitMergeAbortCmd(repoRoot);
+          sendInvalidate("status");
+          await get().refreshStatus();
+        } catch (err) {
+          set({ error: parseGitError(err) });
+        }
+      },
+
+      renameBranch: async (oldName, newName) => {
+        const { repoRoot } = get();
+        if (!repoRoot) return;
+        set({ error: null });
+        try {
+          await gitBranchRenameCmd(repoRoot, oldName, newName);
+          await get().refreshBranches();
+        } catch (err) {
+          set({ error: parseGitError(err) });
+        }
+      },
+
+      setUpstream: async (branch, upstream) => {
+        const { repoRoot } = get();
+        if (!repoRoot) return;
+        set({ error: null });
+        try {
+          await gitBranchSetUpstreamCmd(repoRoot, branch, upstream);
+          await get().refreshBranches();
+        } catch (err) {
+          set({ error: parseGitError(err) });
+        }
+      },
+
+      cloneRepo: async (url, path, depth) => {
+        set({ error: null });
+        try {
+          await gitCloneCmd(url, path, depth);
+        } catch (err) {
+          set({ error: parseGitError(err) });
+        }
       },
 
       addRemote: async (name, url) => {

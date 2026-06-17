@@ -2118,3 +2118,56 @@ pub async fn git_bisect_reset(root: String) -> Result<(), String> {
     run_git(&root, &["bisect", "reset"])?;
     Ok(())
 }
+
+#[derive(Serialize, Deserialize, Clone, Debug, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct MergeOptions {
+    pub no_ff: Option<bool>,
+    pub squash: Option<bool>,
+}
+
+#[tauri::command]
+pub async fn git_merge(root: String, branch: String, options: Option<MergeOptions>) -> Result<(), String> {
+    let opts = options.unwrap_or_default();
+    let mut args = vec!["merge".to_string()];
+    if opts.no_ff.unwrap_or(false) {
+        args.push("--no-ff".to_string());
+    }
+    if opts.squash.unwrap_or(false) {
+        args.push("--squash".to_string());
+    }
+    args.push(branch);
+    run_git_strings(&root, &args)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn git_merge_abort(root: String) -> Result<(), String> {
+    run_git(&root, &["merge", "--abort"])?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn git_clone(url: String, path: String, depth: Option<u32>) -> Result<(), String> {
+    let mut args = vec!["clone".to_string()];
+    if let Some(d) = depth {
+        args.push("--depth".to_string());
+        args.push(d.to_string());
+    }
+    args.push(url);
+    args.push(path);
+    run_git_strings(".", &args)?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn git_branch_rename(root: String, old_name: String, new_name: String) -> Result<(), String> {
+    run_git(&root, &["branch", "-m", &old_name, &new_name])?;
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn git_branch_set_upstream(root: String, branch: String, upstream: String) -> Result<(), String> {
+    run_git(&root, &["branch", "--set-upstream-to", &upstream, &branch])?;
+    Ok(())
+}

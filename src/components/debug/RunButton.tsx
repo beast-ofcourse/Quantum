@@ -6,9 +6,12 @@ import { useTerminalStore } from "@/stores/terminalStore";
 import { useUiStore } from "@/stores/uiStore";
 import { useToastStore } from "@/stores/toastStore";
 import { DebugConfigurationService, createTemplate, getDefaultConfigs, resolveConfigVariables } from "@/lib/debugConfiguration";
-import { joinPath, basename } from "@/lib/pathUtils";
+import { joinPath } from "@/lib/pathUtils";
 import { pathExists } from "@/tauri/fs";
+
 import type { DebugConfiguration, DebugSession } from "@/types/debug";
+
+// ── Component ─────────────────────────────────────────────────
 
 function getSessionStatus(sessions: DebugSession[], id: string | null) {
   if (!id) return "idle";
@@ -32,7 +35,7 @@ export function RunButton() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const status = getSessionStatus(sessions, activeSessionId);
-  const isActive = status !== "idle";
+  const isDebugging = status !== "idle";
   const activeConfig = configs[selectedIdx];
   const runningSession = sessions.find((s) => s.id === activeSessionId);
 
@@ -55,45 +58,30 @@ export function RunButton() {
     return () => document.removeEventListener("pointerdown", handler, true);
   }, [showDropdown]);
 
-  const handlePlayStop = useCallback(async () => {
-    if (runningSession) {
-      await stopSession(runningSession.id);
-    } else if (activeConfig) {
-      const activeTab = useEditorStore.getState().getActiveTab();
-      const resolved = resolveConfigVariables(activeConfig, rootPath ?? "", activeTab?.path);
-      await startSession(resolved);
-    }
-  }, [runningSession, activeConfig, rootPath, startSession, stopSession]);
-
+  // ── Run selected config in terminal without DAP ────────────
   const handleRunWithoutDebug = useCallback(async () => {
     if (!activeConfig || !rootPath) return;
 
     const activeTab = useEditorStore.getState().getActiveTab();
     const activeFilePath = activeTab?.path;
 
-    // Resolve ${workspaceFolder}, ${file}, etc.
     const resolved = resolveConfigVariables(activeConfig, rootPath, activeFilePath);
     const program = resolved.program ?? resolved.cwd ?? rootPath;
     const cwd = resolved.cwd ?? rootPath;
-
-    // Detect runtime from config type
     const runtime = resolved.runtime ?? resolved.type;
     const runtimeArgs = resolved.runtimeArgs ?? [];
     const programArgs = resolved.args ?? [];
 
-    // Build command string
     const cmdArgs = [...runtimeArgs, `"${program}"`, ...programArgs];
     const cmd = [runtime, ...cmdArgs].join(" ");
     const commandLine = `${cmd}\n`;
 
-    // Ensure bottom panel visible and focused
     const ui = useUiStore.getState();
     if (!ui.zones.bottom.isVisible) {
       ui.setZoneVisibility("bottom", true);
     }
     ui.setActivePanel("terminal");
 
-    // Create terminal session at cwd
     const ts = useTerminalStore.getState();
     const sessionId = await ts.createSession(undefined, cwd);
     if (!sessionId) {
@@ -101,9 +89,21 @@ export function RunButton() {
       return;
     }
 
-    // Write command to terminal
+    await new Promise((r) => setTimeout(r, 400));
     await ts.writeStdin(sessionId, commandLine);
   }, [activeConfig, rootPath]);
+
+  // ── Start DAP debugging session ────────────────────────────
+  const handleStartDebug = useCallback(async () => {
+    if (runningSession) {
+      await stopSession(runningSession.id);
+      return;
+    }
+    if (!activeConfig) return;
+    const activeTab = useEditorStore.getState().getActiveTab();
+    const resolved = resolveConfigVariables(activeConfig, rootPath ?? "", activeTab?.path);
+    await startSession(resolved);
+  }, [runningSession, activeConfig, rootPath, startSession, stopSession]);
 
   const handleSelectConfig = useCallback((idx: number) => {
     setSelectedIdx(idx);
@@ -127,13 +127,13 @@ export function RunButton() {
     setShowConfigDialog(true);
   }, []);
 
-  const buttonClass = isActive
+  const buttonClass = isDebugging
     ? status === "paused"
       ? "bg-yellow-400 text-black hover:bg-yellow-500"
       : "bg-red-400 text-black hover:bg-red-500"
     : "bg-green-400 text-black hover:bg-green-500";
 
-  const buttonSymbol = isActive ? "■" : "▶";
+  const buttonSymbol = isDebugging ? "■" : "▶";
 
   if (!configs.length) return null;
 
@@ -190,10 +190,10 @@ export function RunButton() {
 
         {/* Play/Stop button */}
         <button
-          onClick={handlePlayStop}
+          onClick={handleStartDebug}
           className={`flex size-4 items-center justify-center rounded ${buttonClass} text-[10px] leading-none transition-colors`}
           title={
-            isActive
+            isDebugging
               ? "Stop (Shift+F5)"
               : "Start Debugging (F5)"
           }

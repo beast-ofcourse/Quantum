@@ -259,3 +259,8 @@ export interface BisectStartOptions {
   good: string;
   paths?: string[];
 }
+
+export interface MergeOptions {
+  noFF?: boolean;
+  squash?: boolean;
+}

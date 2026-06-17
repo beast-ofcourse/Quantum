@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { GitBranch, GitCommitHorizontal, FolderOpen, AlertCircle } from "lucide-react";
+import { GitBranch, GitCommitHorizontal, FolderOpen, AlertCircle, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useFileStore } from "@/stores/fileStore";
 import { useGitStore } from "@/stores/gitStore";
+import { CloneDialog } from "./CloneDialog";
 
 interface Props {
   isRepo: boolean;
@@ -14,6 +15,7 @@ export function GitEmptyState({ isRepo, checkingRepo }: Props) {
   const initRepo = useGitStore((s) => s.initRepo);
   const [isInitializing, setIsInitializing] = useState(false);
   const [initError, setInitError] = useState<string | null>(null);
+  const [cloneOpen, setCloneOpen] = useState(false);
 
   const handleInit = async () => {
     setIsInitializing(true);
@@ -55,16 +57,26 @@ export function GitEmptyState({ isRepo, checkingRepo }: Props) {
             {initError}
           </div>
         )}
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={handleInit}
-          disabled={isInitializing}
-          className="mt-2"
-        >
-          <GitCommitHorizontal className="mr-2 size-4" />
-          {isInitializing ? "Initializing..." : "Initialize Repository"}
-        </Button>
+        <div className="flex gap-2 mt-2">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleInit}
+            disabled={isInitializing}
+          >
+            <GitCommitHorizontal className="mr-2 size-4" />
+            {isInitializing ? "Initializing..." : "Initialize Repository"}
+          </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setCloneOpen(true)}
+          >
+            <Download className="mr-2 size-4" />
+            Clone Repository
+          </Button>
+        </div>
+        <CloneDialog open={cloneOpen} onOpenChange={setCloneOpen} />
       </div>
     );
   }

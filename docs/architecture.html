@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Editor — Full Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --bg: #0d1117; --bg2: #161b22; --bg3: #21262d; --border: #30363d; --text: #e6edf3; --text2: #8b949e; --accent: #58a6ff; --accent2: #3fb950; --accent3: #d2a8ff; --accent4: #ff7b72; --accent5: #79c0ff; --radius: 8px; --shadow: 0 8px 32px rgba(0,0,0,.4); }
+html { scroll-behavior: smooth; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; overflow-x: hidden; }
+::selection { background: var(--accent); color: #fff; }
+h1, h2, h3, h4 { font-weight: 700; letter-spacing: -0.02em; }
+code, pre { font-family: 'JetBrains Mono', monospace; }
+a { color: var(--accent); text-decoration: none; transition: .2s; }
+a:hover { color: #79c0ff; }
+
+/* Hero */
+.hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem; position: relative; overflow: hidden; }
+.hero::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 0%, rgba(88,166,255,.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(63,185,80,.05) 0%, transparent 50%); pointer-events: none; }
+.hero-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(48,54,61,.3) 1px, transparent 1px), linear-gradient(90deg, rgba(48,54,61,.3) 1px, transparent 1px); background-size: 40px 40px; mask-image: radial-gradient(ellipse at 50% 40%, black 30%, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at 50% 40%, black 30%, transparent 70%); pointer-events: none; }
+.hero-badge { display: inline-flex; align-items: center; gap: .5rem; padding: .4rem 1rem; border-radius: 100px; border: 1px solid var(--border); background: var(--bg2); font-size: .8rem; color: var(--text2); margin-bottom: 1.5rem; animation: fadeUp .8s .2s both; }
+.hero-badge span { display: inline-flex; width: 8px; height: 8px; border-radius: 50%; background: var(--accent2); animation: pulse 2s infinite; }
+@keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+.hero h1 { font-size: clamp(2.5rem, 6vw, 4.5rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1.1; animation: fadeUp .8s .3s both; background: linear-gradient(135deg, var(--text) 0%, var(--accent) 50%, var(--accent3) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.hero p { font-size: 1.15rem; color: var(--text2); max-width: 640px; margin: 1.2rem auto 2rem; animation: fadeUp .8s .4s both; }
+.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; justify-content: center; animation: fadeUp .8s .5s both; }
+.hero-meta span { display: flex; align-items: center; gap: .4rem; font-size: .85rem; color: var(--text2); }
+.hero-meta strong { color: var(--text); font-weight: 600; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Nav dots */
+.nav-dots { position: fixed; right: 1.5rem; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: .6rem; z-index: 100; }
+.nav-dots a { width: 10px; height: 10px; border-radius: 50%; background: var(--bg3); transition: .3s; border: 1px solid var(--border); }
+.nav-dots a:hover, .nav-dots a.active { background: var(--accent); border-color: var(--accent); transform: scale(1.3); }
+
+/* Sections */
+section { padding: 5rem 2rem; max-width: 1200px; margin: 0 auto; position: relative; }
+.section-header { text-align: center; margin-bottom: 4rem; }
+.section-header h2 { font-size: 2.2rem; margin-bottom: .8rem; }
+.section-header h2 .highlight { background: linear-gradient(135deg, var(--accent), var(--accent3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.section-header p { color: var(--text2); max-width: 600px; margin: 0 auto; font-size: 1.05rem; }
+.section-divider { height: 1px; background: linear-gradient(90deg, transparent, var(--border), transparent); margin: 0; }
+
+/* Cards */
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.8rem; transition: .3s; position: relative; overflow: hidden; }
+.card:hover { border-color: rgba(88,166,255,.3); transform: translateY(-2px); box-shadow: var(--shadow); }
+.card-glow { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at 50% 50%, rgba(88,166,255,.03), transparent 50%); pointer-events: none; }
+.card h3 { font-size: 1.1rem; margin-bottom: .6rem; display: flex; align-items: center; gap: .6rem; }
+.card p { color: var(--text2); font-size: .92rem; line-height: 1.7; }
+.card code { background: var(--bg3); padding: .15rem .4rem; border-radius: 4px; font-size: .82rem; color: var(--accent5); }
+
+/* Grid layouts */
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1.5rem; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.2rem; }
+
+/* Flowchart SVG styles */
+.flowchart-wrap { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem; margin: 2rem 0; overflow-x: auto; }
+.flowchart-wrap svg { width: 100%; height: auto; display: block; }
+
+/* Tech stack badges */
+.tech-stack { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
+.tech-badge { display: inline-flex; align-items: center; gap: .35rem; padding: .25rem .7rem; border-radius: 100px; font-size: .78rem; font-weight: 500; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); transition: .2s; }
+.tech-badge:hover { border-color: var(--accent); color: var(--text); }
+.tech-badge.primary { border-color: rgba(88,166,255,.3); color: var(--accent); }
+.tech-badge.secondary { border-color: rgba(63,185,80,.3); color: var(--accent2); }
+.tech-badge.tertiary { border-color: rgba(210,168,255,.3); color: var(--accent3); }
+.tech-badge.quaternary { border-color: rgba(255,123,114,.3); color: var(--accent4); }
+
+/* Feature details */
+.feature-detail { margin-bottom: 3rem; }
+.feature-detail:last-child { margin-bottom: 0; }
+.feature-detail h3 { font-size: 1.3rem; margin-bottom: .5rem; }
+.feature-detail .meta { color: var(--text2); font-size: .85rem; margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: .5rem; }
+.feature-detail .desc { color: var(--text2); font-size: .95rem; line-height: 1.8; margin-bottom: 1rem; }
+
+/* Code block */
+.code-block { background: #0d1117; border: 1px solid var(--border); border-radius: var(--radius); padding: 1.2rem; overflow-x: auto; margin: 1rem 0; }
+.code-block pre { font-size: .82rem; line-height: 1.7; color: var(--text2); }
+.code-block .keyword { color: #ff7b72; }
+.code-block .string { color: #a5d6ff; }
+.code-block .type { color: #79c0ff; }
+.code-block .comment { color: #6e7681; font-style: italic; }
+.code-block .func { color: #d2a8ff; }
+.code-block .num { color: #79c0ff; }
+
+/* Stats row */
+.stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin: 2rem 0; }
+.stat-card { text-align: center; padding: 1.5rem; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); }
+.stat-card .num { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, var(--accent), var(--accent3)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.stat-card .label { font-size: .82rem; color: var(--text2); margin-top: .3rem; }
+
+/* Architecture diagram */
+.arch-layer { margin-bottom: 2.5rem; }
+.arch-layer h4 { font-size: 1rem; color: var(--accent); margin-bottom: .8rem; display: flex; align-items: center; gap: .5rem; }
+.arch-layer h4::before { content: ''; width: 3px; height: 16px; background: var(--accent); border-radius: 2px; }
+.arch-boxes { display: flex; flex-wrap: wrap; gap: .6rem; }
+.arch-box { padding: .5rem 1rem; border-radius: 6px; font-size: .82rem; font-weight: 500; border: 1px solid var(--border); background: var(--bg3); transition: .2s; cursor: default; }
+.arch-box:hover { transform: translateY(-1px); }
+.arch-box.frontend { border-color: rgba(88,166,255,.3); color: var(--accent); }
+.arch-box.backend { border-color: rgba(63,185,80,.3); color: var(--accent2); }
+.arch-box.shared { border-color: rgba(210,168,255,.3); color: var(--accent3); }
+.arch-box.data { border-color: rgba(255,123,114,.3); color: var(--accent4); }
+.arch-box.integration { border-color: rgba(121,192,255,.3); color: #79c0ff; }
+
+/* Scroll reveal */
+.reveal { opacity: 0; transform: translateY(30px); transition: .6s cubic-bezier(.22,1,.36,1); }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* Tree visualization */
+.tree-viz { font-family: 'JetBrains Mono', monospace; font-size: .82rem; line-height: 2; color: var(--text2); }
+.tree-viz .dir { color: var(--accent); }
+.tree-viz .file { color: var(--text2); }
+
+/* Architecture block diagram */
+.block-diagram { display: flex; flex-direction: column; gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; margin: 1.5rem 0; }
+.block-layer { padding: 1rem 1.5rem; background: var(--bg2); display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+.block-layer .layer-label { font-size: .75rem; font-weight: 600; color: var(--text2); min-width: 90px; text-transform: uppercase; letter-spacing: .05em; }
+.block-layer .layer-items { display: flex; flex-wrap: wrap; gap: .4rem; }
+.block-layer .layer-item { padding: .25rem .6rem; border-radius: 4px; font-size: .78rem; background: var(--bg3); border: 1px solid var(--border); }
+.block-layer .layer-item.highlight { border-color: var(--accent); color: var(--accent); }
+.block-layer .layer-item.rust { border-color: rgba(239,120,86,.3); color: #ef7856; }
+.block-layer .layer-item.react { border-color: rgba(88,196,220,.3); color: #58c4dc; }
+.block-layer .layer-item.type { border-color: rgba(49,120,198,.3); color: #3178c6; }
+
+/* Animation for flowcharts */
+@keyframes drawLine { to { stroke-dashoffset: 0; } }
+@keyframes fadeIn { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: scale(1); } }
+.anim-line { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: drawLine 2s ease forwards; }
+.anim-node { animation: fadeIn .5s ease both; }
+
+/* Terminal icon anim */
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+.blink { animation: blink 1s step-end infinite; }
+
+/* Smooth arrow */
+.arrow-svg { display: inline-flex; margin: 0 .5rem; }
+
+/* Footer */
+.footer { text-align: center; padding: 4rem 2rem; border-top: 1px solid var(--border); color: var(--text2); font-size: .85rem; }
+.footer strong { color: var(--text); }
+
+@media (max-width: 768px) {
+  section { padding: 3rem 1.2rem; }
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .nav-dots { display: none; }
+  .hero h1 { font-size: 2rem; }
+  .block-layer { flex-direction: column; align-items: flex-start; }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--border); }
+
+/* Tag cloud */
+.tag-cloud { display: flex; flex-wrap: wrap; gap: .4rem; justify-content: center; margin: 1.5rem 0; }
+.tag-cloud span { padding: .3rem .8rem; border-radius: 100px; font-size: .78rem; border: 1px solid var(--border); background: var(--bg3); transition: .2s; }
+.tag-cloud span:hover { border-color: var(--accent); transform: translateY(-1px); }
+
+/* Animated border gradient */
+.gradient-border { position: relative; border-radius: var(--radius); }
+.gradient-border::before { content: ''; position: absolute; inset: -1px; border-radius: var(--radius); background: linear-gradient(135deg, var(--accent), var(--accent3), var(--accent4), var(--accent)); background-size: 300% 300%; animation: gradientShift 4s ease infinite; z-index: -1; }
+@keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+/* Folder tree SVG */
+.folder-svg { display: inline-block; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-badge"><span></span> Full Architecture Documentation</div>
+  <h1>Code Editor</h1>
+  <p>A modern, desktop-native code editor built with Tauri 2 + React 19 + TypeScript — featuring a full-featured Monaco editor, integrated terminal, Git source control, GitHub integration, and a VS Code-inspired UI.</p>
+  <div class="hero-meta">
+    <span><strong>Tauri 2</strong> + <strong>Rust</strong></span>
+    <span><strong>React 19</strong> + <strong>TypeScript</strong></span>
+    <span><strong>Monaco Editor</strong> + <strong>xterm.js</strong></span>
+    <span><strong>Zustand</strong> + <strong>shadcn/ui</strong></span>
+  </div>
+</div>
+
+<!-- Nav dots -->
+<nav class="nav-dots">
+  <a href="#overview" title="Overview"></a>
+  <a href="#techstack" title="Tech Stack"></a>
+  <a href="#architecture" title="Architecture"></a>
+  <a href="#frontend" title="Frontend"></a>
+  <a href="#backend" title="Backend"></a>
+  <a href="#editor" title="Editor"></a>
+  <a href="#filesystem" title="File System"></a>
+  <a href="#terminal" title="Terminal"></a>
+  <a href="#git" title="Git"></a>
+  <a href="#github" title="GitHub"></a>
+  <a href="#dataflow" title="Data Flow"></a>
+</nav>
+
+<!-- Overview -->
+<section id="overview">
+  <div class="section-header reveal">
+    <h2>Project <span class="highlight">Overview</span></h2>
+    <p>Code Editor is a fully-featured desktop IDE built from the ground up with modern web technologies and a Rust-powered native backend. It provides a VS Code-like experience — file explorer, multi-tab editor, integrated terminal, Git integration, GitHub PR/issue management, command palette, and comprehensive theming — all packaged as a native desktop application.</p>
+  </div>
+  <div class="stats-row reveal">
+    <div class="stat-card"><div class="num">18k+</div><div class="label">Lines of TypeScript</div></div>
+    <div class="stat-card"><div class="num">1.5k+</div><div class="label">Lines of Rust</div></div>
+    <div class="stat-card"><div class="num">80+</div><div class="label">React Components</div></div>
+    <div class="stat-card"><div class="num">7</div><div class="label">Zustand Stores</div></div>
+    <div class="stat-card"><div class="num">58+</div><div class="label">Tauri Commands</div></div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- Tech Stack -->
+<section id="techstack">
+  <div class="section-header reveal">
+    <h2>Tech <span class="highlight">Stack</span></h2>
+    <p>The complete technology stack powering this application, from the native layer to the frontend UI.</p>
+  </div>
+  <div class="grid-2 reveal">
+    <div class="card">
+      <div class="card-glow"></div>
+      <h3>🖥️ Desktop Shell</h3>
+      <div class="tech-stack">
+        <span class="tech-badge primary">Tauri 2</span>
+        <span class="tech-badge primary">Rust 2021</span>
+        <span class="tech-badge">tauri-plugin-fs</span>
+        <span class="tech-badge">tauri-plugin-dialog</span>
+        <span class="tech-badge">tauri-plugin-shell</span>
+      </div>
+      <p>Tauri provides the native desktop wrapper. The Rust backend handles all OS-level operations: file I/O, PTY process management, filesystem watching, Git command execution, shell detection, and search indexing — all exposed as type-safe IPC commands.</p>
+    </div>
+    <div class="card">
+      <div class="card-glow"></div>
+      <h3>⚛️ Frontend Framework</h3>
+      <div class="tech-stack">
+        <span class="tech-badge primary">React 19</span>
+        <span class="tech-badge primary">TypeScript 5.7</span>
+        <span class="tech-badge">Vite 6</span>
+        <span class="tech-badge secondary">Zustand 5</span>
+        <span class="tech-badge secondary">shadcn/ui</span>
+      </div>
+      <p>React 19 with TypeScript for type-safety. Vite 6 serves as the build tool with React plugin, TailwindCSS v4, and Brotli compression. State management is handled by Zustand 5 with persistence middleware. The UI library uses shadcn/ui built on Radix primitives.</p>
+    </div>
+    <div class="card">
+      <div class="card-glow"></div>
+      <h3>📝 Editor Core</h3>
+      <div class="tech-stack">
+        <span class="tech-badge tertiary">Monaco Editor 0.55</span>
+        <span class="tech-badge tertiary">@monaco-editor/react</span>
+        <span class="tech-badge tertiary">xterm.js 5.5</span>
+        <span class="tech-badge tertiary">@xterm/addon-fit</span>
+        <span class="tech-badge tertiary">@xterm/addon-web-links</span>
+      </div>
+      <p>Monaco Editor powers the code editing experience with syntax highlighting, IntelliSense, and multi-language support. xterm.js provides the integrated terminal with fit-to-width and web link detection addons. Both are configured with custom themes matching the application's design system.</p>
+    </div>
+    <div class="card">
+      <div class="card-glow"></div>
+      <h3>🔌 Integrations</h3>
+      <div class="tech-stack">
+        <span class="tech-badge quaternary">@octokit/rest</span>
+        <span class="tech-badge quaternary">@octokit/auth-oauth-device</span>
+        <span class="tech-badge primary">portable-pty (Rust)</span>
+        <span class="tech-badge">notify (Rust)</span>
+        <span class="tech-badge">walkdir (Rust)</span>
+      </div>
+      <p>GitHub integration via Octokit with OAuth device flow authentication. Native PTY (pseudo-terminal) spawning via the <code>portable-pty</code> Rust crate. Filesystem watching via the <code>notify</code> crate. Directory walking via <code>walkdir</code> for search.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- Architecture -->
+<section id="architecture">
+  <div class="section-header reveal">
+    <h2>Application <span class="highlight">Architecture</span></h2>
+    <p>A layered architecture with clear separation between the native Rust backend, the Tauri IPC bridge, and the React frontend.</p>
+  </div>
+
+  <div class="flowchart-wrap reveal">
+    <svg viewBox="0 0 1350 780" xmlns="http://www.w3.org/2000/svg" style="max-width:1350px">
+      <defs>
+        <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#58a6ff"/><stop offset="100%" stop-color="#79c0ff"/></linearGradient>
+        <linearGradient id="grad2" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#3fb950"/><stop offset="100%" stop-color="#7ee787"/></linearGradient>
+        <linearGradient id="grad3" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#d2a8ff"/><stop offset="100%" stop-color="#f5c2e7"/></linearGradient>
+        <linearGradient id="grad4" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#ff7b72"/><stop offset="100%" stop-color="#ffa198"/></linearGradient>
+      </defs>
+      <g transform="scale(1.5)">
+      <!-- Title -->
+      <text x="450" y="30" text-anchor="middle" fill="#e6edf3" font-size="16" font-weight="700" font-family="Inter,sans-serif">Architecture Overview</text>
+
+      <!-- Layer 1: Rust Backend -->
+      <rect x="50" y="50" width="800" height="90" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+      <rect x="50" y="50" width="800" height="24" rx="8" fill="#21262d"/>
+      <rect x="50" y="62" width="800" height="12" fill="#21262d"/>
+      <text x="70" y="67" fill="#ef7856" font-size="11" font-weight="600" font-family="Inter,sans-serif">RUST BACKEND (src-tauri/src/commands/)</text>
+
+      <rect x="65" y="82" width="110" height="40" rx="6" fill="#0d1117" stroke="rgba(239,120,86,.3)" stroke-width="1"/>
+      <text x="120" y="107" text-anchor="middle" fill="#ef7856" font-size="10" font-family="JetBrains Mono,monospace">fs.rs</text>
+      <rect x="190" y="82" width="110" height="40" rx="6" fill="#0d1117" stroke="rgba(239,120,86,.3)" stroke-width="1"/>
+      <text x="245" y="107" text-anchor="middle" fill="#ef7856" font-size="10" font-family="JetBrains Mono,monospace">pty.rs</text>
+      <rect x="315" y="82" width="110" height="40" rx="6" fill="#0d1117" stroke="rgba(239,120,86,.3)" stroke-width="1"/>
+      <text x="370" y="107" text-anchor="middle" fill="#ef7856" font-size="10" font-family="JetBrains Mono,monospace">git.rs</text>
+      <rect x="440" y="82" width="110" height="40" rx="6" fill="#0d1117" stroke="rgba(239,120,86,.3)" stroke-width="1"/>
+      <text x="495" y="107" text-anchor="middle" fill="#ef7856" font-size="10" font-family="JetBrains Mono,monospace">watch.rs</text>
+      <rect x="565" y="82" width="110" height="40" rx="6" fill="#0d1117" stroke="rgba(239,120,86,.3)" stroke-width="1"/>
+      <text x="620" y="107" text-anchor="middle" fill="#ef7856" font-size="10" font-family="JetBrains Mono,monospace">search.rs</text>
+      <rect x="690" y="82" width="110" height="40" rx="6" fill="#0d1117" stroke="rgba(239,120,86,.3)" stroke-width="1"/>
+      <text x="745" y="107" text-anchor="middle" fill="#ef7856" font-size="10" font-family="JetBrains Mono,monospace">shell.rs</text>
+
+      <!-- Arrow -->
+      <line x1="450" y1="140" x2="450" y2="175" stroke="#30363d" stroke-width="1.5" class="anim-line"/>
+      <polygon points="450,180 444,172 456,172" fill="#30363d"/>
+
+      <!-- Layer 2: Tauri IPC -->
+      <rect x="150" y="180" width="600" height="50" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+      <rect x="150" y="180" width="600" height="24" rx="8" fill="#21262d"/>
+      <rect x="150" y="192" width="600" height="12" fill="#21262d"/>
+      <text x="170" y="197" fill="#58a6ff" font-size="11" font-weight="600" font-family="Inter,sans-serif">TAURI IPC BRIDGE (invoke / events)</text>
+      <text x="450" y="218" text-anchor="middle" fill="#8b949e" font-size="9" font-family="JetBrains Mono,monospace">@tauri-apps/api/core → invoke("command_name", args)</text>
+
+      <!-- Arrow -->
+      <line x1="450" y1="230" x2="450" y2="265" stroke="#30363d" stroke-width="1.5" class="anim-line"/>
+      <polygon points="450,270 444,262 456,262" fill="#30363d"/>
+
+      <!-- Layer 3: Tauri Wrappers -->
+      <rect x="50" y="270" width="800" height="50" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+      <rect x="50" y="270" width="800" height="24" rx="8" fill="#21262d"/>
+      <rect x="50" y="282" width="800" height="12" fill="#21262d"/>
+      <text x="70" y="287" fill="#58c4dc" font-size="11" font-weight="600" font-family="Inter,sans-serif">TYPESCRIPT API WRAPPERS (src/tauri/)</text>
+      <text x="450" y="308" text-anchor="middle" fill="#8b949e" font-size="9" font-family="JetBrains Mono,monospace">fs.ts · pty.ts · git.ts · dialog.ts · shell.ts · search.ts</text>
+
+      <!-- Arrow -->
+      <line x1="450" y1="320" x2="450" y2="355" stroke="#30363d" stroke-width="1.5" class="anim-line"/>
+      <polygon points="450,360 444,352 456,352" fill="#30363d"/>
+
+      <!-- Layer 4: Zustand Stores -->
+      <rect x="50" y="360" width="800" height="50" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+      <rect x="50" y="360" width="800" height="24" rx="8" fill="#21262d"/>
+      <rect x="50" y="372" width="800" height="12" fill="#21262d"/>
+      <text x="70" y="377" fill="#3fb950" font-size="11" font-weight="600" font-family="Inter,sans-serif">ZUSTAND STATE STORES (src/stores/)</text>
+      <text x="450" y="398" text-anchor="middle" fill="#8b949e" font-size="9" font-family="JetBrains Mono,monospace">fileStore · editorStore · terminalStore · gitStore · githubStore · uiStore · settingsStore</text>
+
+      <!-- Arrow -->
+      <line x1="450" y1="410" x2="450" y2="445" stroke="#30363d" stroke-width="1.5" class="anim-line"/>
+      <polygon points="450,450 444,442 456,442" fill="#30363d"/>
+
+      <!-- Layer 5: React UI -->
+      <rect x="50" y="450" width="800" height="60" rx="8" fill="#161b22" stroke="#30363d" stroke-width="1"/>
+      <rect x="50" y="450" width="800" height="24" rx="8" fill="#21262d"/>
+      <rect x="50" y="462" width="800" height="12" fill="#21262d"/>
+      <text x="70" y="467" fill="#d2a8ff" font-size="11" font-weight="600" font-family="Inter,sans-serif">REACT UI COMPONENTS</text>
+      <text x="450" y="496" text-anchor="middle" fill="#8b949e" font-size="9" font-family="JetBrains Mono,monospace">layout/ · editor/ · explorer/ · terminal/ · git/ · github/ · search/ · command/ · settings/</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="grid-2 reveal" style="margin-top:2rem">
+    <div class="card">
+      <h3>📦 Layer 1: Rust Backend</h3>
+      <p>Six Rust modules handle OS operations: filesystem read/write/watch, PTY session lifecycle, Git porcelain commands, full-text search (git-grep or walkdir), shell detection, and event-based filesystem watching. Commands are registered in <code>lib.rs</code> via <code>tauri::generate_handler!</code> and managed as Tauri managed state.</p>
+    </div>
+    <div class="card">
+      <h3>🔗 Layer 2-3: Tauri IPC</h3>
+      <p>TypeScript wrappers in <code>src/tauri/</code> abstract the <code>invoke()</code> calls to Rust commands with full typing. Each wrapper function maps to one Tauri command, ensuring type-safe communication. Event listeners capture filesystem changes and PTY output via Tauri's event system.</p>
+    </div>
+    <div class="card">
+      <h3>🧠 Layer 4: State Stores</h3>
+      <p>Seven Zustand stores with persistence middleware separate concerns: <code>fileStore</code> (file tree + folder state), <code>editorStore</code> (tabs + Monaco models), <code>terminalStore</code> (PTY sessions), <code>gitStore</code> (Git operations + status), <code>githubStore</code> (OAuth + API data), <code>uiStore</code> (panel sizes + theme), <code>settingsStore</code> (user preferences).</p>
+    </div>
+    <div class="card">
+      <h3>🎨 Layer 5: React UI</h3>
+      <p>The component tree mirrors VS Code's layout: a shell with custom title bar, menu bar, activity bar, resizable sidebar, editor area, bottom panel with tabs (terminal/problems/output/debug), and a status bar. Lazy-loaded MonacoEditor, React portals for modals, and shadcn/ui primitives throughout.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- Frontend -->
+<section id="frontend">
+  <div class="section-header reveal">
+    <h2>Frontend <span class="highlight">Architecture</span></h2>
+    <p>React 19 component tree with Zustand state management, organizing the UI into clearly separated domains.</p>
+  </div>
+
+  <div class="flowchart-wrap reveal">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="max-width:1200px">
+      <g transform="scale(1.5)">
+      <text x="400" y="25" text-anchor="middle" fill="#e6edf3" font-size="14" font-weight="700" font-family="Inter,sans-serif">React Component Tree</text>
+
+      <!-- App -->
+      <rect x="325" y="38" width="150" height="32" rx="6" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+      <text x="400" y="58" text-anchor="middle" fill="#d2a8ff" font-size="11" font-family="JetBrains Mono,monospace">App.tsx</text>
+
+      <line x1="400" y1="70" x2="400" y2="90" stroke="#30363d" stroke-width="1"/>
+      <polygon points="400,94 396,88 404,88" fill="#30363d"/>
+
+      <!-- ShellLayout -->
+      <rect x="310" y="94" width="180" height="32" rx="6" fill="#21262d" stroke="rgba(210,168,255,.3)" stroke-width="1"/>
+      <text x="400" y="114" text-anchor="middle" fill="#d2a8ff" font-size="11" font-family="JetBrains Mono,monospace">ShellLayout.tsx</text>
+
+      <!-- Components under ShellLayout -->
+      <line x1="310" y1="126" x2="150" y2="150" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <line x1="340" y1="126" x2="280" y2="150" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <line x1="400" y1="126" x2="400" y2="150" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <line x1="470" y1="126" x2="520" y2="150" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <line x1="490" y1="126" x2="650" y2="150" stroke="#30363d" stroke-width="1" class="anim-line"/>
+
+      <rect x="100" y="150" width="110" height="28" rx="4" fill="#0d1117" stroke="rgba(88,166,255,.3)" stroke-width="1"/>
+      <text x="155" y="168" text-anchor="middle" fill="#58a6ff" font-size="9" font-family="JetBrains Mono,monospace">TitleBar</text>
+      <rect x="225" y="150" width="110" height="28" rx="4" fill="#0d1117" stroke="rgba(88,166,255,.3)" stroke-width="1"/>
+      <text x="280" y="168" text-anchor="middle" fill="#58a6ff" font-size="9" font-family="JetBrains Mono,monospace">MenuBar</text>
+      <rect x="350" y="150" width="100" height="28" rx="4" fill="#0d1117" stroke="rgba(88,166,255,.3)" stroke-width="1"/>
+      <text x="400" y="168" text-anchor="middle" fill="#58a6ff" font-size="9" font-family="JetBrains Mono,monospace">ActivityBar</text>
+      <rect x="465" y="150" width="110" height="28" rx="4" fill="#0d1117" stroke="rgba(88,166,255,.3)" stroke-width="1"/>
+      <text x="520" y="168" text-anchor="middle" fill="#58a6ff" font-size="9" font-family="JetBrains Mono,monospace">Sidebar</text>
+      <rect x="595" y="150" width="110" height="28" rx="4" fill="#0d1117" stroke="rgba(88,166,255,.3)" stroke-width="1"/>
+      <text x="650" y="168" text-anchor="middle" fill="#58a6ff" font-size="9" font-family="JetBrains Mono,monospace">StatusBar</text>
+
+      <!-- EditorArea + BottomPanel -->
+      <line x1="400" y1="178" x2="400" y2="200" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <rect x="345" y="200" width="110" height="28" rx="4" fill="#0d1117" stroke="rgba(63,185,80,.3)" stroke-width="1"/>
+      <text x="400" y="218" text-anchor="middle" fill="#3fb950" font-size="9" font-family="JetBrains Mono,monospace">EditorArea</text>
+
+      <line x1="400" y1="228" x2="400" y2="250" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <rect x="345" y="250" width="110" height="28" rx="4" fill="#0d1117" stroke="rgba(63,185,80,.3)" stroke-width="1"/>
+      <text x="400" y="268" text-anchor="middle" fill="#3fb950" font-size="9" font-family="JetBrains Mono,monospace">BottomPanel</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="grid-2 reveal" style="margin-top:2rem">
+    <div class="card">
+      <h3>🗄️ Layout Components</h3>
+      <div class="arch-boxes" style="margin-top:.6rem">
+        <span class="arch-box frontend">ShellLayout.tsx</span>
+        <span class="arch-box frontend">TitleBar.tsx</span>
+        <span class="arch-box frontend">MenuBar.tsx</span>
+        <span class="arch-box frontend">ActivityBar.tsx</span>
+        <span class="arch-box frontend">Sidebar.tsx</span>
+        <span class="arch-box frontend">EditorArea.tsx</span>
+        <span class="arch-box frontend">BottomPanel.tsx</span>
+        <span class="arch-box frontend">StatusBar.tsx</span>
+        <span class="arch-box frontend">Resizer.tsx</span>
+      </div>
+      <p style="margin-top:.6rem"><code>ShellLayout</code> orchestrates the entire UI: a flexible box layout with sidebar toggle, panel resizing via the custom <code>Resizer</code> component (pointer capture-based drag), and keyboard shortcut registration via the <code>useHotkey</code> hook. The <code>TitleBar</code> integrates with Tauri's window API for minimize/maximize/close with custom decorations.</p>
+    </div>
+    <div class="card">
+      <h3>📝 Editor Components</h3>
+      <div class="arch-boxes" style="margin-top:.6rem">
+        <span class="arch-box frontend">MonacoEditor.tsx</span>
+        <span class="arch-box frontend">EditorTabs.tsx</span>
+        <span class="arch-box frontend">EditorTab.tsx</span>
+        <span class="arch-box frontend">WelcomePage.tsx</span>
+        <span class="arch-box frontend">EditorEmptyState.tsx</span>
+      </div>
+      <p style="margin-top:.6rem"><code>MonacoEditor</code> wraps the Monaco Editor via <code>@monaco-editor/react</code> with lazy loading. It syncs content bidirectionally with the Zustand store, applies settings (font, word wrap, minimap), and registers cursor position tracking. Large files (>5MB) show a warning banner.</p>
+    </div>
+    <div class="card">
+      <h3>🔍 Sidebar Views</h3>
+      <div class="arch-boxes" style="margin-top:.6rem">
+        <span class="arch-box frontend">FileTree.tsx</span>
+        <span class="arch-box frontend">FileTreeNode.tsx</span>
+        <span class="arch-box frontend">SearchSidebar.tsx</span>
+        <span class="arch-box frontend">GitSidebar.tsx</span>
+      </div>
+      <p style="margin-top:.6rem">The sidebar switches between four views via the <code>SidebarView</code> type. <code>FileTree</code> renders the directory tree with drag-and-drop (via @dnd-kit), inline rename, and context menu operations. <code>SearchSidebar</code> provides full-text search across files. <code>GitSidebar</code> shows source control with changes, commit box, diff view, and branch management.</p>
+    </div>
+    <div class="card">
+      <h3>⚙️ Overlay Components</h3>
+      <div class="arch-boxes" style="margin-top:.6rem">
+        <span class="arch-box frontend">CommandPalette.tsx</span>
+        <span class="arch-box frontend">ShortcutCheatSheet.tsx</span>
+        <span class="arch-box frontend">SettingsPanel.tsx</span>
+        <span class="arch-box frontend">CloseConfirmDialog.tsx</span>
+      </div>
+      <p style="margin-top:.6mt">Floating overlays managed via React state in <code>ShellLayout</code>. <code>CommandPalette</code> uses fuzzy search (<code>fuzzySearch.ts</code>) over a registry of command providers. <code>SettingsPanel</code> allows editing all user preferences with live preview. <code>CloseConfirmDialog</code> intercepts the Tauri window close event when tabs have unsaved changes.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- Backend -->
+<section id="backend">
+  <div class="section-header reveal">
+    <h2>Backend <span class="highlight">Architecture</span></h2>
+    <p>Six Rust command modules, each responsible for a distinct OS-level capability, exposed via Tauri's invoke handler.</p>
+  </div>
+
+  <div class="grid-2 reveal">
+    <div class="card gradient-border" style="z-index:1">
+      <h3>📁 fs.rs — File System</h3>
+      <div class="tech-stack"><span class="tech-badge">walkdir</span><span class="tech-badge">dirs</span><span class="tech-badge">std::fs</span></div>
+      <p>Provides 11 commands: <code>read_directory</code> (recursive walking with depth control and hidden file filtering), <code>read_file</code>, <code>write_file</code> (auto-creating parent directories), <code>create_file</code> (exclusive creation), <code>create_directory</code>, <code>rename_entry</code>, <code>delete_entry</code> (recursive for directories), <code>resolve_home</code>, <code>stat</code> (symlink-safe metadata), <code>path_exists</code>, and <code>reveal_in_explorer</code> (cross-platform OS file manager opening).</p>
+    </div>
+    <div class="card gradient-border" style="z-index:1">
+      <h3>🖥️ pty.rs — Terminal/PTY</h3>
+      <div class="tech-stack"><span class="tech-badge">portable-pty</span><span class="tech-badge">std::thread</span></div>
+      <p>Manages the lifecycle of pseudo-terminals via the <code>portable-pty</code> crate. <code>spawn_pty</code> creates a new PTY session for a given shell path, spawns a reader thread that emits <code>terminal:stdout:{id}</code> events, and stores the writer/killer handles in a <code>HashMap&lt;String, PtyHandle&gt;</code> wrapped in <code>Arc&lt;Mutex&gt;</code>. <code>write_pty</code> writes stdin, <code>resize_pty</code> adjusts terminal dimensions, and <code>kill_pty</code> terminates the child process and cleans up the session. Exit events are emitted as <code>terminal:exit:{id}</code>.</p>
+    </div>
+    <div class="card gradient-border" style="z-index:1">
+      <h3>🔀 git.rs — Git Integration</h3>
+      <div class="tech-stack"><span class="tech-badge">std::process::Command</span></div>
+      <p>Implements 26 Git porcelain commands by shelling out to the system <code>git</code> binary. All commands parse <code>--porcelain=v2</code> output for structured status reporting. Key commands: <code>git_status</code> (parses staged/unstaged/untracked/conflicted), <code>git_diff</code>, <code>git_log</code> (with format options), <code>git_branch_list</code>/<code>create</code>/<code>delete</code>/<code>checkout</code>, <code>git_add</code>/<code>reset</code>/<code>commit</code>, <code>git_push</code>/<code>pull</code>/<code>fetch</code> (with secure token injection via <code>GIT_CONFIG_PARAMETERS</code> environment variable), <code>git_stash_*</code>, <code>git_blame</code> (porcelain format), <code>git_remote_*</code>, <code>git_submodule_status</code>, <code>git_init</code>, <code>git_config_get/set</code>, <code>git_is_repo</code>, and <code>git_merge_base</code>.</p>
+    </div>
+    <div class="card gradient-border" style="z-index:1">
+      <h3>👀 watch.rs — File Watcher</h3>
+      <div class="tech-stack"><span class="tech-badge">notify</span><span class="tech-badge">tauri::Emitter</span></div>
+      <p>Wraps the <code>notify</code> crate's <code>RecommendedWatcher</code> for recursive filesystem monitoring. <code>watch_directory</code> starts watching a path and emits <code>fs:change</code> Tauri events with the root, kind (create/modify/remove), and affected paths. <code>unwatch_directory</code> and <code>unwatch_all</code> clean up watchers. The frontend listens for these events to trigger debounced tree refreshes and detect external file modifications in open tabs.</p>
+    </div>
+    <div class="card gradient-border" style="z-index:1">
+      <h3>🔎 search.rs — Full-Text Search</h3>
+      <div class="tech-stack"><span class="tech-badge">git grep</span><span class="tech-badge">walkdir</span></div>
+      <p>Adaptive search: if the root is a Git repository, delegates to <code>git grep</code> for speed (with case-sensitivity, whole-word, regex, include/exclude pattern options). Otherwise falls back to a pure Rust <code>walkdir</code>-based search that reads each file and performs substring matching. Results are capped at a configurable <code>maxResults</code> (default 1000). Returns structured <code>SearchMatch</code> objects with path, line, column, content, and match length.</p>
+    </div>
+    <div class="card gradient-border" style="z-index:1">
+      <h3>🖥️ shell.rs — Shell Detection</h3>
+      <div class="tech-stack"><span class="tech-badge">std::env</span></div>
+      <p>Cross-platform shell detection. On Windows: enumerates PowerShell 7, Windows PowerShell, Command Prompt, and WSL (if available) via <code>PATH</code> lookup. On Unix: parses <code>/etc/shells</code>, prioritizes the <code>$SHELL</code> environment variable, and validates that each path exists. Returns structured <code>Shell</code> objects with id, label, path, and arguments for the frontend's shell picker.</p>
+    </div>
+  </div>
+
+  <div class="block-diagram reveal" style="margin-top:2rem">
+    <div class="block-layer">
+      <span class="layer-label">Rust Deps</span>
+      <div class="layer-items">
+        <span class="layer-item rust">tauri 2</span>
+        <span class="layer-item rust">portable-pty 0.9</span>
+        <span class="layer-item rust">notify 8</span>
+        <span class="layer-item rust">walkdir 2</span>
+        <span class="layer-item rust">serde 1</span>
+        <span class="layer-item rust">serde_json 1</span>
+        <span class="layer-item rust">dirs 6</span>
+        <span class="layer-item rust">thiserror 1</span>
+        <span class="layer-item rust">tauri-plugin-fs 2</span>
+        <span class="layer-item rust">tauri-plugin-dialog 2</span>
+        <span class="layer-item rust">tauri-plugin-shell 2</span>
+      </div>
+    </div>
+    <div class="block-layer">
+      <span class="layer-label">Tauri Config</span>
+      <div class="layer-items">
+        <span class="layer-item highlight">tauri.conf.json</span>
+        <span class="layer-item">Custom title bar (decorations: false)</span>
+        <span class="layer-item">NSIS installer</span>
+        <span class="layer-item">1280×800 default window</span>
+        <span class="layer-item">Strict CSP policy</span>
+      </div>
+    </div>
+    <div class="block-layer">
+      <span class="layer-label">Build</span>
+      <div class="layer-items">
+        <span class="layer-item">Release: LTO + opt-level=z + strip + panic=abort</span>
+        <span class="layer-item">Frontend: terser minify + brotli + chunk splitting</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- Editor Feature -->
+<section id="editor">
+  <div class="section-header reveal">
+    <h2>The Editor <span class="highlight">in Detail</span></h2>
+    <p>How the Monaco editor is configured, themed, and integrated with the state store for a seamless editing experience.</p>
+  </div>
+
+  <div class="feature-detail reveal">
+    <h3>⚡ Monaco Editor Setup</h3>
+    <div class="meta"><span class="tech-badge tertiary">monaco-editor 0.55</span><span class="tech-badge tertiary">@monaco-editor/react 4.7</span></div>
+    <p class="desc">The editor is initialized in <code>src/lib/monaco-setup.ts</code> where <code>MonacoEnvironment.getWorker</code> is configured to load language-specific web workers (json, css, html, typescript) for syntax highlighting and IntelliSense. Three custom themes are defined: <code>code-editor-dark</code> (GitHub dark #0d1117 background), <code>code-editor-light</code> (white background), and <code>code-editor-catppuccin</code> (Catppuccin Mocha palette).</p>
+    <div class="code-block">
+<pre><span class="keyword">const</span> <span class="func">setupMonaco</span> = (): <span class="type">void</span> => {
+  <span class="keyword">const</span> w = <span class="keyword">window as</span> unknown <span class="keyword">as</span> { MonacoEnvironment?: { getWorker: (...) => Worker } };
+  w.MonacoEnvironment = {
+    getWorker(_workerId, label) {
+      <span class="keyword">switch</span> (label) {
+        <span class="keyword">case</span> <span class="string">"json"</span>: <span class="keyword">return</span> <span class="keyword">new</span> jsonWorker();
+        <span class="keyword">case</span> <span class="string">"typescript"</span>: <span class="keyword">case</span> <span class="string">"javascript"</span>: <span class="keyword">return</span> <span class="keyword">new</span> tsWorker();
+        <span class="keyword">default</span>: <span class="keyword">return</span> <span class="keyword">new</span> editorWorker();
+      }
+    },
+  };
+  monaco.editor.defineTheme(<span class="string">"code-editor-dark"</span>, DARK_THEME);
+};</pre>
+    </div>
+  </div>
+
+  <div class="feature-detail reveal">
+    <h3>📑 Tab & Content Management</h3>
+    <div class="meta"><span class="tech-badge">editorStore.ts</span><span class="tech-badge secondary">Zustand persist</span></div>
+    <p class="desc">The <code>editorStore</code> manages open tabs as an ordered array of <code>Tab</code> objects. Each tab tracks: <code>path</code>, <code>name</code>, <code>language</code>, <code>isDirty</code>, <code>savedContent</code>, <code>currentContent</code>, and <code>cursor</code> position. Opening a file reads its content via Tauri's <code>read_file</code> invoke, creates a tab, and inserts it adjacent to the active tab. The <code>saveFile</code> action optionally formats on save using Monaco's format action, then writes via <code>write_file</code>. An epoch-based deduplication system prevents redundant external-change handling after saves.</p>
+  </div>
+
+  <div class="feature-detail reveal">
+    <h3>🔄 External Change Detection</h3>
+    <p class="desc">The <code>useFileChangeSync</code> hook listens for <code>fs:change</code> Tauri events. When a change is detected for a currently open file, <code>handleExternalChange</code> in the editor store reloads the file content from disk — but only if the tab is not dirty and the last save epoch has passed. This prevents overwriting unsaved work while keeping the editor in sync with external modifications (e.g., from Git operations or other editors).</p>
+  </div>
+
+  <div class="feature-detail reveal">
+    <h3>💾 Session Restore</h3>
+    <div class="meta"><span class="tech-badge">session.ts</span></div>
+    <p class="desc">On startup, <code>App.tsx</code> calls <code>loadSession()</code> from <code>src/lib/session.ts</code> to restore previously open tabs with their cursor positions. The session is auto-saved to localStorage on every tab change via a Zustand subscription. A separate unsaved backup mechanism stores dirty file contents (capped at 1MB) as a safety net against data loss. Recent folders are tracked using a capped list (max 10) shown on the Welcome page.</p>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- File System Feature -->
+<section id="filesystem">
+  <div class="section-header reveal">
+    <h2>File System <span class="highlight">Explorer</span></h2>
+    <p>How the file tree is built, filtered, and interacted with — from the Rust backend to the React tree component.</p>
+  </div>
+
+  <div class="flowchart-wrap reveal">
+    <svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg" style="max-width:1200px">
+      <g transform="scale(1.5)">
+      <text x="400" y="25" text-anchor="middle" fill="#e6edf3" font-size="14" font-weight="700" font-family="Inter,sans-serif">File Tree Rendering Pipeline</text>
+
+      <!-- Step 1 -->
+      <rect x="50" y="45" width="700" height="36" rx="6" fill="#0d1117" stroke="rgba(239,120,86,.3)" stroke-width="1"/>
+      <circle cx="70" cy="63" r="8" fill="#ef7856" opacity=".3"/>
+      <text x="70" y="67" text-anchor="middle" fill="#ef7856" font-size="10" font-weight="700">1</text>
+      <text x="90" y="68" fill="#e6edf3" font-size="11" font-family="Inter,sans-serif">Rust: walkdir reads directory tree with depth/max_depth, resolves .gitignore</text>
+
+      <!-- Arrow -->
+      <line x1="400" y1="81" x2="400" y2="101" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <polygon points="400,105 396,99 404,99" fill="#30363d"/>
+
+      <!-- Step 2 -->
+      <rect x="50" y="105" width="700" height="36" rx="6" fill="#0d1117" stroke="rgba(88,166,255,.3)" stroke-width="1"/>
+      <circle cx="70" cy="123" r="8" fill="#58a6ff" opacity=".3"/>
+      <text x="70" y="127" text-anchor="middle" fill="#58a6ff" font-size="10" font-weight="700">2</text>
+      <text x="90" y="128" fill="#e6edf3" font-size="11" font-family="Inter,sans-serif">Tauri IPC: invoke("read_directory") returns entries + gitignore text</text>
+
+      <!-- Arrow -->
+      <line x1="400" y1="141" x2="400" y2="161" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <polygon points="400,165 396,159 404,159" fill="#30363d"/>
+
+      <!-- Step 3 -->
+      <rect x="50" y="165" width="340" height="36" rx="6" fill="#0d1117" stroke="rgba(210,168,255,.3)" stroke-width="1"/>
+      <circle cx="70" cy="183" r="8" fill="#d2a8ff" opacity=".3"/>
+      <text x="70" y="187" text-anchor="middle" fill="#d2a8ff" font-size="10" font-weight="700">3</text>
+      <text x="90" y="188" fill="#e6edf3" font-size="11" font-family="Inter,sans-serif">Web Worker: parses .gitignore, builds tree, filters by gitignore + showHidden</text>
+
+      <!-- Arrow between 3 and 4 -->
+      <line x1="220" y1="201" x2="220" y2="221" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <polygon points="220,225 216,219 224,219" fill="#30363d"/>
+
+      <!-- Step 4 (offset to right) -->
+      <rect x="410" y="165" width="340" height="36" rx="6" fill="#0d1117" stroke="rgba(63,185,80,.3)" stroke-width="1"/>
+      <circle cx="430" cy="183" r="8" fill="#3fb950" opacity=".3"/>
+      <text x="430" y="187" text-anchor="middle" fill="#3fb950" font-size="10" font-weight="700">4</text>
+      <text x="450" y="188" fill="#e6edf3" font-size="11" font-family="Inter,sans-serif">Zustand Store: applies custom ordering, stores tree in state</text>
+
+      <!-- Arrow from 4 -->
+      <line x1="580" y1="201" x2="580" y2="221" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <polygon points="580,225 576,219 584,219" fill="#30363d"/>
+
+      <!-- Step 5 (centered) -->
+      <rect x="270" y="225" width="260" height="36" rx="6" fill="#0d1117" stroke="rgba(255,123,114,.3)" stroke-width="1"/>
+      <circle cx="290" cy="243" r="8" fill="#ff7b72" opacity=".3"/>
+      <text x="290" y="247" text-anchor="middle" fill="#ff7b72" font-size="10" font-weight="700">5</text>
+      <text x="310" y="248" fill="#e6edf3" font-size="11" font-family="Inter,sans-serif">React: FileTree component renders recursive tree nodes</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="grid-2 reveal" style="margin-top:2rem">
+    <div class="card">
+      <h3>🧵 Web Worker for Tree Building</h3>
+      <p><code>fileTree.worker.ts</code> receives raw <code>FileEntry[]</code> and a <code>.gitignore</code> string, parses the gitignore into glob rules, builds a hierarchical tree structure, filters out ignored and hidden files, and returns sorted <code>FileNode[]</code>. This offloads the computationally expensive tree construction from the main thread, keeping the UI responsive even in large directories.</p>
+    </div>
+    <div class="card">
+      <h3>📋 Context Menu Operations</h3>
+      <p>The <code>useExplorerActions</code> hook provides file/directory operations via the Rust backend: <code>createFile</code>, <code>createFolder</code> (both validate names for path separators/null bytes), <code>rename</code> (with state migration for expanded directories and selections), <code>delete</code> (recursive for directories), and <code>moveItem</code> (rename-based drag-and-drop). All operations refresh the tree after completion.</p>
+    </div>
+    <div class="card">
+      <h3>🔄 Filesystem Watching</h3>
+      <p>When a folder is opened, <code>setupWatcher</code> registers a recursive <code>notify</code> watcher on the root directory. Changes emit <code>fs:change</code> Tauri events, which trigger a debounced (200ms) tree refresh in the <code>fileStore</code>. The watcher is torn down when closing the folder via <code>teardownWatcher</code>. Custom ordering of items is persisted in localStorage.</p>
+    </div>
+    <div class="card">
+      <h3>🖱️ Drag & Drop</h3>
+      <p>The file tree uses <code>@dnd-kit/core</code> and <code>@dnd-kit/utilities</code> for reordering items within directories via drag-and-drop. The <code>reorderItems</code> action persists the custom order. Cross-directory moves use the <code>moveItem</code> action which performs a <code>rename_entry</code> on the backend. The <code>DirDropTarget</code> component provides visual drop zones.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- Terminal Feature -->
+<section id="terminal">
+  <div class="section-header reveal">
+    <h2>Integrated <span class="highlight">Terminal</span></h2>
+    <p>A full pseudo-terminal integrated into the editor, backed by Rust PTY sessions and rendered with xterm.js.</p>
+  </div>
+
+  <div class="flowchart-wrap reveal">
+    <svg viewBox="0 0 1200 510" xmlns="http://www.w3.org/2000/svg" style="max-width:1200px">
+      <g transform="scale(1.5)">
+      <text x="400" y="25" text-anchor="middle" fill="#e6edf3" font-size="14" font-weight="700" font-family="Inter,sans-serif">Terminal Session Lifecycle</text>
+
+      <!-- Terminal Init -->
+      <rect x="280" y="45" width="240" height="36" rx="6" fill="#0d1117" stroke="rgba(239,120,86,.3)" stroke-width="1"/>
+      <text x="400" y="67" text-anchor="middle" fill="#ef7856" font-size="10" font-family="JetBrains Mono,monospace">createSession()</text>
+
+      <line x1="400" y1="81" x2="400" y2="101" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <polygon points="400,105 396,99 404,99" fill="#30363d"/>
+
+      <!-- Detect Shell -->
+      <rect x="100" y="105" width="200" height="36" rx="6" fill="#0d1117" stroke="rgba(88,166,255,.3)" stroke-width="1"/>
+      <text x="200" y="127" text-anchor="middle" fill="#58a6ff" font-size="10" font-family="JetBrains Mono,monospace">detectShells()</text>
+
+      <!-- Spawn Arrow -->
+      <line x1="300" y1="123" x2="390" y2="123" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <polygon points="395,123 389,119 389,127" fill="#30363d"/>
+
+      <!-- Spawn PTY -->
+      <rect x="395" y="105" width="200" height="36" rx="6" fill="#0d1117" stroke="rgba(239,120,86,.3)" stroke-width="1"/>
+      <text x="495" y="127" text-anchor="middle" fill="#ef7856" font-size="10" font-family="JetBrains Mono,monospace">spawnPty()</text>
+
+      <!-- Subscribe Events -->
+      <line x1="595" y1="123" x2="700" y2="123" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <polygon points="705,123 699,119 699,127" fill="#30363d"/>
+
+      <rect x="705" y="105" width="95" height="36" rx="6" fill="#0d1117" stroke="rgba(63,185,80,.3)" stroke-width="1"/>
+      <text x="752" y="127" text-anchor="middle" fill="#3fb950" font-size="9" font-family="JetBrains Mono,monospace">listen()</text>
+
+      <!-- Reader Thread Arrow -->
+      <line x1="400" y1="141" x2="400" y2="161" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <polygon points="400,165 396,159 404,159" fill="#30363d"/>
+
+      <!-- Rust Reader Thread -->
+      <rect x="250" y="165" width="300" height="50" rx="6" fill="#0d1117" stroke="rgba(210,168,255,.3)" stroke-width="1"/>
+      <text x="400" y="183" text-anchor="middle" fill="#d2a8ff" font-size="10" font-family="JetBrains Mono,monospace">Rust Reader Thread</text>
+      <text x="400" y="200" text-anchor="middle" fill="#8b949e" font-size="9">stdout → emit("terminal:stdout:{id}", data)</text>
+
+      <!-- Two paths from reader -->
+      <line x1="400" y1="215" x2="250" y2="235" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <line x1="400" y1="215" x2="550" y2="235" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <polygon points="250,239 256,233 244,233" fill="#30363d"/>
+      <polygon points="550,239 544,233 556,233" fill="#30363d"/>
+
+      <!-- Store Buffer -->
+      <rect x="160" y="243" width="180" height="36" rx="6" fill="#0d1117" stroke="rgba(63,185,80,.3)" stroke-width="1"/>
+      <text x="250" y="265" text-anchor="middle" fill="#3fb950" font-size="9" font-family="JetBrains Mono,monospace">Buffer + Attach Listener</text>
+
+      <!-- Worker + XTerm -->
+      <rect x="460" y="243" width="180" height="36" rx="6" fill="#0d1117" stroke="rgba(255,123,114,.3)" stroke-width="1"/>
+      <text x="550" y="265" text-anchor="middle" fill="#ff7b72" font-size="9" font-family="JetBrains Mono,monospace">Terminal Worker → xterm.write()</text>
+
+      <!-- User Input -->
+      <line x1="550" y1="279" x2="550" y2="295" stroke="#30363d" stroke-width="1" class="anim-line"/>
+      <polygon points="550,300 546,294 554,294" fill="#30363d"/>
+
+      <rect x="460" y="300" width="180" height="28" rx="6" fill="#0d1117" stroke="rgba(88,166,255,.3)" stroke-width="1"/>
+      <text x="550" y="318" text-anchor="middle" fill="#58a6ff" font-size="9" font-family="JetBrains Mono,monospace">term.onData() → writePty()</text>
+      </g>
+    </svg>
+  </div>
+
+  <div class="grid-2 reveal" style="margin-top:2rem">
+    <div class="card">
+      <h3>🔄 PTY Lifecycle</h3>
+      <p>When <code>createSession()</code> is called: (1) shells are detected if not loaded, (2) the default shell or specified shell is selected, (3) a UUID session ID is generated, (4) Tauri event listeners for <code>terminal:stdout:{id}</code> and <code>terminal:exit:{id}</code> are registered, (5) <code>spawnPty</code> is invoked to create the native PTY via <code>portable-pty</code>, (6) a Rust reader thread emits stdout data as events, and (7) the session is added to the store with its output buffer. Sessions are capped at 8 maximum.</p>
+    </div>
+    <div class="card">
+      <h3>💾 Output Buffering</h3>
+      <p>Each session has a <code>SessionOutputBuffer</code> with a ring buffer (max 5000 lines) that stores all output as strings. The <code>attachToSession</code> method lets components subscribe to real-time output. A <code>terminal.worker.ts</code> web worker batches writes to xterm.js for performance: output chunks are accumulated and flushed every <code>FLUSH_INTERVAL_MS</code> (default 16ms ≈ 60fps), reducing DOM updates and preventing xterm from being overwhelmed during rapid output.</p>
+    </div>
+    <div class="card">
+      <h3>🎨 Theming & Resizing</h3>
+      <p>The <code>useTerminalTheme</code> hook maps the app's three themes (dark, light, catppuccin-mocha) to custom xterm.js color palettes, including 16 ANSI colors plus cursor and selection colors. The <code>FitAddon</code> auto-sizes the terminal to fill its container. A <code>ResizeObserver</code> defers reflow via <code>requestAnimationFrame</code> to avoid layout thrashing, and the new dimensions are sent to the Rust backend via <code>resize_pty</code>.</p>
+    </div>
+    <div class="card">
+      <h3>📋 Multiple Sessions & Tabs</h3>
+      <p>The bottom panel supports multiple terminal sessions with tabbed navigation (<code>TerminalTabs</code>), each labeled sequentially (shell-1, shell-2, ...). A shell picker dropdown allows choosing between available shells (PowerShell, CMD, WSL, bash, zsh, etc.). Sessions can be renamed, killed, and cycled through. A context menu provides additional operations. The terminal tab bar sits alongside Problems, Output, and Debug Console panels.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- Git Feature -->
+<section id="git">
+  <div class="section-header reveal">
+    <h2>Git <span class="highlight">Integration</span></h2>
+    <p>Full source control management — 27 Git commands explained simply, from how they work to why they exist.</p>
+  </div>
+
+  <!-- What is Git? Quick primer -->
+  <div class="reveal" style="margin-bottom:2.5rem">
+    <div class="card">
+      <h3>📖 Git in Plain English</h3>
+      <p style="margin-bottom:.8rem">Think of Git as a <strong>time machine for your code</strong>. Every time you make a change you want to keep, you take a "snapshot" (called a <strong>commit</strong>). These snapshots form a timeline you can travel back and forth on. You can also create <strong>branches</strong> — like alternate universes — where you can try new things without messing up the main timeline. The editor has 27 commands that control this time machine, and here's what each one does:</p>
+      <div style="display:flex;flex-wrap:wrap;gap:.6rem;align-items:center">
+        <span style="padding:.2rem .5rem;border-radius:4px;background:rgba(63,185,80,.1);border:1px solid rgba(63,185,80,.2);font-size:.8rem">📸 Commit = A snapshot</span>
+        <span style="padding:.2rem .5rem;border-radius:4px;background:rgba(88,166,255,.1);border:1px solid rgba(88,166,255,.2);font-size:.8rem">🌿 Branch = An alternate timeline</span>
+        <span style="padding:.2rem .5rem;border-radius:4px;background:rgba(210,168,255,.1);border:1px solid rgba(210,168,255,.2);font-size:.8rem">📦 Repository = Your project folder</span>
+        <span style="padding:.2rem .5rem;border-radius:4px;background:rgba(255,123,114,.1);border:1px solid rgba(255,123,114,.2);font-size:.8rem">🌐 Remote = A copy on GitHub</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Automatic Detection -->
+  <div class="grid-2 reveal" style="margin-bottom:2rem">
+    <div class="card">
+      <h3>🔍 Automatic Git Detection</h3>
+      <p>When you open a folder, the editor automatically checks: <em>"Is this a Git project?"</em> It does this by running a quick check to see if a hidden <code>.git</code> folder exists. If yes, it immediately loads your current status, branches, remotes (like GitHub), stashes, and even reads your Git username and email. You don't need to do anything — it just works. If the folder isn't a Git project yet, a button appears to let you <code>init</code> (start tracking).</p>
+    </div>
+    <div class="card">
+      <h3>🔐 Secure Authentication</h3>
+      <p>When you push code to GitHub, the editor needs to prove who you are. Instead of typing your password insecurely, the editor uses a <strong>secret token</strong> (like a digital key). This token is passed to the Rust backend, which feeds it to Git through a hidden environment variable — never visible on screen or in command logs. This keeps your credentials safe from other programs running on your computer.</p>
+    </div>
+    <div class="card">
+      <h3>⚡ Smart Caching (Web Worker)</h3>
+      <p>Checking Git status can be slow on large projects. The editor runs Git commands in a background <strong>web worker</strong> (like a helper that works in the background without slowing down the UI). It also uses a <strong>smart cache</strong> — if you check status multiple times within 5 seconds, it reuses the last result instead of re-running the command. Think of it like remembering the answer instead of re-calculating every time.</p>
+    </div>
+    <div class="card">
+      <h3>📊 Understanding Status</h3>
+      <p>The <code>status</code> command is the most important — it's like a dashboard showing what's happening. It tells you: which branch you're on, how many commits ahead/behind the remote you are, which files are staged (ready to commit), which are unstaged (changed but not ready), which are untracked (new files Git doesn't know about), and which have merge conflicts. The editor parses Git's machine-readable output into a clean, structured format the UI can display.</p>
+    </div>
+  </div>
+
+  <!-- All 27 Commands - detailed -->
+  <div class="reveal" style="margin-bottom:2rem">
+    <h3 style="font-size:1.3rem;margin-bottom:1.5rem;text-align:center">📋 All 27 Git Commands — Explained Simply</h3>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:1rem">
+
+      <!-- STATUS -->
+      <div class="card">
+        <h3>📊 status</h3>
+        <div class="tech-stack"><span class="tech-badge">Dashboard</span></div>
+        <p><strong>What it does:</strong> Shows you the current state of your project — which files have changed, which are ready to save (staged), and which branch you're on.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like looking at a checklist to see what's been done, what's half-done, and what hasn't been started yet.</p>
+      </div>
+
+      <!-- DIFF -->
+      <div class="card">
+        <h3>📝 diff</h3>
+        <div class="tech-stack"><span class="tech-badge">Compare</span></div>
+        <p><strong>What it does:</strong> Shows exactly what lines you added, removed, or changed in a file, line by line. Green is new, red is removed.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like comparing two versions of a document with "track changes" turned on.</p>
+      </div>
+
+      <!-- LOG -->
+      <div class="card">
+        <h3>📜 log</h3>
+        <div class="tech-stack"><span class="tech-badge">History</span></div>
+        <p><strong>What it does:</strong> Shows the complete history of commits (snapshots) for your project — who made each change, when, and what they wrote about it.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like flipping through a photo album of your project, where each photo has a date and a caption.</p>
+      </div>
+
+      <!-- BRANCH_LIST -->
+      <div class="card">
+        <h3>🌿 branch_list</h3>
+        <div class="tech-stack"><span class="tech-badge">List timelines</span></div>
+        <p><strong>What it does:</strong> Lists all branches (alternate timelines) in your project — both local (on your computer) and remote (on GitHub). Shows which one is active and how ahead/behind each branch is compared to others.</p>
+      </div>
+
+      <!-- BRANCH_CREATE -->
+      <div class="card">
+        <h3>🌱 branch_create</h3>
+        <div class="tech-stack"><span class="tech-badge">New timeline</span></div>
+        <p><strong>What it does:</strong> Creates a new branch so you can work on a feature or fix without affecting the main code. It's like forking off into a parallel universe where you can experiment freely.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like making a copy of a document to try wild edits while keeping the original safe.</p>
+      </div>
+
+      <!-- BRANCH_DELETE -->
+      <div class="card">
+        <h3>🗑️ branch_delete</h3>
+        <div class="tech-stack"><span class="tech-badge">Delete timeline</span></div>
+        <p><strong>What it does:</strong> Deletes a branch you no longer need. Usually done after the feature is finished and merged into the main branch. Optionally can force-delete even if the branch hasn't been merged.</p>
+      </div>
+
+      <!-- CHECKOUT -->
+      <div class="card">
+        <h3>🔄 checkout</h3>
+        <div class="tech-stack"><span class="tech-badge">Switch timeline</span></div>
+        <p><strong>What it does:</strong> Switches your active branch — like stepping into a different timeline. All your files automatically change to match that branch's version.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like pressing a button that transforms your workspace to match whatever branch you select.</p>
+      </div>
+
+      <!-- ADD (STAGE) -->
+      <div class="card">
+        <h3>➕ add (stage)</h3>
+        <div class="tech-stack"><span class="tech-badge">Prepare to save</span></div>
+        <p><strong>What it does:</strong> Tells Git "I want to include this file in my next snapshot." This is called <strong>staging</strong> — it lets you carefully choose which changes to commit.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like putting files into a box before sealing it. You can add or remove files before you finally close the box (commit).</p>
+      </div>
+
+      <!-- RESET (UNSTAGE) -->
+      <div class="card">
+        <h3>⏪ reset (unstage)</h3>
+        <div class="tech-stack"><span class="tech-badge">Remove from box</span></div>
+        <p><strong>What it does:</strong> The opposite of add — removes files from the "staging area" so they won't be included in the next commit. Your file changes are preserved, just not marked for the snapshot.</p>
+      </div>
+
+      <!-- COMMIT -->
+      <div class="card">
+        <h3>📸 commit</h3>
+        <div class="tech-stack"><span class="tech-badge">Take a snapshot</span></div>
+        <p><strong>What it does:</strong> Takes a permanent snapshot of all staged files. You must write a message describing what you changed. Git records who made it, when, and exactly what the code looked like at that moment. Returns a unique ID (hash) for this snapshot.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like pressing the shutter button on a camera — it freezes your code in time forever.</p>
+      </div>
+
+      <!-- PUSH -->
+      <div class="card">
+        <h3>📤 push</h3>
+        <div class="tech-stack"><span class="tech-badge">Upload to cloud</span></div>
+        <p><strong>What it does:</strong> Uploads your local commits to GitHub (or another remote server). Once pushed, others can see your changes. Supports force-push (with safety checks) and setting upstream tracking.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like saving a document from your computer to Google Drive so others can see it.</p>
+      </div>
+
+      <!-- PULL -->
+      <div class="card">
+        <h3>📥 pull</h3>
+        <div class="tech-stack"><span class="tech-badge">Download from cloud</span></div>
+        <p><strong>What it does:</strong> Downloads the latest changes from GitHub and merges them into your current branch. Supports rebase mode and fast-forward-only mode for cleaner history.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like syncing a shared Google Doc to get everyone's latest edits.</p>
+      </div>
+
+      <!-- FETCH -->
+      <div class="card">
+        <h3>👀 fetch</h3>
+        <div class="tech-stack"><span class="tech-badge">Check for updates</span></div>
+        <p><strong>What it does:</strong> Checks what's new on GitHub without actually merging anything. It's like peeking at what others have pushed — you can decide later whether to pull those changes. Supports pruning deleted branches and fetching tags.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like looking at what's in the fridge before deciding what to eat — you're just gathering information.</p>
+      </div>
+
+      <!-- REMOTE_LIST -->
+      <div class="card">
+        <h3>🔗 remote_list</h3>
+        <div class="tech-stack"><span class="tech-badge">View connections</span></div>
+        <p><strong>What it does:</strong> Lists all remote servers (like GitHub, GitLab) that your project is connected to. Shows both the URL used for downloading (fetch) and uploading (push).</p>
+      </div>
+
+      <!-- REMOTE_ADD -->
+      <div class="card">
+        <h3>🔗 remote_add</h3>
+        <div class="tech-stack"><span class="tech-badge">Add connection</span></div>
+        <p><strong>What it does:</strong> Connects your local project to a remote repository (e.g., on GitHub). You give it a name (usually "origin") and the URL. After this, you can push and pull.</p>
+      </div>
+
+      <!-- REMOTE_REMOVE -->
+      <div class="card">
+        <h3>🔗 remote_remove</h3>
+        <div class="tech-stack"><span class="tech-badge">Remove connection</span></div>
+        <p><strong>What it does:</strong> Disconnects from a remote server. The local code stays untouched — it just removes the link to that external repository.</p>
+      </div>
+
+      <!-- STASH_LIST -->
+      <div class="card">
+        <h3>📦 stash_list</h3>
+        <div class="tech-stack"><span class="tech-badge">View temporary saves</span></div>
+        <p><strong>What it does:</strong> Lists all your saved temporary changes (stashes). Each stash shows its index number, the message you gave it, the branch it was made on, and its unique hash.</p>
+      </div>
+
+      <!-- STASH_PUSH -->
+      <div class="card">
+        <h3>📦 stash_push</h3>
+        <div class="tech-stack"><span class="tech-badge">Temporarily save</span></div>
+        <p><strong>What it does:</strong> Temporarily puts aside any uncommitted changes — like hitting "pause" on your work. This is useful when you need to switch branches urgently but aren't ready to commit yet.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like clearing your desk into a drawer because you need to work on something else. You can pull everything back out later.</p>
+      </div>
+
+      <!-- STASH_POP -->
+      <div class="card">
+        <h3>📦 stash_pop</h3>
+        <div class="tech-stack"><span class="tech-badge">Restore temporary save</span></div>
+        <p><strong>What it does:</strong> Restores the most recent stashed changes (or a specific stash) back into your working files and removes it from the stash list. Like taking your stuff back out of that drawer.</p>
+      </div>
+
+      <!-- STASH_DROP -->
+      <div class="card">
+        <h3>📦 stash_drop</h3>
+        <div class="tech-stack"><span class="tech-badge">Discard temporary save</span></div>
+        <p><strong>What it does:</strong> Deletes a stash that you no longer need. If you restored your changes and everything is fine, you can drop the backup.</p>
+      </div>
+
+      <!-- BLAME -->
+      <div class="card">
+        <h3>🔍 blame</h3>
+        <div class="tech-stack"><span class="tech-badge">Find who wrote what</span></div>
+        <p><strong>What it does:</strong> Goes through every line of a file and shows who last changed it, when they changed it, and in which commit. Each line gets annotated with the author, date, and commit message.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like looking at a whiteboard and seeing each person's handwriting color-coded with their name and the time they wrote it.</p>
+      </div>
+
+      <!-- SUBMODULE_STATUS -->
+      <div class="card">
+        <h3>📦 submodule_status</h3>
+        <div class="tech-stack"><span class="tech-badge">Check sub-projects</span></div>
+        <p><strong>What it does:</strong> A submodule is like a project inside your project (e.g., a library you imported). This command shows the status of all submodules — their paths, URLs, current commits, and whether they have uncommitted changes.</p>
+      </div>
+
+      <!-- INIT -->
+      <div class="card">
+        <h3>🚀 init</h3>
+        <div class="tech-stack"><span class="tech-badge">Start tracking</span></div>
+        <p><strong>What it does:</strong> Turns a regular folder into a Git repository. It creates a hidden <code>.git</code> folder that will track every change you make. You only do this once per project, at the beginning.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like installing a security camera system in your house. After setup, everything is recorded.</p>
+      </div>
+
+      <!-- CONFIG_GET -->
+      <div class="card">
+        <h3>⚙️ config_get</h3>
+        <div class="tech-stack"><span class="tech-badge">Read settings</span></div>
+        <p><strong>What it does:</strong> Reads Git configuration values — like your name, email, or preferred editor. It checks the local project settings first, then falls back to global settings if not found.</p>
+      </div>
+
+      <!-- CONFIG_SET -->
+      <div class="card">
+        <h3>⚙️ config_set</h3>
+        <div class="tech-stack"><span class="tech-badge">Write settings</span></div>
+        <p><strong>What it does:</strong> Changes Git configuration values. You can save settings locally (for just this project) or globally (for all your Git projects). Used to set your name, email, or other preferences.</p>
+      </div>
+
+      <!-- IS_REPO -->
+      <div class="card">
+        <h3>✅ is_repo</h3>
+        <div class="tech-stack"><span class="tech-badge">Quick check</span></div>
+        <p><strong>What it does:</strong> A simple yes/no check: "Is this folder a Git repository?" It runs <code>git rev-parse --git-dir</code> which quickly returns success if a <code>.git</code> folder exists, or fails if not.</p>
+      </div>
+
+      <!-- MERGE_BASE -->
+      <div class="card">
+        <h3>🔀 merge_base</h3>
+        <div class="tech-stack"><span class="tech-badge">Find common ancestor</span></div>
+        <p><strong>What it does:</strong> Finds the most recent commit that two branches share in common — their "common ancestor." This is used to understand where two branches diverged, which is critical for calculating diffs and resolving merges.</p>
+        <p style="color:var(--text2);font-size:.85rem;margin-top:.4rem"><strong>Real-world analogy:</strong> Like finding the last photo two siblings appear in together before they went their separate ways.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- How the Rust backend runs Git -->
+  <div class="reveal" style="margin-bottom:2rem">
+    <div class="card">
+      <h3>🦀 How the Rust Backend Runs Git</h3>
+      <p style="margin-bottom:.8rem">The Rust code in <code>src-tauri/src/commands/git.rs</code> (616 lines) handles all Git operations. Instead of using a Git library, it directly runs the <code>git</code> command on your system, just like you would in a terminal. Here's how a typical command flows:</p>
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:1rem;font-size:.85rem;line-height:2;color:var(--text2)">
+        <strong style="color:var(--text)">Step 1:</strong> Frontend calls <code>invoke("git_status", { root: "/my/project" })</code><br>
+        <strong style="color:var(--text)">Step 2:</strong> Rust runs on your computer: <code>git status --porcelain=v2 --branch</code><br>
+        <strong style="color:var(--text)">Step 3:</strong> Rust parses the machine-readable output line by line<br>
+        <strong style="color:var(--text)">Step 4:</strong> Extracts branch name, ahead/behind counts, staged files, unstaged files, untracked files, and conflicted files<br>
+        <strong style="color:var(--text)">Step 5:</strong> Returns a structured <code>GitStatus</code> object to the frontend
+      </div>
+      <p style="margin-top:.8rem">For push/pull/fetch with authentication, the GitHub token is passed securely through the <code>GIT_CONFIG_PARAMETERS</code> environment variable rather than command-line arguments (which other processes on your computer could see). This uses the format <code>http.extraHeader=Authorization: bearer {token}</code>.</p>
+    </div>
+  </div>
+
+  <!-- Quick Reference Cards -->
+  <div class="reveal">
+    <div class="card">
+      <h3>📋 Quick Reference — All 27 Commands</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:.6rem;margin-top:1rem">
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent)">status</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Dashboard of changes</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent)">diff</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Line-by-line comparison</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent)">log</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Full commit history</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent2)">branch_list</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">List all branches</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent2)">branch_create</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Create new branch</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent2)">branch_delete</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Delete a branch</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent3)">checkout</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Switch branches</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent3)">add</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Stage changes for commit</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent3)">reset</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Unstage changes</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent4)">commit</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Take a snapshot</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent4)">push</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Upload to GitHub</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent4)">pull</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Download from GitHub</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent)">fetch</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Check for updates</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent)">remote_list</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">View GitHub connections</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent)">remote_add</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Link to GitHub</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent)">remote_remove</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Unlink from GitHub</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent2)">stash_list</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">View temporary saves</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent2)">stash_push</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Temporarily save</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent2)">stash_pop</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Restore saved work</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent2)">stash_drop</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Discard temporary save</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent3)">blame</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Find who wrote each line</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent3)">submodule_status</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Check sub-projects</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent3)">init</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Start tracking a project</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent4)">config_get</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Read Git settings</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent4)">config_set</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Change Git settings</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent4)">is_repo</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Is this a Git project?</span>
+        </div>
+        <div style="padding:.4rem .6rem;border-radius:4px;background:var(--bg3);border:1px solid var(--border)">
+          <strong style="color:var(--accent)">merge_base</strong><br>
+          <span style="font-size:.78rem;color:var(--text2)">Find common ancestor</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- GitHub Feature -->
+<section id="github">
+  <div class="section-header reveal">
+    <h2>GitHub <span class="highlight">Integration</span></h2>
+    <p>OAuth-based GitHub authentication with PR and issue tracking, directly inside the editor.</p>
+  </div>
+
+  <div class="grid-2 reveal">
+    <div class="card">
+      <h3>🔑 OAuth Device Flow</h3>
+      <p>Authentication uses the GitHub OAuth Device Authorization Flow via <code>@octokit/auth-oauth-device</code>. When the user clicks "Sign In", the app requests a device code from GitHub. The user is shown a verification code and a URL (<code>github.com/login/device</code>). Once they enter the code, the app polls for an access token. The token is persisted in localStorage alongside the authenticated user's profile (login, avatar, name, email). Token restoration is attempted on rehydration.</p>
+    </div>
+    <div class="card">
+      <h3>📦 Octokit REST Client</h3>
+      <p>The <code>@octokit/rest</code> library provides the API client. It's initialized once (<code>createOctokit</code>) with the OAuth token and destroyed on sign-out (<code>destroyOctokit</code>). The client fetches: open pull requests (with check run statuses via <code>checks.listForRef</code>), open issues (filtered to exclude PRs), and the remote repository info is parsed from Git remotes via <code>parseGitHubRemote</code> (supports both HTTPS and SSH URL formats).</p>
+    </div>
+    <div class="card">
+      <h3>🔍 PR & Issue Views</h3>
+      <p>The GitHub panel shows two tabs: Pull Requests and Issues. Each PR card displays: number, title, author avatar, draft/merged status, labels, and CI check status indicators (success/failure/pending). Clicking a PR opens a detail view with the full description and check runs. Issues show similar info with comment counts. The <code>GitHubPullRequestDetail</code> component renders PR metadata with check status badges.</p>
+    </div>
+    <div class="card">
+      <h3>🔗 Remote Detection</h3>
+      <p>The <code>setRepoFromRemote</code> action automatically detects the GitHub repository from the "origin" Git remote. It parses the remote URL (HTTPS: <code>https://github.com/owner/repo</code> or SSH: <code>git@github.com:owner/repo</code>) to extract the owner and repository name. This links the authenticated session to the current project's GitHub context.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- Data Flow -->
+<section id="dataflow">
+  <div class="section-header reveal">
+    <h2>Data <span class="highlight">Flow</span></h2>
+    <p>How data moves through the application — from user interaction to the Rust backend and back to the UI.</p>
+  </div>
+
+  <div class="flowchart-wrap reveal">
+    <svg viewBox="0 0 1350 630" xmlns="http://www.w3.org/2000/svg" style="max-width:1350px">
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10" fill="#30363d"/></marker>
+      </defs>
+      <g transform="scale(1.5)">
+      <text x="450" y="25" text-anchor="middle" fill="#e6edf3" font-size="14" font-weight="700" font-family="Inter,sans-serif">Complete Data Flow Diagram</text>
+
+      <!-- User -->
+      <rect x="380" y="40" width="140" height="36" rx="18" fill="#21262d" stroke="#58a6ff" stroke-width="1.5"/>
+      <text x="450" y="63" text-anchor="middle" fill="#58a6ff" font-size="12" font-weight="600" font-family="Inter,sans-serif">User Input</text>
+
+      <!-- Arrow to React -->
+      <line x1="450" y1="76" x2="450" y2="96" stroke="#30363d" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- React Component -->
+      <rect x="350" y="96" width="200" height="36" rx="6" fill="#0d1117" stroke="rgba(210,168,255,.5)" stroke-width="1"/>
+      <text x="450" y="118" text-anchor="middle" fill="#d2a8ff" font-size="10" font-family="JetBrains Mono,monospace">React Component</text>
+
+      <!-- Arrow to Store -->
+      <line x1="450" y1="132" x2="450" y2="152" stroke="#30363d" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- Zustand Store -->
+      <rect x="350" y="152" width="200" height="36" rx="6" fill="#0d1117" stroke="rgba(63,185,80,.5)" stroke-width="1"/>
+      <text x="450" y="174" text-anchor="middle" fill="#3fb950" font-size="10" font-family="JetBrains Mono,monospace">Zustand Store</text>
+
+      <!-- Decision: invoke or direct? -->
+      <line x1="450" y1="188" x2="450" y2="208" stroke="#30363d" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <polygon points="450,215 440,205 460,205" fill="#21262d" stroke="#30363d" stroke-width="1"/>
+
+      <text x="500" y="214" fill="#8b949e" font-size="9">Needs Rust?</text>
+
+      <!-- No path -->
+      <line x1="460" y1="215" x2="550" y2="215" stroke="#30363d" stroke-width="1" marker-end="url(#arrow)"/>
+      <rect x="555" y="200" width="80" height="30" rx="4" fill="#0d1117" stroke="rgba(63,185,80,.3)" stroke-width="1"/>
+      <text x="595" y="219" text-anchor="middle" fill="#3fb950" font-size="8" font-family="JetBrains Mono,monospace">Local state</text>
+
+      <!-- Yes path -->
+      <line x1="440" y1="215" x2="350" y2="215" stroke="#30363d" stroke-width="1" marker-end="url(#arrow)"/>
+      <line x1="350" y1="215" x2="200" y2="240" stroke="#30363d" stroke-width="1" marker-end="url(#arrow)"/>
+
+      <!-- Tauri invoke -->
+      <rect x="120" y="240" width="160" height="36" rx="6" fill="#0d1117" stroke="rgba(88,166,255,.5)" stroke-width="1"/>
+      <text x="200" y="262" text-anchor="middle" fill="#58a6ff" font-size="10" font-family="JetBrains Mono,monospace">invoke("command")</text>
+
+      <line x1="200" y1="276" x2="200" y2="296" stroke="#30363d" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- Rust Command -->
+      <rect x="120" y="296" width="160" height="36" rx="6" fill="#0d1117" stroke="rgba(239,120,86,.5)" stroke-width="1"/>
+      <text x="200" y="318" text-anchor="middle" fill="#ef7856" font-size="10" font-family="JetBrains Mono,monospace">Rust Command fn</text>
+
+      <line x1="280" y1="314" x2="350" y2="314" stroke="#30363d" stroke-width="1.5" class="anim-line"/>
+      <line x1="350" y1="314" x2="450" y2="290" stroke="#30363d" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- Response back to store -->
+      <rect x="350" y="280" width="200" height="36" rx="6" fill="#0d1117" stroke="rgba(63,185,80,.5)" stroke-width="1"/>
+      <text x="450" y="302" text-anchor="middle" fill="#3fb950" font-size="10" font-family="JetBrains Mono,monospace">Store updates state</text>
+
+      <line x1="450" y1="316" x2="450" y2="350" stroke="#30363d" stroke-width="1.5" marker-end="url(#arrow)"/>
+
+      <!-- Re-render -->
+      <rect x="350" y="350" width="200" height="36" rx="6" fill="#0d1117" stroke="rgba(255,123,114,.5)" stroke-width="1"/>
+      <text x="450" y="372" text-anchor="middle" fill="#ff7b72" font-size="10" font-family="JetBrains Mono,monospace">React re-renders</text>
+
+      <line x1="450" y1="386" x2="450" y2="406" stroke="#30363d" stroke-width="1.5" marker-end="url(#arrow)"/>
+      <text x="450" y="418" text-anchor="middle" fill="#8b949e" font-size="9">UI updated</text>
+      </g>
+    </svg>
+  </div>
+
+  <!-- Event-based data flow -->
+  <div class="grid-2 reveal" style="margin-top:2rem">
+    <div class="card">
+      <h3>📡 Event-Based Communication</h3>
+      <p>The Rust backend emits Tauri events for asynchronous push-based communication:</p>
+      <ul style="color:var(--text2);font-size:.92rem;line-height:2;list-style:none;padding:0;margin-top:.5rem">
+        <li>• <code>fs:change</code> — Filesystem changes (create/modify/remove)</li>
+        <li>• <code>terminal:stdout:{sessionId}</code> — PTY output data</li>
+        <li>• <code>terminal:exit:{sessionId}</code> — PTY process exit with code/signal</li>
+      </ul>
+      <p style="margin-top:.5rem">The frontend subscribes to these events via <code>@tauri-apps/api/event</code> <code>listen()</code> in the corresponding stores, enabling reactive UI updates without polling.</p>
+    </div>
+    <div class="card">
+      <h3>🧠 Web Workers</h3>
+      <p>Three web workers offload CPU-intensive work from the main thread:</p>
+      <ul style="color:var(--text2);font-size:.92rem;line-height:2;list-style:none;padding:0;margin-top:.5rem">
+        <li>• <code>fileTree.worker.ts</code> — Builds hierarchical file trees from flat entry lists, applying .gitignore rules</li>
+        <li>• <code>git.worker.ts</code> — Caches and processes Git data with LRU cache</li>
+        <li>• <code>terminal.worker.ts</code> — Buffers and throttles xterm.js writes to 60fps</li>
+      </ul>
+      <p style="margin-top:.5rem">All workers communicate via structured <code>postMessage</code> with a request/response protocol using UUID-based correlation IDs.</p>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- Features Summary -->
+<section>
+  <div class="section-header reveal">
+    <h2>Feature <span class="highlight">Summary</span></h2>
+    <p>At-a-glance overview of every component in the editor.</p>
+  </div>
+
+  <div class="grid-4 reveal">
+    <div class="card"><h3>⌨️ Command Palette</h3><p>Fuzzy-search over a registry of command providers. Commands are categorized (File, View, Terminal, Git) with platform-aware keybinding display.</p></div>
+    <div class="card"><h3>🎭 Three Themes</h3><p>Dark (#0d1117 GitHub dark), Light (pure white), and Catppuccin Mocha. All UI components, editor, terminal, and syntax highlighting adapt seamlessly.</p></div>
+    <div class="card"><h3>🔊 Platform Awareness</h3><p><code>isTauri()</code> check switches behavior between desktop and browser. Custom title bar with native window controls when in Tauri.</p></div>
+    <div class="card"><h3>📐 Resizable Panels</h3><p>Custom <code>Resizer</code> using pointer capture API. Sidebar (160-480px) and terminal panel (100-600px) with persisted sizes.</p></div>
+    <div class="card"><h3>🖱️ Drag & Drop</h3><p>Filesystem items can be dragged within and across directories using @dnd-kit. Custom order is persisted in localStorage.</p></div>
+    <div class="card"><h3>📜 File Encoding</h3><p><code>encoding.ts</code> detects BOM marks, validates UTF-8, and determines encoding. Supports utf-8, utf-16le, utf-16be, latin-1, ascii.</p></div>
+    <div class="card"><h3>⚡ Hotkey System</h3><p><code>HotkeyRegistry</code> class with normalized combos ("mod+b"), editable input detection, and platform-aware modifiers (Cmd/Ctrl).</p></div>
+    <div class="card"><h3>🛡️ Error Boundary</h3><p>React error boundary wrapping the entire app. Named boundaries for Application, Sidebar, and Terminal areas with graceful degradation.</p></div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- File Tree -->
+<section>
+  <div class="section-header reveal">
+    <h2>Project <span class="highlight">Structure</span></h2>
+    <p>The complete file tree of the application, organized by domain.</p>
+  </div>
+
+  <div class="grid-2 reveal">
+    <div class="card">
+      <h3>📂 src/ — Frontend Source</h3>
+      <div class="tree-viz">
+<span class="dir">src/</span>
+<span class="dir">  ├── components/</span>
+<span class="file">  │   ├── layout/          (10 files)</span>
+<span class="file">  │   ├── editor/          (8 files)</span>
+<span class="file">  │   ├── explorer/        (7 files)</span>
+<span class="file">  │   ├── terminal/        (9 files)</span>
+<span class="file">  │   ├── git/             (7 files)</span>
+<span class="file">  │   ├── github/          (6 files)</span>
+<span class="file">  │   ├── search/          (1 file)</span>
+<span class="file">  │   ├── command/         (2 files)</span>
+<span class="file">  │   ├── settings/        (1 file)</span>
+<span class="file">  │   └── ui/              (shadcn primitives)</span>
+<span class="dir">  ├── stores/              (7 files)</span>
+<span class="dir">  ├── hooks/               (9 files)</span>
+<span class="dir">  ├── lib/                 (15 files)</span>
+<span class="dir">  ├── tauri/               (7 files)</span>
+<span class="dir">  ├── types/               (8 files)</span>
+<span class="dir">  ├── workers/             (3 files)</span>
+<span class="file">  ├── App.tsx              (Entry component)</span>
+<span class="file">  ├── main.tsx             (React root)</span>
+<span class="file">  └── index.css            (Tailwind + theme)</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>🦀 src-tauri/ — Rust Backend</h3>
+      <div class="tree-viz">
+<span class="dir">src-tauri/</span>
+<span class="dir">  ├── src/</span>
+<span class="file">  │   ├── main.rs          (Entry point)</span>
+<span class="file">  │   ├── lib.rs           (Plugin init + handlers)</span>
+<span class="file">  │   └── commands/</span>
+<span class="file">  │       ├── mod.rs        (Module exports)</span>
+<span class="file">  │       ├── fs.rs         (File system I/O)</span>
+<span class="file">  │       ├── pty.rs        (PTY terminal)</span>
+<span class="file">  │       ├── git.rs        (Git commands)</span>
+<span class="file">  │       ├── watch.rs      (File watcher)</span>
+<span class="file">  │       ├── search.rs     (Text search)</span>
+<span class="file">  │       └── shell.rs      (Shell detection)</span>
+<span class="file">  ├── tauri.conf.json       (Tauri config)</span>
+<span class="file">  ├── Cargo.toml            (Rust deps)</span>
+<span class="file">  └── build.rs              (Build script)</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="section-divider"></div>
+
+<!-- Footer -->
+<footer class="footer">
+  <p>Built with <strong>Tauri 2</strong>, <strong>React 19</strong>, <strong>TypeScript</strong>, <strong>Rust</strong>, and ❤️</p>
+  <p style="margin-top:.3rem">Full Architecture Documentation — Code Editor v0.1.0</p>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Nav dot active tracking
+const sections = document.querySelectorAll('section[id]');
+const navDots = document.querySelectorAll('.nav-dots a');
+
+const onScroll = () => {
+  let current = '';
+  sections.forEach(section => {
+    const top = section.offsetTop - 200;
+    if (window.scrollY >= top) current = section.id;
+  });
+  navDots.forEach(dot => {
+    dot.classList.toggle('active', dot.getAttribute('href') === '#' + current);
+  });
+};
+
+window.addEventListener('scroll', onScroll);
+onScroll();
+
+// Smooth scroll for nav dots
+navDots.forEach(dot => {
+  dot.addEventListener('click', e => {
+    e.preventDefault();
+    const id = dot.getAttribute('href').slice(1);
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+</script>
+</body>
+</html>

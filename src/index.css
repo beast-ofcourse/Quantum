@@ -1,0 +1,240 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.556 0 0);
+}
+
+.catppuccin-mocha {
+  --background: #1e1e2e;
+  --foreground: #cdd6f4;
+  --card: #181825;
+  --card-foreground: #cdd6f4;
+  --popover: #181825;
+  --popover-foreground: #cdd6f4;
+  --primary: #cba6f7;
+  --primary-foreground: #1e1e2e;
+  --secondary: #313244;
+  --secondary-foreground: #cdd6f4;
+  --muted: #313244;
+  --muted-foreground: #a6adc8;
+  --accent: #45475a;
+  --accent-foreground: #cdd6f4;
+  --destructive: #f38ba8;
+  --destructive-foreground: #1e1e2e;
+  --border: #45475a;
+  --input: #45475a;
+  --ring: #cba6f7;
+}
+
+.spiderman {
+  --background: #0D111A;
+  --foreground: #E8EDF2;
+  --card: #151B28;
+  --card-foreground: #E8EDF2;
+  --popover: #0F1520;
+  --popover-foreground: #E8EDF2;
+  --primary: #E23636;
+  --primary-foreground: #FFFFFF;
+  --secondary: #1E2740;
+  --secondary-foreground: #E8EDF2;
+  --muted: #1E2740;
+  --muted-foreground: #8B95A5;
+  --accent: #2B5BED;
+  --accent-foreground: #FFFFFF;
+  --destructive: #E23636;
+  --destructive-foreground: #FFFFFF;
+  --border: #2A3245;
+  --input: #2A3245;
+  --ring: #E23636;
+}
+
+.spiderman .shell-container::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image: url(/spidy-eyes.png);
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.05;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.spiderman .file-tree-folder {
+  color: #E23636;
+}
+
+.spiderman .file-tree-folder-icon {
+  color: #E23636;
+}
+
+.spiderman .file-tree-folder-icon::after {
+  content: "🕸";
+  font-size: 8px;
+  opacity: 0.3;
+  margin-left: 2px;
+}
+
+.spiderman [data-git-badge="modified"] {
+  color: #E23636 !important;
+}
+
+.spiderman [data-git-badge="added"] {
+  color: #2B5BED !important;
+}
+
+.spiderman [data-git-badge="deleted"] {
+  color: #B71C1C !important;
+}
+
+.spiderman [data-git-badge="untracked"] {
+  color: #9E9E9E !important;
+}
+
+.spiderman [data-git-badge="conflict"] {
+  color: #FF1744 !important;
+  text-shadow: 0 0 4px #E23636;
+}
+
+.spiderman [data-git-badge="renamed"] {
+  color: #448AFF !important;
+}
+
+.spiderman [data-git-badge="modified"]::after,
+.spiderman [data-git-badge="added"]::after {
+  content: "🕷";
+  font-size: 6px;
+  margin-left: 1px;
+  opacity: 0.5;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+}
+
+.git-gutter-modified::before {
+  content: "";
+  display: block;
+  width: 3px;
+  height: 100%;
+  margin-left: 3px;
+  background: #eab308;
+  border-radius: 1px;
+}
+
+.git-gutter-added::before {
+  content: "";
+  display: block;
+  width: 3px;
+  height: 100%;
+  margin-left: 3px;
+  background: #22c55e;
+  border-radius: 1px;
+}
+
+.git-gutter-deleted::before {
+  content: "";
+  display: block;
+  width: 3px;
+  height: 100%;
+  margin-left: 3px;
+  background: #ef4444;
+  border-radius: 1px;
+}
+
+.git-blame-glyph::before {
+  content: "";
+  display: block;
+  width: 8px;
+  height: 100%;
+  margin-left: 1px;
+  background: #8884;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}

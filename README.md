@@ -1,5 +1,8 @@
 # Quantum
 
+[![CI](https://github.com/user-sb737/Code-editor/actions/workflows/ci.yml/badge.svg)](https://github.com/user-sb737/Code-editor/actions/workflows/ci.yml)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **A modern, extensible desktop code editor** built with Tauri 2 + React 19 + TypeScript + Monaco Editor.
 
 Quantum is a feature-rich IDE designed for local development, with deep Git integration, a full debug adapter protocol client, LSP language server support, a flexible extension system, and a VS Code-inspired layout. Currently in active development.

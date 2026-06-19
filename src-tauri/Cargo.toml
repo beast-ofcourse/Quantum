@@ -26,6 +26,8 @@ notify = "8"
 dirs = "6"
 portable-pty = "0.9"
 thiserror = "1"
+notify-debouncer-mini = "0.7"
+tempfile = "3"
 [profile.release]
 panic = "abort"
 codegen-units = 1

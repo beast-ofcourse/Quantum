@@ -1,4 +1,7 @@
 mod commands;
+mod swarm;
+
+use tauri::Manager;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -100,8 +103,36 @@ pub fn run() {
             commands::search::search_in_files,
             commands::search::replace_in_files,
             commands::definitions::find_definitions,
+            // Swarm commands
+            swarm::commands::init_swarm,
+            swarm::commands::add_agent,
+            swarm::commands::spawn_agent_pty,
+            swarm::commands::kill_agent,
+            swarm::commands::get_swarm_state,
+            swarm::commands::check_merge,
+            swarm::commands::merge_agent,
+            swarm::commands::set_api_key,
+            swarm::commands::get_api_key,
+            swarm::commands::delete_api_key,
+            swarm::commands::update_swarm_config,
+            swarm::commands::write_agent_context,
+            swarm::commands::reconcile_swarm,
         ])
-        .setup(|_app| Ok(()))
+        .setup(|app| {
+            let handle = app.handle().clone();
+            let project_root = std::env::current_dir()
+                .unwrap_or_default()
+                .to_string_lossy()
+                .to_string();
+
+            // Run reconciliation if swarm state exists (this also starts watcher)
+            let state_path = format!("{}/.quantum/swarm-state.json", project_root);
+            if std::path::Path::new(&state_path).exists() {
+                let _ = swarm::commands::reconcile_swarm(handle, project_root);
+            }
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

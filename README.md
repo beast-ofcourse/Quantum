@@ -72,6 +72,20 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 - Extension API for registering custom LSP servers per language
 - **Pyright** bundled as a first-party LSP server
 
+### Multi-Agent Orchestration (Quantum Swarm) — In Progress
+> **Phase 0: Foundation & Dependency Audit** completed 2026-06-19
+> **Phase 1: Rust Backend Core** implemented 2026-06-19 (awaiting build verification)
+
+- **Git worktree isolation** — each AI agent runs in its own isolated checkout, no file collisions
+- **Multi-agent coordination** — sequential task execution with merge conflict detection
+- **File-based IPC** — agents communicate via `context.md` (IDE→agent) and `manifest.json` (agent→IDE)
+- **OS keychain API keys** — secure provider credential management (file-based in v1, keychain in v2)
+- **Real-time status visibility** — live agent manifest updates, activity timeline, file lock tracking
+- **PTY environment injection** — `QUANTUM_*` vars + API keys injected at spawn, no manual config
+- **IDE crash recovery** — reconciles agent state on restart, detects alive/dead processes
+- **Supported agents:** OpenCode, KiloCode (launch); Claude Code, Codex, Aider (future)
+- See [`docs/swarm-design.md`](docs/swarm-design.md) for full architecture
+
 ### Extension System
 - Sandboxed extension host with lifecycle management (activation/deactivation/cleanup)
 - Extension manifest format: name, displayName, description, version, main entry

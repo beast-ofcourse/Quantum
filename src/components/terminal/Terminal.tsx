@@ -36,6 +36,7 @@ export function Terminal({ session, xtermRef, onSearchOpen }: TerminalProps) {
       fontFamily:
         'ui-monospace, "Cascadia Code", "JetBrains Mono", "Fira Code", Consolas, monospace',
       fontSize: 13,
+      lineHeight: 1.0,
       cursorBlink: true,
       scrollback: 5000,
       allowProposedApi: true,
@@ -99,10 +100,12 @@ export function Terminal({ session, xtermRef, onSearchOpen }: TerminalProps) {
       }
     };
 
+    // Immediate sync fit (renderer is ready after open())
+    doFit();
+
     // Defer initial fit to let layout settle
     const initRaf = requestAnimationFrame(() => {
       doFit();
-      // Second fit on next frame to catch layout settling
       requestAnimationFrame(doFit);
     });
 
@@ -115,6 +118,10 @@ export function Terminal({ session, xtermRef, onSearchOpen }: TerminalProps) {
       fitTimer = requestAnimationFrame(doFit);
     });
     ro.observe(container);
+    // Also observe parent to catch layout shifts from panel resize
+    if (container.parentElement) {
+      ro.observe(container.parentElement);
+    }
 
     const detach = useTerminalStore.getState().attachToSession(
       session.id,

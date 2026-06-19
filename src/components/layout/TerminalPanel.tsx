@@ -38,7 +38,7 @@ export function TerminalPanel() {
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <TerminalTabs />
       <div
-        className="relative flex-1 overflow-hidden"
+        className="relative min-h-0 flex-1 overflow-hidden"
         onPointerDown={() => setActivePanel("terminal")}
       >
         {active ? (

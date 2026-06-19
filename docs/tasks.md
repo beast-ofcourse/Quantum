@@ -505,20 +505,19 @@
 
 ---
 
-### Phase 5 — DAG Dependency Orchestration (Post-v1 Enhancement)
+### Phase 5 ✅ — DAG Dependency Orchestration
 
 **Goal:** Replace sequential execution with full DAG-based task scheduling. Parallel agent execution when dependencies allow.
 
-**Source:** Skeptic's DAG simplification was accepted for v1. This phase re-introduces it with hardened design based on all adversarial feedback.
-
-**When to start:** Only after all Phase 4 edge cases are verified in production-like usage.
-
-**Key changes:**
-- Coordination service: replace `sequentialQueue` with `DagEngine` — evaluates dependency graph after each merge
-- SwarmState.tasks: `dependsOn` array is actively used (currently ignored)
-- Task status: add `"blocked"` status for tasks whose deps are not yet met
-- UI: TaskBoard shows real DAG edges, dependency chains visible
-- New file: `src/lib/swarm/dagEngine.ts` — pure function: `(tasks, completedTaskId) => nextTasks[]`
+**Done:**
+- ✅ `src/lib/swarm/dagEngine.ts` — pure module: `getNextTasks()`, `detectCycle()`, `classifyTasks()`
+- ✅ Task status union includes `"blocked"` (`TaskStatus` type)
+- ✅ `updateTaskStatus` action in swarmStore
+- ✅ Coordination service uses `processDagAfterCompletion` → `dagEngine.getNextTasks()`
+- ✅ TaskBoard 4th "Blocked" column shown dynamically when blocked tasks exist
+- ✅ Rust `add_agent`: sets `"blocked"` if `depends_on` non-empty, `"pending"` otherwise
+- ✅ 16 test cases for dagEngine (chain, diamond, parallel, cycle detection)
+- ✅ 152 TS tests pass, `cargo check` clean
 
 ---
 

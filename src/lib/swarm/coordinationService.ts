@@ -1,7 +1,13 @@
-import type { AgentManifest, AgentStatus, SwarmState, TimelineEvent } from "@/types/swarm";
+import type { AgentManifest, AgentStatus, SwarmState } from "@/types/swarm";
 import * as swarmApi from "@/tauri/swarm";
 import { useSwarmStore } from "@/stores/swarmStore";
-import { useTerminalStore } from "@/stores/terminalStore";
+
+const HEARTBEAT_INTERVAL_MS = 30_000;
+const HEARTBEAT_STALE_MS = 35_000;
+
+const VALID_STATUSES: readonly AgentStatus[] = [
+  "idle", "running", "waiting", "merging", "done", "failed", "dead",
+];
 
 export class CoordinationService {
   private projectRoot = "";
@@ -19,15 +25,30 @@ export class CoordinationService {
     }
   }
 
+  // ── 4.6.1 + 4.6.2 — Manifest handling ───────────────
+
   onManifestChanged(agentId: string, manifest: AgentManifest): void {
     const store = useSwarmStore.getState();
-    store.updateAgentManifest(agentId, manifest);
+    const coercedManifest: AgentManifest = {
+      ...manifest,
+      status: this.coerceStatus(manifest.status),
+    };
+    store.updateAgentManifest(agentId, coercedManifest);
 
     const state = store.state;
     if (state?.agents[agentId]?.status === "running") {
       void this.refreshOtherAgents(agentId, state);
     }
   }
+
+  private coerceStatus(status: string): string {
+    if (VALID_STATUSES.includes(status as AgentStatus)) {
+      return status;
+    }
+    return "running";
+  }
+
+  // ── 4.2.2 — Agent exit handling ─────────────────────
 
   async onAgentExit(agentId: string, exitCode: number): Promise<void> {
     const store = useSwarmStore.getState();
@@ -41,10 +62,26 @@ export class CoordinationService {
       detail: `Exit code: ${exitCode}`,
     });
 
+    // Release file locks
+    if (store.state) {
+      const locks = { ...store.state.fileLocks };
+      for (const [file, lock] of Object.entries(locks)) {
+        if (lock.lockedBy === agentId) {
+          delete locks[file];
+        }
+      }
+      store.setState({
+        ...store.state,
+        fileLocks: locks,
+      });
+    }
+
     if (exitCode !== 0) return;
 
     await this.processMerge(agentId);
   }
+
+  // ── 4.4.1 — Merge processing ────────────────────────
 
   private async processMerge(agentId: string): Promise<void> {
     const store = useSwarmStore.getState();
@@ -104,6 +141,8 @@ export class CoordinationService {
     });
   }
 
+  // ── 4.5.2 — Dependency unblocking ───────────────────
+
   private async unblockDependents(completedAgentId: string): Promise<void> {
     const store = useSwarmStore.getState();
     if (!store.state) return;
@@ -144,12 +183,24 @@ export class CoordinationService {
     }
   }
 
+  // ── 4.2.3 — Context refresh ─────────────────────────
+
   async refreshContext(agentId: string): Promise<void> {
     const store = useSwarmStore.getState();
     if (!store.state) return;
 
     const content = this.buildContextMd(agentId, store.state);
-    await swarmApi.writeAgentContext(this.projectRoot, agentId, content);
+    try {
+      await swarmApi.writeAgentContext(this.projectRoot, agentId, content);
+    } catch (err) {
+      // 4.3.3 — .quantum/ may have been deleted, try to recreate
+      try {
+        await swarmApi.recreateQuantumDir(this.projectRoot);
+        await swarmApi.writeAgentContext(this.projectRoot, agentId, content);
+      } catch {
+        console.error("[coordination] context write failed after retry:", err);
+      }
+    }
   }
 
   private async refreshOtherAgents(
@@ -163,10 +214,12 @@ export class CoordinationService {
     }
   }
 
+  // ── 4.2 — Heartbeat ─────────────────────────────────
+
   private startHeartbeat(): void {
     this.heartbeatInterval = setInterval(() => {
       void this.checkHeartbeat();
-    }, 30_000);
+    }, HEARTBEAT_INTERVAL_MS);
   }
 
   private async checkHeartbeat(): Promise<void> {
@@ -174,23 +227,76 @@ export class CoordinationService {
     if (!store.state) return;
 
     const now = Date.now();
+
     for (const [id, agent] of Object.entries(store.state.agents)) {
       if (agent.status !== "running") continue;
-      if (!agent.heartbeatAt) continue;
+
+      if (!agent.heartbeatAt) {
+        // 4.2.3 — No heartbeat yet — write context.md as safety catch
+        await this.refreshContext(id);
+        continue;
+      }
 
       const heartbeatTime = new Date(agent.heartbeatAt).getTime();
-      if (now - heartbeatTime > 35_000) {
+      const age = now - heartbeatTime;
+
+      if (age > HEARTBEAT_STALE_MS) {
+        // 4.2.4 — Log heartbeat event
         store.appendTimelineEvent({
           t: new Date().toISOString(),
           agent: id,
           type: "heartbeat_stale",
-          detail: "No manifest update in 35s",
+          detail: `No manifest update in ${Math.round(age / 1000)}s`,
         });
 
+        // 4.2.1 — Check if PID is actually alive
+        if (agent.pid && agent.pid > 0) {
+          try {
+            const alive = await swarmApi.isPidAlive(agent.pid);
+            if (!alive) {
+              // 4.2.2 — PID dead — mark agent dead, release locks
+              this.handleDeadAgent(store, id);
+              continue;
+            }
+          } catch {
+            console.warn(`[coordination] PID check failed for ${id}`);
+          }
+        }
+
+        // 4.2.3 — PID alive but stale — write context.md as safety catch
         await this.refreshContext(id);
       }
     }
   }
+
+  private handleDeadAgent(
+    store: ReturnType<typeof useSwarmStore.getState>,
+    agentId: string,
+  ): void {
+    store.updateAgentStatus(agentId, "dead");
+
+    if (store.state) {
+      const locks = { ...store.state.fileLocks };
+      for (const [file, lock] of Object.entries(locks)) {
+        if (lock.lockedBy === agentId) {
+          delete locks[file];
+        }
+      }
+      store.setState({
+        ...store.state,
+        fileLocks: locks,
+      });
+    }
+
+    store.appendTimelineEvent({
+      t: new Date().toISOString(),
+      agent: agentId,
+      type: "agent_died",
+      detail: "Process dead — locks released",
+    });
+  }
+
+  // ── 4.6.4 — Context builder ─────────────────────────
 
   buildContextMd(agentId: string, state: SwarmState): string {
     const agent = state.agents[agentId];

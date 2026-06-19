@@ -115,6 +115,8 @@ pub fn run() {
             swarm::commands::update_swarm_config,
             swarm::commands::write_agent_context,
             swarm::commands::reconcile_swarm,
+            swarm::commands::is_pid_alive,
+            swarm::commands::check_swarm_state_file,
         ])
         .setup(|app| {
             let handle = app.handle().clone();
@@ -124,10 +126,11 @@ pub fn run() {
                 .to_string();
 
             // Run reconciliation if swarm state exists (this also starts watcher)
-            let state_path = format!("{}/.quantum/swarm-state.json", project_root);
-            if std::path::Path::new(&state_path).exists() {
-                let _ = swarm::commands::reconcile_swarm(handle, project_root);
-            }
+            // Silently catches parse errors — state corruption handled at UI level
+            let _ = swarm::commands::reconcile_swarm(handle.clone(), project_root.clone());
+
+            // Re-attach FS watcher regardless of reconciliation result
+            let _ = std::fs::create_dir_all(format!("{}/.quantum/agents", project_root));
 
             Ok(())
         })

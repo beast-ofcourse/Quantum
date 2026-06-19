@@ -77,6 +77,7 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 > **Phase 1: Rust Backend Core** completed 2026-06-19 (all commands compile, 45 unit tests)
 > **Phase 2: Types, Store & Events** completed 2026-06-19 (16 TS tests, 137 total passing)
 > **Phase 3: UI Components** completed 2026-06-19 (9 new components, 3 modified files, 137 tests passing)
+> **Phase 4: Recovery & Edge Cases** completed 2026-06-19 (Rust + TS hardening, 137 tests passing)
 
 - **Git worktree isolation** — each AI agent runs in its own isolated checkout, no file collisions
 - **Multi-agent coordination** — sequential task execution with merge conflict detection
@@ -102,6 +103,13 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 - **SwarmSettingsDialog** — default agent/model selectors, provider API key inputs (masked, save/delete/test)
 - **FileTree lock badges** — `data-lock-agent` attribute + "L" badge on locked files
 - **TerminalTab agent badges** — status dot + agent type prefix on agent-owned terminal tabs
+- **Startup reconciliation** — on IDE restart, detects alive/dead agents, re-attaches watcher, releases stale locks
+- **Heartbeat crash detection** — 30s interval, 35s stale threshold, PID health check via OS, auto-releases locks on death
+- **State corruption recovery** — parse error returns descriptive JSON snippet, `.quantum/` deletion handled with auto-recreate
+- **Merge resilience** — interrupted merges re-attempted on restart, worktree collision: valid→error / stale→.bak rename
+- **Git-not-found detection** — user-readable error message instructing Git installation
+- **Kill escalation** — SIGTERM → 5s wait → SIGKILL (`taskkill /F` on Windows)
+- **Status coercion** — unknown manifest status values default to `"running"`, store never crashes
 - See [`docs/swarm-design.md`](docs/swarm-design.md) for full architecture
 
 ### Extension System

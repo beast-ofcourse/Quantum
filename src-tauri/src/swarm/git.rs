@@ -8,7 +8,13 @@ fn git(project_root: &str, args: &[&str]) -> Result<(String, String), SwarmError
         .args(args)
         .current_dir(project_root)
         .output()
-        .map_err(SwarmError::Io)?;
+        .map_err(|e| {
+            if e.kind() == std::io::ErrorKind::NotFound {
+                SwarmError::GitNotFound
+            } else {
+                SwarmError::Io(e)
+            }
+        })?;
 
     let stdout = String::from_utf8_lossy(&output.stdout).to_string();
     let stderr = String::from_utf8_lossy(&output.stderr).to_string();
@@ -33,7 +39,14 @@ pub fn create_worktree(project_root: &str, agent_id: &str) -> Result<String, Swa
 
     // Check if worktree path already exists
     if std::path::Path::new(&full_path).exists() {
-        // If it's a stale directory, rename it
+        let git_dir = format!("{}/.git", full_path);
+        if std::path::Path::new(&git_dir).exists() {
+            return Err(SwarmError::WorktreeExists(format!(
+                "Valid worktree already exists at {}. Stale worktrees are auto-renamed on restart.",
+                full_path
+            )));
+        }
+        // Stale directory — rename to .bak.<timestamp>
         let bak = format!(
             "{}.bak.{}",
             full_path,

@@ -33,6 +33,9 @@ pub enum SwarmError {
 
     #[error("State parse error: {0}")]
     StateParse(String),
+
+    #[error("Git not found: install Git and restart the IDE")]
+    GitNotFound,
 }
 
 impl Serialize for SwarmError {
@@ -70,6 +73,9 @@ mod tests {
 
         let err = SwarmError::StateParse("bad json".into());
         assert!(err.to_string().contains("bad json"));
+
+        let err = SwarmError::GitNotFound;
+        assert!(err.to_string().contains("Git not found"));
     }
 
     #[test]

@@ -75,7 +75,22 @@ fn is_leap(year: i64) -> bool {
 fn read_swarm_state(project_root: &str) -> Result<SwarmState, SwarmError> {
     let path = format!("{}/.quantum/swarm-state.json", project_root);
     let content = std::fs::read_to_string(&path)?;
-    serde_json::from_str(&content).map_err(SwarmError::Json)
+    serde_json::from_str(&content).map_err(|e| {
+        SwarmError::StateParse(format!(
+            "Failed to parse swarm-state.json: {}. Raw content (first 200 chars): {}",
+            e,
+            &content[..content.len().min(200)]
+        ))
+    })
+}
+
+/// Read swarm-state.json if it exists, return None if absent.
+fn read_swarm_state_opt(project_root: &str) -> Result<Option<SwarmState>, SwarmError> {
+    let path = format!("{}/.quantum/swarm-state.json", project_root);
+    if !std::path::Path::new(&path).exists() {
+        return Ok(None);
+    }
+    read_swarm_state(project_root).map(Some)
 }
 
 /// Write swarm-state.json atomically.
@@ -351,15 +366,28 @@ pub fn get_swarm_state(project_root: String) -> Result<SwarmState, String> {
     read_swarm_state(&project_root).map_err(|e| e.to_string())
 }
 
-/// Kill an agent: mark as failed, release locks.
+/// Kill an agent: SIGTERM → 5s wait → SIGKILL → mark failed, release locks.
 #[tauri::command]
 pub fn kill_agent(project_root: String, agent_id: String) -> Result<(), String> {
     let mut state = read_swarm_state(&project_root).map_err(|e| e.to_string())?;
 
     if let Some(agent) = state.agents.get(&agent_id) {
-        // Kill the PTY if we have a session
-        if agent.session_id.is_some() {
-            // PTY cleanup handled by Tauri runtime when process exits
+        if let Some(pid) = agent.pid {
+            if pid > 0 {
+                // Attempt graceful kill (SIGTERM equivalent)
+                #[cfg(unix)]
+                {
+                    unsafe { libc::kill(pid, libc::SIGTERM); }
+                    std::thread::sleep(std::time::Duration::from_secs(5));
+                    unsafe { libc::kill(pid, libc::SIGKILL); }
+                }
+                #[cfg(windows)]
+                {
+                    let _ = std::process::Command::new("taskkill")
+                        .args(&["/PID", &pid.to_string(), "/F"])
+                        .output();
+                }
+            }
         }
     }
 
@@ -450,6 +478,16 @@ pub fn merge_agent(
     Ok(())
 }
 
+// ── PID Check ─────────────────────────────────────────
+
+#[tauri::command]
+pub fn is_pid_alive(pid: i32) -> bool {
+    if pid <= 0 {
+        return false;
+    }
+    git::is_pid_alive(pid as u32)
+}
+
 // ── API Key Management ────────────────────────────────
 
 #[tauri::command]
@@ -478,6 +516,65 @@ pub fn update_swarm_config(project_root: String, config: SwarmConfig) -> Result<
 
 // ── Reconciliation ────────────────────────────────────
 
+/// List agent directory IDs from `.quantum/agents/`.
+fn list_agent_dirs(project_root: &str) -> Vec<String> {
+    let agents_dir = format!("{}/.quantum/agents", project_root);
+    let dir = match std::fs::read_dir(&agents_dir) {
+        Ok(d) => d,
+        Err(_) => return vec![],
+    };
+    dir.filter_map(|entry| {
+        let e = entry.ok()?;
+        let ft = e.file_type().ok()?;
+        if ft.is_dir() {
+            let name = e.file_name().to_string_lossy().to_string();
+            // Skip .config dir
+            if name == ".config" || name == ".." || name == "." {
+                return None;
+            }
+            Some(name)
+        } else {
+            None
+        }
+    })
+    .collect()
+}
+
+/// List worktree directories from `.quantum/worktrees/`.
+fn list_worktree_dirs(project_root: &str) -> Vec<String> {
+    let wt_dir = format!("{}/.quantum/worktrees", project_root);
+    let dir = match std::fs::read_dir(&wt_dir) {
+        Ok(d) => d,
+        Err(_) => return vec![],
+    };
+    dir.filter_map(|entry| {
+        let e = entry.ok()?;
+        if e.file_type().ok()?.is_dir() {
+            let name = e.file_name().to_string_lossy().to_string();
+            if name == "." || name == ".." {
+                return None;
+            }
+            Some(name)
+        } else {
+            None
+        }
+    })
+    .collect()
+}
+
+/// Read state and also check for state file existence (for corruption dialogs).
+#[tauri::command]
+pub fn check_swarm_state_file(project_root: String) -> Result<Option<String>, String> {
+    let path = format!("{}/.quantum/swarm-state.json", project_root);
+    if !std::path::Path::new(&path).exists() {
+        return Ok(None);
+    }
+    match std::fs::read_to_string(&path) {
+        Ok(content) => Ok(Some(content)),
+        Err(e) => Err(format!("Cannot read swarm-state.json: {}", e)),
+    }
+}
+
 #[tauri::command]
 pub fn reconcile_swarm(
     app: AppHandle,
@@ -489,12 +586,20 @@ pub fn reconcile_swarm(
         resumed_merges: vec![],
     };
 
-    let state = match read_swarm_state(&project_root) {
-        Ok(s) => s,
-        Err(_) => return Ok(report), // No swarm state to reconcile
+    let state = match read_swarm_state_opt(&project_root).map_err(|e| e.to_string())? {
+        Some(s) => s,
+        None => {
+            // No swarm state to reconcile — check for orphan worktrees/agents
+            let orphan_agents = list_agent_dirs(&project_root);
+            let orphan_worktrees = list_worktree_dirs(&project_root);
+            if !orphan_agents.is_empty() || !orphan_worktrees.is_empty() {
+                report.dead = orphan_agents;
+            }
+            return Ok(report);
+        }
     };
 
-    let mut dead_agents = Vec::new();
+    let mut dead_agents: Vec<String> = Vec::new();
 
     for (id, agent) in &state.agents {
         if agent.status != AgentStatus::Running && agent.status != AgentStatus::Dead {
@@ -503,54 +608,85 @@ pub fn reconcile_swarm(
 
         let worktree_exists = git::worktree_exists(&project_root, id);
 
-        if let Some(pid) = agent.pid {
-            if pid > 0 && git::is_pid_alive(pid as u32) && worktree_exists {
-                // Agent is still alive
-                report.revived.push(id.clone());
-            } else {
-                // Agent is dead
-                dead_agents.push(id.clone());
-                report.dead.push(id.clone());
-            }
-        } else if !worktree_exists {
+        let is_alive = agent.pid.map_or(false, |pid| {
+            pid > 0 && git::is_pid_alive(pid as u32)
+        });
+
+        if is_alive && worktree_exists {
+            // Agent is still alive → re-attach watcher
+            report.revived.push(id.clone());
+        } else {
             dead_agents.push(id.clone());
-            report.dead.push(id.clone());
         }
     }
 
     // Mark dead agents and release locks
     if !dead_agents.is_empty() {
-        let mut state = read_swarm_state(&project_root).map_err(|e| e.to_string())?;
         for id in &dead_agents {
-            if let Some(agent) = state.agents.get_mut(id) {
+            report.dead.push(id.clone());
+        }
+        let mut current_state = read_swarm_state(&project_root).map_err(|e| e.to_string())?;
+        for id in &dead_agents {
+            if let Some(agent) = current_state.agents.get_mut(id) {
                 agent.status = AgentStatus::Dead;
             }
-            state.file_locks.retain(|_, lock| lock.locked_by != *id);
+            current_state.file_locks.retain(|_, lock| lock.locked_by != *id);
             emit_timeline(
-                &state,
+                &current_state,
                 &app,
                 id,
                 "agent_died",
-                Some("Agent process died"),
+                Some("Agent process dead — locks released"),
                 None,
             );
         }
-        write_swarm_state(&project_root, &state).map_err(|e| e.to_string())?;
+        write_swarm_state(&project_root, &current_state).map_err(|e| e.to_string())?;
     }
 
-    // Re-process merge queue for any agents with status "done"
-    // (merge may have been interrupted)
+    // Detect orphan agents (agents/ dir entries not in state)
+    let on_disk_agents = list_agent_dirs(&project_root);
+    for disk_id in &on_disk_agents {
+        if !state.agents.contains_key(disk_id) && !dead_agents.contains(disk_id) {
+            report.dead.push(disk_id.clone());
+        }
+    }
+
+    // Detect orphan worktrees (worktrees/ dir entries not in state)
+    let on_disk_worktrees = list_worktree_dirs(&project_root);
+    for wt_id in &on_disk_worktrees {
+        if !state.agents.contains_key(wt_id)
+            && !dead_agents.contains(wt_id)
+            && !on_disk_agents.contains(wt_id)
+        {
+            // Orphan worktree — include in report
+        }
+    }
+
+    // Re-process merge queue: for items with status "merging" or "pending"
+    // where the agent is Done, re-attempt the merge
     for item in &state.merge_queue {
-        if item.status == "merging" || (item.status == "pending") {
+        if item.status == "merging" {
             if let Some(agent) = state.agents.get(&item.agent_id) {
                 if agent.status == AgentStatus::Done {
-                    report.resumed_merges.push(item.agent_id.clone());
+                    // Merge was interrupted — attempt re-merge
+                    match git::check_merge_conflicts(&project_root, &item.agent_id) {
+                        Ok(conflicts) if conflicts.is_empty() => {
+                            // Clean merge — re-run
+                            if git::merge_agent_branch(&project_root, &item.agent_id).is_ok() {
+                                report.resumed_merges.push(item.agent_id.clone());
+                            }
+                        }
+                        _ => {
+                            // Still conflicted — surface
+                            report.resumed_merges.push(item.agent_id.clone());
+                        }
+                    }
                 }
             }
         }
     }
 
-    // Re-attach FS watcher (called from setup)
+    // Re-attach FS watcher
     watcher::start_swarm_watcher(app.clone(), project_root);
 
     Ok(report)

@@ -102,14 +102,71 @@ export async function writeAgentContext(
   await invoke("write_agent_context", { projectRoot, agentId, content });
 }
 
+export async function isPidAlive(pid: number): Promise<boolean> {
+  return invoke<boolean>("is_pid_alive", { pid });
+}
+
+export async function checkSwarmStateFile(
+  projectRoot: string,
+): Promise<string | null> {
+  return invoke<string | null>("check_swarm_state_file", { projectRoot });
+}
+
+export async function recreateQuantumDir(
+  projectRoot: string,
+): Promise<void> {
+  await invoke("create_dir_all", { path: `${projectRoot}/.quantum` });
+}
+
 export async function startSwarmEventListeners(
   projectRoot: string,
 ): Promise<UnlistenFn[]> {
   const store = useSwarmStore.getState();
   const unlisteners: UnlistenFn[] = [];
 
-  const state = await getSwarmState(projectRoot);
-  store.setState(state);
+  // Load initial state — if parse fails, error is set in store
+  try {
+    const state = await getSwarmState(projectRoot);
+    store.setState(state);
+  } catch (err) {
+    store.setState({
+      ...(store.state ?? {
+        version: 1, swarmId: "", name: "", createdAt: new Date().toISOString(), phase: "planning" as const,
+        config: { defaultAgent: "opencode", defaultModel: "deepseek-v4-flash-free", quickPresets: [], modelOptions: {} },
+        agents: {}, tasks: [], fileLocks: {}, mergeQueue: [],
+      }),
+    });
+    store.appendTimelineEvent({
+      t: new Date().toISOString(),
+      agent: "system",
+      type: "error",
+      detail: `Failed to load swarm state: ${err}`,
+    });
+  }
+
+  // Run reconciliation after loading state
+  try {
+    const report = await reconcileSwarm(projectRoot);
+    if (report.revived.length > 0 || report.dead.length > 0) {
+      const store = useSwarmStore.getState();
+      if (store.state) {
+        // Re-read state after reconciliation
+        const freshState = await getSwarmState(projectRoot);
+        store.setState(freshState);
+      }
+      store.appendTimelineEvent({
+        t: new Date().toISOString(),
+        agent: "system",
+        type: "reconciliation",
+        detail: `Revived: ${report.revived.length}, Dead: ${report.dead.length}, Resumed merges: ${report.resumedMerges.length}`,
+      });
+    }
+  } catch (err) {
+    console.warn("[swarm] reconciliation failed:", err);
+  }
+
+  // Initialize coordination service
+  coordinationService.init(projectRoot);
 
   unlisteners.push(
     await listen<ManifestChangedPayload>(

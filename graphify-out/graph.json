@@ -1,0 +1,5055 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {},
+  "nodes": [
+    {
+      "label": "ErrorBoundary",
+      "file_type": "code",
+      "source_file": "src/components/ErrorBoundary.tsx",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "components_errorboundary_errorboundary",
+      "community": 35,
+      "norm_label": "errorboundary"
+    },
+    {
+      "label": "CallStackPanel",
+      "file_type": "code",
+      "source_file": "src/components/debug/CallStackPanel.tsx",
+      "source_location": "L84",
+      "_origin": "ast",
+      "id": "debug_callstackpanel_callstackpanel",
+      "community": 43,
+      "norm_label": "callstackpanel"
+    },
+    {
+      "label": "DebugConfigDialog",
+      "file_type": "code",
+      "source_file": "src/components/debug/DebugConfigDialog.tsx",
+      "source_location": "L82",
+      "_origin": "ast",
+      "id": "debug_debugconfigdialog_debugconfigdialog",
+      "community": 44,
+      "norm_label": "debugconfigdialog"
+    },
+    {
+      "label": "EditorErrorBoundary",
+      "file_type": "code",
+      "source_file": "src/components/editor/EditorErrorBoundary.tsx",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "editor_editorerrorboundary_editorerrorboundary",
+      "community": 45,
+      "norm_label": "editorerrorboundary"
+    },
+    {
+      "label": "ExternalChangeDialog",
+      "file_type": "code",
+      "source_file": "src/components/editor/ExternalChangeDialog.tsx",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "editor_externalchangedialog_externalchangedialog",
+      "community": 46,
+      "norm_label": "externalchangedialog"
+    },
+    {
+      "label": "UnsavedChangesDialog",
+      "file_type": "code",
+      "source_file": "src/components/editor/UnsavedChangesDialog.tsx",
+      "source_location": "L37",
+      "_origin": "ast",
+      "id": "editor_unsavedchangesdialog_unsavedchangesdialog",
+      "community": 47,
+      "norm_label": "unsavedchangesdialog"
+    },
+    {
+      "label": "useEditorActions",
+      "file_type": "code",
+      "source_file": "src/components/editor/useEditorActions.ts",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "editor_useeditoractions_useeditoractions",
+      "community": 48,
+      "norm_label": "useeditoractions"
+    },
+    {
+      "label": "DirDropTarget",
+      "file_type": "code",
+      "source_file": "src/components/explorer/DirDropTarget.tsx",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "explorer_dirdroptarget_dirdroptarget",
+      "community": 50,
+      "norm_label": "dirdroptarget"
+    },
+    {
+      "label": "InsertIndicator",
+      "file_type": "code",
+      "source_file": "src/components/explorer/InsertIndicator.tsx",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "explorer_insertindicator_insertindicator",
+      "community": 51,
+      "norm_label": "insertindicator"
+    },
+    {
+      "label": "useExplorerActions",
+      "file_type": "code",
+      "source_file": "src/components/explorer/useExplorerActions.ts",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "explorer_useexploreractions_useexploreractions",
+      "community": 52,
+      "norm_label": "useexploreractions"
+    },
+    {
+      "label": "ViewContainer",
+      "file_type": "code",
+      "source_file": "src/components/extensions/ViewContainer.tsx",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "extensions_viewcontainer_viewcontainer",
+      "community": 77,
+      "norm_label": "viewcontainer"
+    },
+    {
+      "label": "GitBranchCompare",
+      "file_type": "code",
+      "source_file": "src/components/git/GitBranchCompare.tsx",
+      "source_location": "L36",
+      "_origin": "ast",
+      "id": "git_gitbranchcompare_gitbranchcompare",
+      "community": 79,
+      "norm_label": "gitbranchcompare"
+    },
+    {
+      "label": "GitHubAuth",
+      "file_type": "code",
+      "source_file": "src/components/github/GitHubAuth.tsx",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "github_githubauth_githubauth",
+      "community": 83,
+      "norm_label": "githubauth"
+    },
+    {
+      "label": "ActivityBar",
+      "file_type": "code",
+      "source_file": "src/components/layout/ActivityBar.tsx",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "layout_activitybar_activitybar",
+      "community": 99,
+      "norm_label": "activitybar"
+    },
+    {
+      "label": "BottomDock",
+      "file_type": "code",
+      "source_file": "src/components/layout/BottomDock.tsx",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "layout_bottomdock_bottomdock",
+      "community": 100,
+      "norm_label": "bottomdock"
+    },
+    {
+      "label": "Dock",
+      "file_type": "code",
+      "source_file": "src/components/layout/Dock.tsx",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "layout_dock_dock",
+      "community": 101,
+      "norm_label": "dock"
+    },
+    {
+      "label": "DockTab",
+      "file_type": "code",
+      "source_file": "src/components/layout/DockTab.tsx",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "layout_docktab_docktab",
+      "community": 102,
+      "norm_label": "docktab"
+    },
+    {
+      "label": "LayoutCustomizationMenu",
+      "file_type": "code",
+      "source_file": "src/components/layout/LayoutCustomizationMenu.tsx",
+      "source_location": "L23",
+      "_origin": "ast",
+      "id": "layout_layoutcustomizationmenu_layoutcustomizationmenu",
+      "community": 103,
+      "norm_label": "layoutcustomizationmenu"
+    },
+    {
+      "label": "LeftDock",
+      "file_type": "code",
+      "source_file": "src/components/layout/LeftDock.tsx",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "layout_leftdock_leftdock",
+      "community": 104,
+      "norm_label": "leftdock"
+    },
+    {
+      "label": "MenuBar",
+      "file_type": "code",
+      "source_file": "src/components/layout/MenuBar.tsx",
+      "source_location": "L37",
+      "_origin": "ast",
+      "id": "layout_menubar_menubar",
+      "community": 105,
+      "norm_label": "menubar"
+    },
+    {
+      "label": "ResizerOrientation",
+      "file_type": "code",
+      "source_file": "src/components/layout/Resizer.tsx",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "layout_resizer_resizerorientation",
+      "community": 106,
+      "norm_label": "resizerorientation"
+    },
+    {
+      "label": "RightDock",
+      "file_type": "code",
+      "source_file": "src/components/layout/RightDock.tsx",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "layout_rightdock_rightdock",
+      "community": 107,
+      "norm_label": "rightdock"
+    },
+    {
+      "label": "ShortcutKey",
+      "file_type": "code",
+      "source_file": "src/components/layout/ShortcutKey.tsx",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "layout_shortcutkey_shortcutkey",
+      "community": 108,
+      "norm_label": "shortcutkey"
+    },
+    {
+      "label": "Sidebar",
+      "file_type": "code",
+      "source_file": "src/components/layout/Sidebar.tsx",
+      "source_location": "L64",
+      "_origin": "ast",
+      "id": "layout_sidebar_sidebar",
+      "community": 109,
+      "norm_label": "sidebar"
+    },
+    {
+      "label": "StandalonePanelShell",
+      "file_type": "code",
+      "source_file": "src/components/layout/StandalonePanelShell.tsx",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "layout_standalonepanelshell_standalonepanelshell",
+      "community": 110,
+      "norm_label": "standalonepanelshell"
+    },
+    {
+      "label": "ThemeToggle",
+      "file_type": "code",
+      "source_file": "src/components/layout/ThemeToggle.tsx",
+      "source_location": "L24",
+      "_origin": "ast",
+      "id": "layout_themetoggle_themetoggle",
+      "community": 111,
+      "norm_label": "themetoggle"
+    },
+    {
+      "label": "TitleBarMenus",
+      "file_type": "code",
+      "source_file": "src/components/layout/TitleBarMenus.tsx",
+      "source_location": "L37",
+      "_origin": "ast",
+      "id": "layout_titlebarmenus_titlebarmenus",
+      "community": 112,
+      "norm_label": "titlebarmenus"
+    },
+    {
+      "label": "MarkdownFileInfo",
+      "file_type": "code",
+      "source_file": "src/components/markdown/markdown-types.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "markdown_markdown_types_markdownfileinfo",
+      "community": 228,
+      "norm_label": "markdownfileinfo"
+    },
+    {
+      "label": "MarkdownViewMode",
+      "file_type": "code",
+      "source_file": "src/components/markdown/markdown-types.ts",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "markdown_markdown_types_markdownviewmode",
+      "community": 229,
+      "norm_label": "markdownviewmode"
+    },
+    {
+      "label": "KeybindingCapture",
+      "file_type": "code",
+      "source_file": "src/components/settings/KeybindingCapture.tsx",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "settings_keybindingcapture_keybindingcapture",
+      "community": 232,
+      "norm_label": "keybindingcapture"
+    },
+    {
+      "label": "SettingsPanel",
+      "file_type": "code",
+      "source_file": "src/components/settings/SettingsPanel.tsx",
+      "source_location": "L45",
+      "_origin": "ast",
+      "id": "settings_settingspanel_settingspanel",
+      "community": 233,
+      "norm_label": "settingspanel"
+    },
+    {
+      "label": "pushDebugMessage",
+      "file_type": "code",
+      "source_file": "src/components/terminal/DebugConsolePanel.tsx",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "terminal_debugconsolepanel_pushdebugmessage",
+      "community": 350,
+      "norm_label": "pushdebugmessage"
+    },
+    {
+      "label": "clearDebugMessages",
+      "file_type": "code",
+      "source_file": "src/components/terminal/DebugConsolePanel.tsx",
+      "source_location": "L23",
+      "_origin": "ast",
+      "id": "terminal_debugconsolepanel_cleardebugmessages",
+      "community": 349,
+      "norm_label": "cleardebugmessages"
+    },
+    {
+      "label": "pushLog",
+      "file_type": "code",
+      "source_file": "src/components/terminal/OutputPanel.tsx",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "terminal_outputpanel_pushlog",
+      "community": 352,
+      "norm_label": "pushlog"
+    },
+    {
+      "label": "clearLogs",
+      "file_type": "code",
+      "source_file": "src/components/terminal/OutputPanel.tsx",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "terminal_outputpanel_clearlogs",
+      "community": 351,
+      "norm_label": "clearlogs"
+    },
+    {
+      "label": "Terminal",
+      "file_type": "code",
+      "source_file": "src/components/terminal/Terminal.tsx",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "terminal_terminal_terminal",
+      "community": 353,
+      "norm_label": "terminal"
+    },
+    {
+      "label": "TerminalContextMenu",
+      "file_type": "code",
+      "source_file": "src/components/terminal/TerminalContextMenu.tsx",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "terminal_terminalcontextmenu_terminalcontextmenu",
+      "community": 354,
+      "norm_label": "terminalcontextmenu"
+    },
+    {
+      "label": "TerminalEmptyState",
+      "file_type": "code",
+      "source_file": "src/components/terminal/TerminalEmptyState.tsx",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "terminal_terminalemptystate_terminalemptystate",
+      "community": 355,
+      "norm_label": "terminalemptystate"
+    },
+    {
+      "label": "TerminalTabs",
+      "file_type": "code",
+      "source_file": "src/components/terminal/TerminalTabs.tsx",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "terminal_terminaltabs_terminaltabs",
+      "community": 356,
+      "norm_label": "terminaltabs"
+    },
+    {
+      "label": "ColorField",
+      "file_type": "code",
+      "source_file": "src/components/theme/ColorField.tsx",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "theme_colorfield_colorfield",
+      "community": 357,
+      "norm_label": "colorfield"
+    },
+    {
+      "label": "ColorGroupDef",
+      "file_type": "code",
+      "source_file": "src/components/theme/ColorGroup.tsx",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "theme_colorgroup_colorgroupdef",
+      "community": 358,
+      "norm_label": "colorgroupdef"
+    },
+    {
+      "label": "ThemePreview",
+      "file_type": "code",
+      "source_file": "src/components/theme/ThemePreview.tsx",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "theme_themepreview_themepreview",
+      "community": 359,
+      "norm_label": "themepreview"
+    },
+    {
+      "label": "Select",
+      "file_type": "code",
+      "source_file": "src/components/ui/select.tsx",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "ui_select_select",
+      "community": 447,
+      "norm_label": "select"
+    },
+    {
+      "label": "createCommandsAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/commands.ts",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "api_commands_createcommandsapi",
+      "community": 17,
+      "norm_label": "createcommandsapi"
+    },
+    {
+      "label": "CommandsAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/commands.ts",
+      "source_location": "L53",
+      "_origin": "ast",
+      "id": "api_commands_commandsapi",
+      "community": 16,
+      "norm_label": "commandsapi"
+    },
+    {
+      "label": "createEditorAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/editor.ts",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "api_editor_createeditorapi",
+      "community": 18,
+      "norm_label": "createeditorapi"
+    },
+    {
+      "label": "EditorAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/editor.ts",
+      "source_location": "L89",
+      "_origin": "ast",
+      "id": "api_editor_editorapi",
+      "community": 19,
+      "norm_label": "editorapi"
+    },
+    {
+      "label": "createFsAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/fs.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "api_fs_createfsapi",
+      "community": 20,
+      "norm_label": "createfsapi"
+    },
+    {
+      "label": "FsAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/fs.ts",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "api_fs_fsapi",
+      "community": 21,
+      "norm_label": "fsapi"
+    },
+    {
+      "label": "createAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/index.ts",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "api_index_createapi",
+      "community": 22,
+      "norm_label": "createapi"
+    },
+    {
+      "label": "createLspApi",
+      "file_type": "code",
+      "source_file": "src/extensions/api/lsp.ts",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "api_lsp_createlspapi",
+      "community": 23,
+      "norm_label": "createlspapi"
+    },
+    {
+      "label": "createSettingsAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/settings.ts",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "api_settings_createsettingsapi",
+      "community": 24,
+      "norm_label": "createsettingsapi"
+    },
+    {
+      "label": "SettingsAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/settings.ts",
+      "source_location": "L44",
+      "_origin": "ast",
+      "id": "api_settings_settingsapi",
+      "community": 25,
+      "norm_label": "settingsapi"
+    },
+    {
+      "label": "createStatusBarAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/statusBar.ts",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "api_statusbar_createstatusbarapi",
+      "community": 26,
+      "norm_label": "createstatusbarapi"
+    },
+    {
+      "label": "StatusBarAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/statusBar.ts",
+      "source_location": "L61",
+      "_origin": "ast",
+      "id": "api_statusbar_statusbarapi",
+      "community": 27,
+      "norm_label": "statusbarapi"
+    },
+    {
+      "label": "createStorageAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/storage.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "api_storage_createstorageapi",
+      "community": 28,
+      "norm_label": "createstorageapi"
+    },
+    {
+      "label": "StorageAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/storage.ts",
+      "source_location": "L23",
+      "_origin": "ast",
+      "id": "api_storage_storageapi",
+      "community": 29,
+      "norm_label": "storageapi"
+    },
+    {
+      "label": "ViewRegistration",
+      "file_type": "code",
+      "source_file": "src/extensions/api/views.ts",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "api_views_viewregistration",
+      "community": 31,
+      "norm_label": "viewregistration"
+    },
+    {
+      "label": "createViewsAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/views.ts",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "api_views_createviewsapi",
+      "community": 30,
+      "norm_label": "createviewsapi"
+    },
+    {
+      "label": "ViewsAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/views.ts",
+      "source_location": "L72",
+      "_origin": "ast",
+      "id": "api_views_viewsapi",
+      "community": 32,
+      "norm_label": "viewsapi"
+    },
+    {
+      "label": "createWindowAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/window.ts",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "api_window_createwindowapi",
+      "community": 33,
+      "norm_label": "createwindowapi"
+    },
+    {
+      "label": "WindowAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/api/window.ts",
+      "source_location": "L24",
+      "_origin": "ast",
+      "id": "api_window_windowapi",
+      "community": 34,
+      "norm_label": "windowapi"
+    },
+    {
+      "label": "setMonacoEditor",
+      "file_type": "code",
+      "source_file": "src/extensions/editorRef.ts",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "extensions_editorref_setmonacoeditor",
+      "community": 55,
+      "norm_label": "setmonacoeditor"
+    },
+    {
+      "label": "getCurrentEditor",
+      "file_type": "code",
+      "source_file": "src/extensions/editorRef.ts",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "extensions_editorref_getcurrenteditor",
+      "community": 53,
+      "norm_label": "getcurrenteditor"
+    },
+    {
+      "label": "getMonacoModule",
+      "file_type": "code",
+      "source_file": "src/extensions/editorRef.ts",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "extensions_editorref_getmonacomodule",
+      "community": 54,
+      "norm_label": "getmonacomodule"
+    },
+    {
+      "label": "emitSaveEvent",
+      "file_type": "code",
+      "source_file": "src/extensions/host.ts",
+      "source_location": "L106",
+      "_origin": "ast",
+      "id": "extensions_host_emitsaveevent",
+      "community": 58,
+      "norm_label": "emitsaveevent"
+    },
+    {
+      "label": "initExtensionHost",
+      "file_type": "code",
+      "source_file": "src/extensions/host.ts",
+      "source_location": "L110",
+      "_origin": "ast",
+      "id": "extensions_host_initextensionhost",
+      "community": 59,
+      "norm_label": "initextensionhost"
+    },
+    {
+      "label": "activateExtension",
+      "file_type": "code",
+      "source_file": "src/extensions/host.ts",
+      "source_location": "L237",
+      "_origin": "ast",
+      "id": "extensions_host_activateextension",
+      "community": 56,
+      "norm_label": "activateextension"
+    },
+    {
+      "label": "deactivateExtension",
+      "file_type": "code",
+      "source_file": "src/extensions/host.ts",
+      "source_location": "L307",
+      "_origin": "ast",
+      "id": "extensions_host_deactivateextension",
+      "community": 57,
+      "norm_label": "deactivateextension"
+    },
+    {
+      "label": "reloadExtension",
+      "file_type": "code",
+      "source_file": "src/extensions/host.ts",
+      "source_location": "L320",
+      "_origin": "ast",
+      "id": "extensions_host_reloadextension",
+      "community": 60,
+      "norm_label": "reloadextension"
+    },
+    {
+      "label": "removeExtension",
+      "file_type": "code",
+      "source_file": "src/extensions/host.ts",
+      "source_location": "L324",
+      "_origin": "ast",
+      "id": "extensions_host_removeextension",
+      "community": 61,
+      "norm_label": "removeextension"
+    },
+    {
+      "label": "shutdownExtensionHost",
+      "file_type": "code",
+      "source_file": "src/extensions/host.ts",
+      "source_location": "L340",
+      "_origin": "ast",
+      "id": "extensions_host_shutdownextensionhost",
+      "community": 62,
+      "norm_label": "shutdownextensionhost"
+    },
+    {
+      "label": "parseGitHubUrl",
+      "file_type": "code",
+      "source_file": "src/extensions/installer.ts",
+      "source_location": "L23",
+      "_origin": "ast",
+      "id": "extensions_installer_parsegithuburl",
+      "community": 64,
+      "norm_label": "parsegithuburl"
+    },
+    {
+      "label": "installFromGitHub",
+      "file_type": "code",
+      "source_file": "src/extensions/installer.ts",
+      "source_location": "L109",
+      "_origin": "ast",
+      "id": "extensions_installer_installfromgithub",
+      "community": 63,
+      "norm_label": "installfromgithub"
+    },
+    {
+      "label": "LoadedModule",
+      "file_type": "code",
+      "source_file": "src/extensions/loader.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "extensions_loader_loadedmodule",
+      "community": 65,
+      "norm_label": "loadedmodule"
+    },
+    {
+      "label": "loadExtensionEntry",
+      "file_type": "code",
+      "source_file": "src/extensions/loader.ts",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "extensions_loader_loadextensionentry",
+      "community": 66,
+      "norm_label": "loadextensionentry"
+    },
+    {
+      "label": "ensureExtensionsDir",
+      "file_type": "code",
+      "source_file": "src/extensions/scanner.ts",
+      "source_location": "L36",
+      "_origin": "ast",
+      "id": "extensions_scanner_ensureextensionsdir",
+      "community": 67,
+      "norm_label": "ensureextensionsdir"
+    },
+    {
+      "label": "ScannedExtension",
+      "file_type": "code",
+      "source_file": "src/extensions/scanner.ts",
+      "source_location": "L57",
+      "_origin": "ast",
+      "id": "extensions_scanner_scannedextension",
+      "community": 6,
+      "norm_label": "scannedextension"
+    },
+    {
+      "label": "scanExtensions",
+      "file_type": "code",
+      "source_file": "src/extensions/scanner.ts",
+      "source_location": "L62",
+      "_origin": "ast",
+      "id": "extensions_scanner_scanextensions",
+      "community": 68,
+      "norm_label": "scanextensions"
+    },
+    {
+      "label": "generateExtensionFolder",
+      "file_type": "code",
+      "source_file": "src/extensions/template.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "extensions_template_generateextensionfolder",
+      "community": 69,
+      "norm_label": "generateextensionfolder"
+    },
+    {
+      "label": "generateExtensionMain",
+      "file_type": "code",
+      "source_file": "src/extensions/template.ts",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "extensions_template_generateextensionmain",
+      "community": 70,
+      "norm_label": "generateextensionmain"
+    },
+    {
+      "label": "ExtensionManifest",
+      "file_type": "code",
+      "source_file": "src/extensions/types.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "extensions_types_extensionmanifest",
+      "community": 6,
+      "norm_label": "extensionmanifest"
+    },
+    {
+      "label": "ExtensionInfo",
+      "file_type": "code",
+      "source_file": "src/extensions/types.ts",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "extensions_types_extensioninfo",
+      "community": 76,
+      "norm_label": "extensioninfo"
+    },
+    {
+      "label": "Disposable",
+      "file_type": "code",
+      "source_file": "src/extensions/types.ts",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "extensions_types_disposable",
+      "community": 7,
+      "norm_label": "disposable"
+    },
+    {
+      "label": "disposableFrom",
+      "file_type": "code",
+      "source_file": "src/extensions/types.ts",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "extensions_types_disposablefrom",
+      "community": 73,
+      "norm_label": "disposablefrom"
+    },
+    {
+      "label": "StatusBarItem",
+      "file_type": "code",
+      "source_file": "src/extensions/types.ts",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "extensions_types_statusbaritem",
+      "community": 7,
+      "norm_label": "statusbaritem"
+    },
+    {
+      "label": "Document",
+      "file_type": "code",
+      "source_file": "src/extensions/types.ts",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "extensions_types_document",
+      "community": 74,
+      "norm_label": "document"
+    },
+    {
+      "label": "ChangeEvent",
+      "file_type": "code",
+      "source_file": "src/extensions/types.ts",
+      "source_location": "L39",
+      "_origin": "ast",
+      "id": "extensions_types_changeevent",
+      "community": 71,
+      "norm_label": "changeevent"
+    },
+    {
+      "label": "CursorEvent",
+      "file_type": "code",
+      "source_file": "src/extensions/types.ts",
+      "source_location": "L44",
+      "_origin": "ast",
+      "id": "extensions_types_cursorevent",
+      "community": 72,
+      "norm_label": "cursorevent"
+    },
+    {
+      "label": "ExtensionAPI",
+      "file_type": "code",
+      "source_file": "src/extensions/types.ts",
+      "source_location": "L50",
+      "_origin": "ast",
+      "id": "extensions_types_extensionapi",
+      "community": 75,
+      "norm_label": "extensionapi"
+    },
+    {
+      "label": "ExtensionViewRegistration",
+      "file_type": "code",
+      "source_file": "src/extensions/viewRegistry.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "extensions_viewregistry_extensionviewregistration",
+      "community": 78,
+      "norm_label": "extensionviewregistration"
+    },
+    {
+      "label": "useAutoSave",
+      "file_type": "code",
+      "source_file": "src/hooks/useAutoSave.ts",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "hooks_useautosave_useautosave",
+      "community": 85,
+      "norm_label": "useautosave"
+    },
+    {
+      "label": "useCursorTrail",
+      "file_type": "code",
+      "source_file": "src/hooks/useCursorTrail.ts",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "hooks_usecursortrail_usecursortrail",
+      "community": 86,
+      "norm_label": "usecursortrail"
+    },
+    {
+      "label": "useDebugDecorations",
+      "file_type": "code",
+      "source_file": "src/hooks/useDebugDecorations.ts",
+      "source_location": "L50",
+      "_origin": "ast",
+      "id": "hooks_usedebugdecorations_usedebugdecorations",
+      "community": 87,
+      "norm_label": "usedebugdecorations"
+    },
+    {
+      "label": "useEditorHotkeys",
+      "file_type": "code",
+      "source_file": "src/hooks/useEditorHotkeys.ts",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "hooks_useeditorhotkeys_useeditorhotkeys",
+      "community": 88,
+      "norm_label": "useeditorhotkeys"
+    },
+    {
+      "label": "useFileChangeSync",
+      "file_type": "code",
+      "source_file": "src/hooks/useFileChangeSync.ts",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "hooks_usefilechangesync_usefilechangesync",
+      "community": 89,
+      "norm_label": "usefilechangesync"
+    },
+    {
+      "label": "useFileDrop",
+      "file_type": "code",
+      "source_file": "src/hooks/useFileDrop.ts",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "hooks_usefiledrop_usefiledrop",
+      "community": 90,
+      "norm_label": "usefiledrop"
+    },
+    {
+      "label": "useGitBlameDecorations",
+      "file_type": "code",
+      "source_file": "src/hooks/useGitBlameDecorations.ts",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "hooks_usegitblamedecorations_usegitblamedecorations",
+      "community": 91,
+      "norm_label": "usegitblamedecorations"
+    },
+    {
+      "label": "useGitDecorations",
+      "file_type": "code",
+      "source_file": "src/hooks/useGitDecorations.ts",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "hooks_usegitdecorations_usegitdecorations",
+      "community": 92,
+      "norm_label": "usegitdecorations"
+    },
+    {
+      "label": "useGitGutterDecorations",
+      "file_type": "code",
+      "source_file": "src/hooks/useGitGutterDecorations.ts",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "hooks_usegitgutterdecorations_usegitgutterdecorations",
+      "community": 93,
+      "norm_label": "usegitgutterdecorations"
+    },
+    {
+      "label": "useGitHotkeys",
+      "file_type": "code",
+      "source_file": "src/hooks/useGitHotkeys.ts",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "hooks_usegithotkeys_usegithotkeys",
+      "community": 94,
+      "norm_label": "usegithotkeys"
+    },
+    {
+      "label": "UseHotkeyOptions",
+      "file_type": "code",
+      "source_file": "src/hooks/useHotkey.ts",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "hooks_usehotkey_usehotkeyoptions",
+      "community": 9,
+      "norm_label": "usehotkeyoptions"
+    },
+    {
+      "label": "useHotkey",
+      "file_type": "code",
+      "source_file": "src/hooks/useHotkey.ts",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "hooks_usehotkey_usehotkey",
+      "community": 95,
+      "norm_label": "usehotkey"
+    },
+    {
+      "label": "useTerminalHotkeys",
+      "file_type": "code",
+      "source_file": "src/hooks/useTerminalHotkeys.ts",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "hooks_useterminalhotkeys_useterminalhotkeys",
+      "community": 96,
+      "norm_label": "useterminalhotkeys"
+    },
+    {
+      "label": "useThemeManager",
+      "file_type": "code",
+      "source_file": "src/hooks/useThemeManager.ts",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "hooks_usethememanager_usethememanager",
+      "community": 97,
+      "norm_label": "usethememanager"
+    },
+    {
+      "label": "useZoomHotkeys",
+      "file_type": "code",
+      "source_file": "src/hooks/useZoomHotkeys.ts",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "hooks_usezoomhotkeys_usezoomhotkeys",
+      "community": 98,
+      "norm_label": "usezoomhotkeys"
+    },
+    {
+      "label": "initBrowserFs",
+      "file_type": "code",
+      "source_file": "src/lib/browserFs.ts",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "lib_browserfs_initbrowserfs",
+      "community": 123,
+      "norm_label": "initbrowserfs"
+    },
+    {
+      "label": "persistBrowserFs",
+      "file_type": "code",
+      "source_file": "src/lib/browserFs.ts",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "lib_browserfs_persistbrowserfs",
+      "community": 124,
+      "norm_label": "persistbrowserfs"
+    },
+    {
+      "label": "clearBrowserFs",
+      "file_type": "code",
+      "source_file": "src/lib/browserFs.ts",
+      "source_location": "L44",
+      "_origin": "ast",
+      "id": "lib_browserfs_clearbrowserfs",
+      "community": 122,
+      "norm_label": "clearbrowserfs"
+    },
+    {
+      "label": "browserResolveHome",
+      "file_type": "code",
+      "source_file": "src/lib/browserFs.ts",
+      "source_location": "L57",
+      "_origin": "ast",
+      "id": "lib_browserfs_browserresolvehome",
+      "community": 119,
+      "norm_label": "browserresolvehome"
+    },
+    {
+      "label": "browserPathExists",
+      "file_type": "code",
+      "source_file": "src/lib/browserFs.ts",
+      "source_location": "L61",
+      "_origin": "ast",
+      "id": "lib_browserfs_browserpathexists",
+      "community": 116,
+      "norm_label": "browserpathexists"
+    },
+    {
+      "label": "browserCreateDirectory",
+      "file_type": "code",
+      "source_file": "src/lib/browserFs.ts",
+      "source_location": "L70",
+      "_origin": "ast",
+      "id": "lib_browserfs_browsercreatedirectory",
+      "community": 113,
+      "norm_label": "browsercreatedirectory"
+    },
+    {
+      "label": "browserWriteFile",
+      "file_type": "code",
+      "source_file": "src/lib/browserFs.ts",
+      "source_location": "L87",
+      "_origin": "ast",
+      "id": "lib_browserfs_browserwritefile",
+      "community": 121,
+      "norm_label": "browserwritefile"
+    },
+    {
+      "label": "browserReadFile",
+      "file_type": "code",
+      "source_file": "src/lib/browserFs.ts",
+      "source_location": "L104",
+      "_origin": "ast",
+      "id": "lib_browserfs_browserreadfile",
+      "community": 118,
+      "norm_label": "browserreadfile"
+    },
+    {
+      "label": "browserReadDirectory",
+      "file_type": "code",
+      "source_file": "src/lib/browserFs.ts",
+      "source_location": "L112",
+      "_origin": "ast",
+      "id": "lib_browserfs_browserreaddirectory",
+      "community": 117,
+      "norm_label": "browserreaddirectory"
+    },
+    {
+      "label": "browserDeleteEntry",
+      "file_type": "code",
+      "source_file": "src/lib/browserFs.ts",
+      "source_location": "L130",
+      "_origin": "ast",
+      "id": "lib_browserfs_browserdeleteentry",
+      "community": 114,
+      "norm_label": "browserdeleteentry"
+    },
+    {
+      "label": "browserStat",
+      "file_type": "code",
+      "source_file": "src/lib/browserFs.ts",
+      "source_location": "L143",
+      "_origin": "ast",
+      "id": "lib_browserfs_browserstat",
+      "community": 120,
+      "norm_label": "browserstat"
+    },
+    {
+      "label": "BrowserFsEntry",
+      "file_type": "code",
+      "source_file": "src/lib/browserFs.ts",
+      "source_location": "L151",
+      "_origin": "ast",
+      "id": "lib_browserfs_browserfsentry",
+      "community": 115,
+      "norm_label": "browserfsentry"
+    },
+    {
+      "label": "registerCodeLensProvider",
+      "file_type": "code",
+      "source_file": "src/lib/codeLensProvider.ts",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "lib_codelensprovider_registercodelensprovider",
+      "community": 125,
+      "norm_label": "registercodelensprovider"
+    },
+    {
+      "label": "registerCommandProvider",
+      "file_type": "code",
+      "source_file": "src/lib/commandRegistry.ts",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "lib_commandregistry_registercommandprovider",
+      "community": 129,
+      "norm_label": "registercommandprovider"
+    },
+    {
+      "label": "getAllCommands",
+      "file_type": "code",
+      "source_file": "src/lib/commandRegistry.ts",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "lib_commandregistry_getallcommands",
+      "community": 126,
+      "norm_label": "getallcommands"
+    },
+    {
+      "label": "invalidateCache",
+      "file_type": "code",
+      "source_file": "src/lib/commandRegistry.ts",
+      "source_location": "L24",
+      "_origin": "ast",
+      "id": "lib_commandregistry_invalidatecache",
+      "community": 128,
+      "norm_label": "invalidatecache"
+    },
+    {
+      "label": "getCommandsByCategory",
+      "file_type": "code",
+      "source_file": "src/lib/commandRegistry.ts",
+      "source_location": "L28",
+      "_origin": "ast",
+      "id": "lib_commandregistry_getcommandsbycategory",
+      "community": 127,
+      "norm_label": "getcommandsbycategory"
+    },
+    {
+      "label": "initCSSInjector",
+      "file_type": "code",
+      "source_file": "src/lib/cssInjector.ts",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "lib_cssinjector_initcssinjector",
+      "community": 130,
+      "norm_label": "initcssinjector"
+    },
+    {
+      "label": "reloadCSS",
+      "file_type": "code",
+      "source_file": "src/lib/cssInjector.ts",
+      "source_location": "L30",
+      "_origin": "ast",
+      "id": "lib_cssinjector_reloadcss",
+      "community": 131,
+      "norm_label": "reloadcss"
+    },
+    {
+      "label": "DapRequest",
+      "file_type": "code",
+      "source_file": "src/lib/dap/protocol.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "dap_protocol_daprequest",
+      "community": 39,
+      "norm_label": "daprequest"
+    },
+    {
+      "label": "DapResponse",
+      "file_type": "code",
+      "source_file": "src/lib/dap/protocol.ts",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "dap_protocol_dapresponse",
+      "community": 40,
+      "norm_label": "dapresponse"
+    },
+    {
+      "label": "DapEventMsg",
+      "file_type": "code",
+      "source_file": "src/lib/dap/protocol.ts",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "dap_protocol_dapeventmsg",
+      "community": 36,
+      "norm_label": "dapeventmsg"
+    },
+    {
+      "label": "DapMessage",
+      "file_type": "code",
+      "source_file": "src/lib/dap/protocol.ts",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "dap_protocol_dapmessage",
+      "community": 37,
+      "norm_label": "dapmessage"
+    },
+    {
+      "label": "encodeDapMessage",
+      "file_type": "code",
+      "source_file": "src/lib/dap/protocol.ts",
+      "source_location": "L40",
+      "_origin": "ast",
+      "id": "dap_protocol_encodedapmessage",
+      "community": 41,
+      "norm_label": "encodedapmessage"
+    },
+    {
+      "label": "DapMessageBuffer",
+      "file_type": "code",
+      "source_file": "src/lib/dap/protocol.ts",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "dap_protocol_dapmessagebuffer",
+      "community": 38,
+      "norm_label": "dapmessagebuffer"
+    },
+    {
+      "label": "DapProtocolClient",
+      "file_type": "code",
+      "source_file": "src/lib/dap/protocol.ts",
+      "source_location": "L81",
+      "_origin": "ast",
+      "id": "dap_protocol_dapprotocolclient",
+      "community": 4,
+      "norm_label": "dapprotocolclient"
+    },
+    {
+      "label": "DapTransport",
+      "file_type": "code",
+      "source_file": "src/lib/dap/transport.ts",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "dap_transport_daptransport",
+      "community": 42,
+      "norm_label": "daptransport"
+    },
+    {
+      "label": "resolveConfigVariables",
+      "file_type": "code",
+      "source_file": "src/lib/debugConfiguration.ts",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "lib_debugconfiguration_resolveconfigvariables",
+      "community": 136,
+      "norm_label": "resolveconfigvariables"
+    },
+    {
+      "label": "getAvailableTypes",
+      "file_type": "code",
+      "source_file": "src/lib/debugConfiguration.ts",
+      "source_location": "L74",
+      "_origin": "ast",
+      "id": "lib_debugconfiguration_getavailabletypes",
+      "community": 134,
+      "norm_label": "getavailabletypes"
+    },
+    {
+      "label": "createTemplate",
+      "file_type": "code",
+      "source_file": "src/lib/debugConfiguration.ts",
+      "source_location": "L78",
+      "_origin": "ast",
+      "id": "lib_debugconfiguration_createtemplate",
+      "community": 132,
+      "norm_label": "createtemplate"
+    },
+    {
+      "label": "getDefaultConfigs",
+      "file_type": "code",
+      "source_file": "src/lib/debugConfiguration.ts",
+      "source_location": "L84",
+      "_origin": "ast",
+      "id": "lib_debugconfiguration_getdefaultconfigs",
+      "community": 135,
+      "norm_label": "getdefaultconfigs"
+    },
+    {
+      "label": "DebugConfigurationService",
+      "file_type": "code",
+      "source_file": "src/lib/debugConfiguration.ts",
+      "source_location": "L96",
+      "_origin": "ast",
+      "id": "lib_debugconfiguration_debugconfigurationservice",
+      "community": 133,
+      "norm_label": "debugconfigurationservice"
+    },
+    {
+      "label": "DefaultKeybinding",
+      "file_type": "code",
+      "source_file": "src/lib/defaultKeybindings.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "lib_defaultkeybindings_defaultkeybinding",
+      "community": 137,
+      "norm_label": "defaultkeybinding"
+    },
+    {
+      "label": "getDefaultCombo",
+      "file_type": "code",
+      "source_file": "src/lib/defaultKeybindings.ts",
+      "source_location": "L30",
+      "_origin": "ast",
+      "id": "lib_defaultkeybindings_getdefaultcombo",
+      "community": 138,
+      "norm_label": "getdefaultcombo"
+    },
+    {
+      "label": "registerDefinitionProvider",
+      "file_type": "code",
+      "source_file": "src/lib/definitionProvider.ts",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "lib_definitionprovider_registerdefinitionprovider",
+      "community": 139,
+      "norm_label": "registerdefinitionprovider"
+    },
+    {
+      "label": "unregisterDefinitionProvider",
+      "file_type": "code",
+      "source_file": "src/lib/definitionProvider.ts",
+      "source_location": "L51",
+      "_origin": "ast",
+      "id": "lib_definitionprovider_unregisterdefinitionprovider",
+      "community": 140,
+      "norm_label": "unregisterdefinitionprovider"
+    },
+    {
+      "label": "FileEncoding",
+      "file_type": "code",
+      "source_file": "src/lib/encoding.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "lib_encoding_fileencoding",
+      "community": 144,
+      "norm_label": "fileencoding"
+    },
+    {
+      "label": "detectEncoding",
+      "file_type": "code",
+      "source_file": "src/lib/encoding.ts",
+      "source_location": "L44",
+      "_origin": "ast",
+      "id": "lib_encoding_detectencoding",
+      "community": 143,
+      "norm_label": "detectencoding"
+    },
+    {
+      "label": "DecodeResult",
+      "file_type": "code",
+      "source_file": "src/lib/encoding.ts",
+      "source_location": "L54",
+      "_origin": "ast",
+      "id": "lib_encoding_decoderesult",
+      "community": 142,
+      "norm_label": "decoderesult"
+    },
+    {
+      "label": "decodeContent",
+      "file_type": "code",
+      "source_file": "src/lib/encoding.ts",
+      "source_location": "L59",
+      "_origin": "ast",
+      "id": "lib_encoding_decodecontent",
+      "community": 141,
+      "norm_label": "decodecontent"
+    },
+    {
+      "label": "ensureBundledExtensions",
+      "file_type": "code",
+      "source_file": "src/lib/extensionBundler.ts",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "lib_extensionbundler_ensurebundledextensions",
+      "community": 145,
+      "norm_label": "ensurebundledextensions"
+    },
+    {
+      "label": "fuzzyScore",
+      "file_type": "code",
+      "source_file": "src/lib/fuzzySearch.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "lib_fuzzysearch_fuzzyscore",
+      "community": 147,
+      "norm_label": "fuzzyscore"
+    },
+    {
+      "label": "fuzzyFilter",
+      "file_type": "code",
+      "source_file": "src/lib/fuzzySearch.ts",
+      "source_location": "L26",
+      "_origin": "ast",
+      "id": "lib_fuzzysearch_fuzzyfilter",
+      "community": 146,
+      "norm_label": "fuzzyfilter"
+    },
+    {
+      "label": "parseGitError",
+      "file_type": "code",
+      "source_file": "src/lib/git-error-parser.ts",
+      "source_location": "L69",
+      "_origin": "ast",
+      "id": "lib_git_error_parser_parsegiterror",
+      "community": 148,
+      "norm_label": "parsegiterror"
+    },
+    {
+      "label": "getOctokit",
+      "file_type": "code",
+      "source_file": "src/lib/github.ts",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "lib_github_getoctokit",
+      "community": 151,
+      "norm_label": "getoctokit"
+    },
+    {
+      "label": "createOctokit",
+      "file_type": "code",
+      "source_file": "src/lib/github.ts",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "lib_github_createoctokit",
+      "community": 149,
+      "norm_label": "createoctokit"
+    },
+    {
+      "label": "destroyOctokit",
+      "file_type": "code",
+      "source_file": "src/lib/github.ts",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "lib_github_destroyoctokit",
+      "community": 150,
+      "norm_label": "destroyoctokit"
+    },
+    {
+      "label": "parseGitHubRemote",
+      "file_type": "code",
+      "source_file": "src/lib/github.ts",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "lib_github_parsegithubremote",
+      "community": 152,
+      "norm_label": "parsegithubremote"
+    },
+    {
+      "label": "HotkeyHandler",
+      "file_type": "code",
+      "source_file": "src/lib/hotkeys.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "lib_hotkeys_hotkeyhandler",
+      "community": 9,
+      "norm_label": "hotkeyhandler"
+    },
+    {
+      "label": "HotkeyBinding",
+      "file_type": "code",
+      "source_file": "src/lib/hotkeys.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "lib_hotkeys_hotkeybinding",
+      "community": 153,
+      "norm_label": "hotkeybinding"
+    },
+    {
+      "label": "HotkeyMap",
+      "file_type": "code",
+      "source_file": "src/lib/hotkeys.ts",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "lib_hotkeys_hotkeymap",
+      "community": 154,
+      "norm_label": "hotkeymap"
+    },
+    {
+      "label": "HotkeyRegistry",
+      "file_type": "code",
+      "source_file": "src/lib/hotkeys.ts",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "lib_hotkeys_hotkeyregistry",
+      "community": 155,
+      "norm_label": "hotkeyregistry"
+    },
+    {
+      "label": "IconPackService",
+      "file_type": "code",
+      "source_file": "src/lib/iconPackService.ts",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "lib_iconpackservice_iconpackservice",
+      "community": 10,
+      "norm_label": "iconpackservice"
+    },
+    {
+      "label": "getLanguageFromPath",
+      "file_type": "code",
+      "source_file": "src/lib/languages.ts",
+      "source_location": "L56",
+      "_origin": "ast",
+      "id": "lib_languages_getlanguagefrompath",
+      "community": 157,
+      "norm_label": "getlanguagefrompath"
+    },
+    {
+      "label": "getFileName",
+      "file_type": "code",
+      "source_file": "src/lib/languages.ts",
+      "source_location": "L67",
+      "_origin": "ast",
+      "id": "lib_languages_getfilename",
+      "community": 156,
+      "norm_label": "getfilename"
+    },
+    {
+      "label": "PresetZones",
+      "file_type": "code",
+      "source_file": "src/lib/layoutPresets.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "lib_layoutpresets_presetzones",
+      "community": 11,
+      "norm_label": "presetzones"
+    },
+    {
+      "label": "LspClient",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/client.ts",
+      "source_location": "L27",
+      "_origin": "ast",
+      "id": "lsp_client_lspclient",
+      "community": 3,
+      "norm_label": "lspclient"
+    },
+    {
+      "label": "encodeMessage",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/jsonrpc.ts",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "lsp_jsonrpc_encodemessage",
+      "community": 215,
+      "norm_label": "encodemessage"
+    },
+    {
+      "label": "createRequest",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/jsonrpc.ts",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "lsp_jsonrpc_createrequest",
+      "community": 213,
+      "norm_label": "createrequest"
+    },
+    {
+      "label": "createNotification",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/jsonrpc.ts",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "lsp_jsonrpc_createnotification",
+      "community": 212,
+      "norm_label": "createnotification"
+    },
+    {
+      "label": "createResponse",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/jsonrpc.ts",
+      "source_location": "L21",
+      "_origin": "ast",
+      "id": "lsp_jsonrpc_createresponse",
+      "community": 214,
+      "norm_label": "createresponse"
+    },
+    {
+      "label": "MessageBuffer",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/jsonrpc.ts",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "lsp_jsonrpc_messagebuffer",
+      "community": 216,
+      "norm_label": "messagebuffer"
+    },
+    {
+      "label": "MonacoBridge",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/monacoBridge.ts",
+      "source_location": "L41",
+      "_origin": "ast",
+      "id": "lsp_monacobridge_monacobridge",
+      "community": 217,
+      "norm_label": "monacobridge"
+    },
+    {
+      "label": "LspTransport",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/transport.ts",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "lsp_transport_lsptransport",
+      "community": 218,
+      "norm_label": "lsptransport"
+    },
+    {
+      "label": "Position",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/types.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "lsp_types_position",
+      "community": 224,
+      "norm_label": "position"
+    },
+    {
+      "label": "Range",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/types.ts",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "lsp_types_range",
+      "community": 225,
+      "norm_label": "range"
+    },
+    {
+      "label": "Location",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/types.ts",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "lsp_types_location",
+      "community": 223,
+      "norm_label": "location"
+    },
+    {
+      "label": "Diagnostic",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/types.ts",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "lsp_types_diagnostic",
+      "community": 3,
+      "norm_label": "diagnostic"
+    },
+    {
+      "label": "CompletionItem",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/types.ts",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "lsp_types_completionitem",
+      "community": 219,
+      "norm_label": "completionitem"
+    },
+    {
+      "label": "CompletionList",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/types.ts",
+      "source_location": "L30",
+      "_origin": "ast",
+      "id": "lsp_types_completionlist",
+      "community": 220,
+      "norm_label": "completionlist"
+    },
+    {
+      "label": "Hover",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/types.ts",
+      "source_location": "L35",
+      "_origin": "ast",
+      "id": "lsp_types_hover",
+      "community": 221,
+      "norm_label": "hover"
+    },
+    {
+      "label": "SignatureInformation",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/types.ts",
+      "source_location": "L40",
+      "_origin": "ast",
+      "id": "lsp_types_signatureinformation",
+      "community": 227,
+      "norm_label": "signatureinformation"
+    },
+    {
+      "label": "SignatureHelp",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/types.ts",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "lsp_types_signaturehelp",
+      "community": 226,
+      "norm_label": "signaturehelp"
+    },
+    {
+      "label": "ServerCapabilities",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/types.ts",
+      "source_location": "L52",
+      "_origin": "ast",
+      "id": "lsp_types_servercapabilities",
+      "community": 3,
+      "norm_label": "servercapabilities"
+    },
+    {
+      "label": "LspConfig",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/types.ts",
+      "source_location": "L60",
+      "_origin": "ast",
+      "id": "lsp_types_lspconfig",
+      "community": 3,
+      "norm_label": "lspconfig"
+    },
+    {
+      "label": "JsonRpcMessage",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/types.ts",
+      "source_location": "L66",
+      "_origin": "ast",
+      "id": "lsp_types_jsonrpcmessage",
+      "community": 222,
+      "norm_label": "jsonrpcmessage"
+    },
+    {
+      "label": "TocEntry",
+      "file_type": "code",
+      "source_file": "src/lib/markdownParser.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "lib_markdownparser_tocentry",
+      "community": 161,
+      "norm_label": "tocentry"
+    },
+    {
+      "label": "ParseResult",
+      "file_type": "code",
+      "source_file": "src/lib/markdownParser.ts",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "lib_markdownparser_parseresult",
+      "community": 160,
+      "norm_label": "parseresult"
+    },
+    {
+      "label": "ParsedMarkdown",
+      "file_type": "code",
+      "source_file": "src/lib/markdownParser.ts",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "lib_markdownparser_parsedmarkdown",
+      "community": 158,
+      "norm_label": "parsedmarkdown"
+    },
+    {
+      "label": "parseMarkdown",
+      "file_type": "code",
+      "source_file": "src/lib/markdownParser.ts",
+      "source_location": "L164",
+      "_origin": "ast",
+      "id": "lib_markdownparser_parsemarkdown",
+      "community": 159,
+      "norm_label": "parsemarkdown"
+    },
+    {
+      "label": "fetchRegistry",
+      "file_type": "code",
+      "source_file": "src/lib/marketplaceService.ts",
+      "source_location": "L305",
+      "_origin": "ast",
+      "id": "lib_marketplaceservice_fetchregistry",
+      "community": 162,
+      "norm_label": "fetchregistry"
+    },
+    {
+      "label": "getMarketplaceExtensions",
+      "file_type": "code",
+      "source_file": "src/lib/marketplaceService.ts",
+      "source_location": "L321",
+      "_origin": "ast",
+      "id": "lib_marketplaceservice_getmarketplaceextensions",
+      "community": 166,
+      "norm_label": "getmarketplaceextensions"
+    },
+    {
+      "label": "getExtensionById",
+      "file_type": "code",
+      "source_file": "src/lib/marketplaceService.ts",
+      "source_location": "L347",
+      "_origin": "ast",
+      "id": "lib_marketplaceservice_getextensionbyid",
+      "community": 165,
+      "norm_label": "getextensionbyid"
+    },
+    {
+      "label": "getAllTags",
+      "file_type": "code",
+      "source_file": "src/lib/marketplaceService.ts",
+      "source_location": "L352",
+      "_origin": "ast",
+      "id": "lib_marketplaceservice_getalltags",
+      "community": 163,
+      "norm_label": "getalltags"
+    },
+    {
+      "label": "getCachedRegistry",
+      "file_type": "code",
+      "source_file": "src/lib/marketplaceService.ts",
+      "source_location": "L358",
+      "_origin": "ast",
+      "id": "lib_marketplaceservice_getcachedregistry",
+      "community": 164,
+      "norm_label": "getcachedregistry"
+    },
+    {
+      "label": "setupMonaco",
+      "file_type": "code",
+      "source_file": "src/lib/monaco-setup.ts",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "lib_monaco_setup_setupmonaco",
+      "community": 167,
+      "norm_label": "setupmonaco"
+    },
+    {
+      "label": "detachPanel",
+      "file_type": "code",
+      "source_file": "src/lib/multiWindowService.ts",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "lib_multiwindowservice_detachpanel",
+      "community": 169,
+      "norm_label": "detachpanel"
+    },
+    {
+      "label": "attachPanel",
+      "file_type": "code",
+      "source_file": "src/lib/multiWindowService.ts",
+      "source_location": "L64",
+      "_origin": "ast",
+      "id": "lib_multiwindowservice_attachpanel",
+      "community": 168,
+      "norm_label": "attachpanel"
+    },
+    {
+      "label": "focusDetachedPanel",
+      "file_type": "code",
+      "source_file": "src/lib/multiWindowService.ts",
+      "source_location": "L85",
+      "_origin": "ast",
+      "id": "lib_multiwindowservice_focusdetachedpanel",
+      "community": 171,
+      "norm_label": "focusdetachedpanel"
+    },
+    {
+      "label": "setupPanelWindowGeometryTracking",
+      "file_type": "code",
+      "source_file": "src/lib/multiWindowService.ts",
+      "source_location": "L102",
+      "_origin": "ast",
+      "id": "lib_multiwindowservice_setuppanelwindowgeometrytracking",
+      "community": 173,
+      "norm_label": "setuppanelwindowgeometrytracking"
+    },
+    {
+      "label": "listenForAppClose",
+      "file_type": "code",
+      "source_file": "src/lib/multiWindowService.ts",
+      "source_location": "L136",
+      "_origin": "ast",
+      "id": "lib_multiwindowservice_listenforappclose",
+      "community": 172,
+      "norm_label": "listenforappclose"
+    },
+    {
+      "label": "emitAppClosing",
+      "file_type": "code",
+      "source_file": "src/lib/multiWindowService.ts",
+      "source_location": "L151",
+      "_origin": "ast",
+      "id": "lib_multiwindowservice_emitappclosing",
+      "community": 170,
+      "norm_label": "emitappclosing"
+    },
+    {
+      "label": "getAllPanels",
+      "file_type": "code",
+      "source_file": "src/lib/panelRegistry.tsx",
+      "source_location": "L62",
+      "_origin": "ast",
+      "id": "lib_panelregistry_getallpanels",
+      "community": 175,
+      "norm_label": "getallpanels"
+    },
+    {
+      "label": "getPanel",
+      "file_type": "code",
+      "source_file": "src/lib/panelRegistry.tsx",
+      "source_location": "L66",
+      "_origin": "ast",
+      "id": "lib_panelregistry_getpanel",
+      "community": 177,
+      "norm_label": "getpanel"
+    },
+    {
+      "label": "getDefaultZone",
+      "file_type": "code",
+      "source_file": "src/lib/panelRegistry.tsx",
+      "source_location": "L70",
+      "_origin": "ast",
+      "id": "lib_panelregistry_getdefaultzone",
+      "community": 176,
+      "norm_label": "getdefaultzone"
+    },
+    {
+      "label": "getPanelsByZone",
+      "file_type": "code",
+      "source_file": "src/lib/panelRegistry.tsx",
+      "source_location": "L74",
+      "_origin": "ast",
+      "id": "lib_panelregistry_getpanelsbyzone",
+      "community": 178,
+      "norm_label": "getpanelsbyzone"
+    },
+    {
+      "label": "getActivityBarPanels",
+      "file_type": "code",
+      "source_file": "src/lib/panelRegistry.tsx",
+      "source_location": "L78",
+      "_origin": "ast",
+      "id": "lib_panelregistry_getactivitybarpanels",
+      "community": 174,
+      "norm_label": "getactivitybarpanels"
+    },
+    {
+      "label": "savePanelWindowPos",
+      "file_type": "code",
+      "source_file": "src/lib/panelWindowPositions.ts",
+      "source_location": "L25",
+      "_origin": "ast",
+      "id": "lib_panelwindowpositions_savepanelwindowpos",
+      "community": 181,
+      "norm_label": "savepanelwindowpos"
+    },
+    {
+      "label": "loadPanelWindowPos",
+      "file_type": "code",
+      "source_file": "src/lib/panelWindowPositions.ts",
+      "source_location": "L31",
+      "_origin": "ast",
+      "id": "lib_panelwindowpositions_loadpanelwindowpos",
+      "community": 180,
+      "norm_label": "loadpanelwindowpos"
+    },
+    {
+      "label": "clearPanelWindowPos",
+      "file_type": "code",
+      "source_file": "src/lib/panelWindowPositions.ts",
+      "source_location": "L36",
+      "_origin": "ast",
+      "id": "lib_panelwindowpositions_clearpanelwindowpos",
+      "community": 179,
+      "norm_label": "clearpanelwindowpos"
+    },
+    {
+      "label": "detectSeparator",
+      "file_type": "code",
+      "source_file": "src/lib/pathUtils.ts",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "lib_pathutils_detectseparator",
+      "community": 184,
+      "norm_label": "detectseparator"
+    },
+    {
+      "label": "joinPath",
+      "file_type": "code",
+      "source_file": "src/lib/pathUtils.ts",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "lib_pathutils_joinpath",
+      "community": 186,
+      "norm_label": "joinpath"
+    },
+    {
+      "label": "parentPath",
+      "file_type": "code",
+      "source_file": "src/lib/pathUtils.ts",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "lib_pathutils_parentpath",
+      "community": 188,
+      "norm_label": "parentpath"
+    },
+    {
+      "label": "basename",
+      "file_type": "code",
+      "source_file": "src/lib/pathUtils.ts",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "lib_pathutils_basename",
+      "community": 183,
+      "norm_label": "basename"
+    },
+    {
+      "label": "nameFromRoot",
+      "file_type": "code",
+      "source_file": "src/lib/pathUtils.ts",
+      "source_location": "L43",
+      "_origin": "ast",
+      "id": "lib_pathutils_namefromroot",
+      "community": 187,
+      "norm_label": "namefromroot"
+    },
+    {
+      "label": "validateName",
+      "file_type": "code",
+      "source_file": "src/lib/pathUtils.ts",
+      "source_location": "L50",
+      "_origin": "ast",
+      "id": "lib_pathutils_validatename",
+      "community": 189,
+      "norm_label": "validatename"
+    },
+    {
+      "label": "applyCustomOrder",
+      "file_type": "code",
+      "source_file": "src/lib/pathUtils.ts",
+      "source_location": "L63",
+      "_origin": "ast",
+      "id": "lib_pathutils_applycustomorder",
+      "community": 182,
+      "norm_label": "applycustomorder"
+    },
+    {
+      "label": "findCommonParent",
+      "file_type": "code",
+      "source_file": "src/lib/pathUtils.ts",
+      "source_location": "L112",
+      "_origin": "ast",
+      "id": "lib_pathutils_findcommonparent",
+      "community": 185,
+      "norm_label": "findcommonparent"
+    },
+    {
+      "label": "SessionTab",
+      "file_type": "code",
+      "source_file": "src/lib/session.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "lib_session_sessiontab",
+      "community": 200,
+      "norm_label": "sessiontab"
+    },
+    {
+      "label": "WindowState",
+      "file_type": "code",
+      "source_file": "src/lib/session.ts",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "lib_session_windowstate",
+      "community": 201,
+      "norm_label": "windowstate"
+    },
+    {
+      "label": "SessionData",
+      "file_type": "code",
+      "source_file": "src/lib/session.ts",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "lib_session_sessiondata",
+      "community": 199,
+      "norm_label": "sessiondata"
+    },
+    {
+      "label": "saveSession",
+      "file_type": "code",
+      "source_file": "src/lib/session.ts",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "lib_session_savesession",
+      "community": 197,
+      "norm_label": "savesession"
+    },
+    {
+      "label": "loadSession",
+      "file_type": "code",
+      "source_file": "src/lib/session.ts",
+      "source_location": "L40",
+      "_origin": "ast",
+      "id": "lib_session_loadsession",
+      "community": 195,
+      "norm_label": "loadsession"
+    },
+    {
+      "label": "clearSession",
+      "file_type": "code",
+      "source_file": "src/lib/session.ts",
+      "source_location": "L55",
+      "_origin": "ast",
+      "id": "lib_session_clearsession",
+      "community": 192,
+      "norm_label": "clearsession"
+    },
+    {
+      "label": "saveUnsavedBackup",
+      "file_type": "code",
+      "source_file": "src/lib/session.ts",
+      "source_location": "L61",
+      "_origin": "ast",
+      "id": "lib_session_saveunsavedbackup",
+      "community": 198,
+      "norm_label": "saveunsavedbackup"
+    },
+    {
+      "label": "loadUnsavedBackup",
+      "file_type": "code",
+      "source_file": "src/lib/session.ts",
+      "source_location": "L73",
+      "_origin": "ast",
+      "id": "lib_session_loadunsavedbackup",
+      "community": 196,
+      "norm_label": "loadunsavedbackup"
+    },
+    {
+      "label": "clearUnsavedBackup",
+      "file_type": "code",
+      "source_file": "src/lib/session.ts",
+      "source_location": "L96",
+      "_origin": "ast",
+      "id": "lib_session_clearunsavedbackup",
+      "community": 193,
+      "norm_label": "clearunsavedbackup"
+    },
+    {
+      "label": "addRecentFolder",
+      "file_type": "code",
+      "source_file": "src/lib/session.ts",
+      "source_location": "L102",
+      "_origin": "ast",
+      "id": "lib_session_addrecentfolder",
+      "community": 190,
+      "norm_label": "addrecentfolder"
+    },
+    {
+      "label": "getRecentFolders",
+      "file_type": "code",
+      "source_file": "src/lib/session.ts",
+      "source_location": "L111",
+      "_origin": "ast",
+      "id": "lib_session_getrecentfolders",
+      "community": 194,
+      "norm_label": "getrecentfolders"
+    },
+    {
+      "label": "clearRecentFolders",
+      "file_type": "code",
+      "source_file": "src/lib/session.ts",
+      "source_location": "L125",
+      "_origin": "ast",
+      "id": "lib_session_clearrecentfolders",
+      "community": 191,
+      "norm_label": "clearrecentfolders"
+    },
+    {
+      "label": "SessionTab",
+      "file_type": "code",
+      "source_file": "src/lib/sessionRestore.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "lib_sessionrestore_sessiontab",
+      "community": 206,
+      "norm_label": "sessiontab"
+    },
+    {
+      "label": "SessionData",
+      "file_type": "code",
+      "source_file": "src/lib/sessionRestore.ts",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "lib_sessionrestore_sessiondata",
+      "community": 205,
+      "norm_label": "sessiondata"
+    },
+    {
+      "label": "saveSession",
+      "file_type": "code",
+      "source_file": "src/lib/sessionRestore.ts",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "lib_sessionrestore_savesession",
+      "community": 204,
+      "norm_label": "savesession"
+    },
+    {
+      "label": "loadSession",
+      "file_type": "code",
+      "source_file": "src/lib/sessionRestore.ts",
+      "source_location": "L37",
+      "_origin": "ast",
+      "id": "lib_sessionrestore_loadsession",
+      "community": 203,
+      "norm_label": "loadsession"
+    },
+    {
+      "label": "clearSession",
+      "file_type": "code",
+      "source_file": "src/lib/sessionRestore.ts",
+      "source_location": "L54",
+      "_origin": "ast",
+      "id": "lib_sessionrestore_clearsession",
+      "community": 202,
+      "norm_label": "clearsession"
+    },
+    {
+      "label": "openAndCreateTerminalSession",
+      "file_type": "code",
+      "source_file": "src/lib/terminal-helpers.ts",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "lib_terminal_helpers_openandcreateterminalsession",
+      "community": 207,
+      "norm_label": "openandcreateterminalsession"
+    },
+    {
+      "label": "openTerminalAtPath",
+      "file_type": "code",
+      "source_file": "src/lib/terminal-helpers.ts",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "lib_terminal_helpers_openterminalatpath",
+      "community": 208,
+      "norm_label": "openterminalatpath"
+    },
+    {
+      "label": "ToWorker",
+      "file_type": "code",
+      "source_file": "src/lib/terminal-worker.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "lib_terminal_worker_toworker",
+      "community": 210,
+      "norm_label": "toworker"
+    },
+    {
+      "label": "FromWorker",
+      "file_type": "code",
+      "source_file": "src/lib/terminal-worker.ts",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "lib_terminal_worker_fromworker",
+      "community": 209,
+      "norm_label": "fromworker"
+    },
+    {
+      "label": "ThemeService",
+      "file_type": "code",
+      "source_file": "src/lib/themeService.ts",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "lib_themeservice_themeservice",
+      "community": 12,
+      "norm_label": "themeservice"
+    },
+    {
+      "label": "cn",
+      "file_type": "code",
+      "source_file": "src/lib/utils.ts",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "lib_utils_cn",
+      "community": 211,
+      "norm_label": "cn"
+    },
+    {
+      "label": "DiagnosticItem",
+      "file_type": "code",
+      "source_file": "src/stores/diagnosticStore.ts",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "stores_diagnosticstore_diagnosticitem",
+      "community": 235,
+      "norm_label": "diagnosticitem"
+    },
+    {
+      "label": "initDiagnostics",
+      "file_type": "code",
+      "source_file": "src/stores/diagnosticStore.ts",
+      "source_location": "L28",
+      "_origin": "ast",
+      "id": "stores_diagnosticstore_initdiagnostics",
+      "community": 236,
+      "norm_label": "initdiagnostics"
+    },
+    {
+      "label": "destroyDiagnostics",
+      "file_type": "code",
+      "source_file": "src/stores/diagnosticStore.ts",
+      "source_location": "L61",
+      "_origin": "ast",
+      "id": "stores_diagnosticstore_destroydiagnostics",
+      "community": 234,
+      "norm_label": "destroydiagnostics"
+    },
+    {
+      "label": "ExtensionStatusItem",
+      "file_type": "code",
+      "source_file": "src/stores/extensionStatusBarStore.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "stores_extensionstatusbarstore_extensionstatusitem",
+      "community": 237,
+      "norm_label": "extensionstatusitem"
+    },
+    {
+      "label": "getEffectiveCombo",
+      "file_type": "code",
+      "source_file": "src/stores/keybindingStore.ts",
+      "source_location": "L38",
+      "_origin": "ast",
+      "id": "stores_keybindingstore_geteffectivecombo",
+      "community": 238,
+      "norm_label": "geteffectivecombo"
+    },
+    {
+      "label": "InputModal",
+      "file_type": "code",
+      "source_file": "src/stores/modalStore.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "stores_modalstore_inputmodal",
+      "community": 240,
+      "norm_label": "inputmodal"
+    },
+    {
+      "label": "QuickPickModal",
+      "file_type": "code",
+      "source_file": "src/stores/modalStore.ts",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "stores_modalstore_quickpickmodal",
+      "community": 241,
+      "norm_label": "quickpickmodal"
+    },
+    {
+      "label": "ActiveModal",
+      "file_type": "code",
+      "source_file": "src/stores/modalStore.ts",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "stores_modalstore_activemodal",
+      "community": 239,
+      "norm_label": "activemodal"
+    },
+    {
+      "label": "SearchMode",
+      "file_type": "code",
+      "source_file": "src/stores/searchStore.ts",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "stores_searchstore_searchmode",
+      "community": 242,
+      "norm_label": "searchmode"
+    },
+    {
+      "label": "SearchResult",
+      "file_type": "code",
+      "source_file": "src/stores/searchStore.ts",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "stores_searchstore_searchresult",
+      "community": 243,
+      "norm_label": "searchresult"
+    },
+    {
+      "label": "SessionOutputBuffer",
+      "file_type": "code",
+      "source_file": "src/stores/terminalStore.ts",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "stores_terminalstore_sessionoutputbuffer",
+      "community": 244,
+      "norm_label": "sessionoutputbuffer"
+    },
+    {
+      "label": "ToastKind",
+      "file_type": "code",
+      "source_file": "src/stores/toastStore.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "stores_toaststore_toastkind",
+      "community": 246,
+      "norm_label": "toastkind"
+    },
+    {
+      "label": "Toast",
+      "file_type": "code",
+      "source_file": "src/stores/toastStore.ts",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "stores_toaststore_toast",
+      "community": 245,
+      "norm_label": "toast"
+    },
+    {
+      "label": "DefinitionLocation",
+      "file_type": "code",
+      "source_file": "src/tauri/definitions.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "tauri_definitions_definitionlocation",
+      "community": 247,
+      "norm_label": "definitionlocation"
+    },
+    {
+      "label": "findDefinitions",
+      "file_type": "code",
+      "source_file": "src/tauri/definitions.ts",
+      "source_location": "L11",
+      "_origin": "ast",
+      "id": "tauri_definitions_finddefinitions",
+      "community": 248,
+      "norm_label": "finddefinitions"
+    },
+    {
+      "label": "pickFolder",
+      "file_type": "code",
+      "source_file": "src/tauri/dialog.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "tauri_dialog_pickfolder",
+      "community": 253,
+      "norm_label": "pickfolder"
+    },
+    {
+      "label": "pickFile",
+      "file_type": "code",
+      "source_file": "src/tauri/dialog.ts",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "tauri_dialog_pickfile",
+      "community": 251,
+      "norm_label": "pickfile"
+    },
+    {
+      "label": "pickFiles",
+      "file_type": "code",
+      "source_file": "src/tauri/dialog.ts",
+      "source_location": "L75",
+      "_origin": "ast",
+      "id": "tauri_dialog_pickfiles",
+      "community": 252,
+      "norm_label": "pickfiles"
+    },
+    {
+      "label": "ConfirmOptions",
+      "file_type": "code",
+      "source_file": "src/tauri/dialog.ts",
+      "source_location": "L89",
+      "_origin": "ast",
+      "id": "tauri_dialog_confirmoptions",
+      "community": 250,
+      "norm_label": "confirmoptions"
+    },
+    {
+      "label": "confirm",
+      "file_type": "code",
+      "source_file": "src/tauri/dialog.ts",
+      "source_location": "L96",
+      "_origin": "ast",
+      "id": "tauri_dialog_confirm",
+      "community": 249,
+      "norm_label": "confirm"
+    },
+    {
+      "label": "ReadDirectoryArgs",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "tauri_fs_readdirectoryargs",
+      "community": 259,
+      "norm_label": "readdirectoryargs"
+    },
+    {
+      "label": "readDirectory",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "tauri_fs_readdirectory",
+      "community": 258,
+      "norm_label": "readdirectory"
+    },
+    {
+      "label": "readFile",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "tauri_fs_readfile",
+      "community": 260,
+      "norm_label": "readfile"
+    },
+    {
+      "label": "writeFile",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L26",
+      "_origin": "ast",
+      "id": "tauri_fs_writefile",
+      "community": 268,
+      "norm_label": "writefile"
+    },
+    {
+      "label": "createFile",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L30",
+      "_origin": "ast",
+      "id": "tauri_fs_createfile",
+      "community": 255,
+      "norm_label": "createfile"
+    },
+    {
+      "label": "createDirectory",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "tauri_fs_createdirectory",
+      "community": 254,
+      "norm_label": "createdirectory"
+    },
+    {
+      "label": "renameEntry",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L38",
+      "_origin": "ast",
+      "id": "tauri_fs_renameentry",
+      "community": 261,
+      "norm_label": "renameentry"
+    },
+    {
+      "label": "deleteEntry",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L42",
+      "_origin": "ast",
+      "id": "tauri_fs_deleteentry",
+      "community": 256,
+      "norm_label": "deleteentry"
+    },
+    {
+      "label": "resolveHome",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "tauri_fs_resolvehome",
+      "community": 262,
+      "norm_label": "resolvehome"
+    },
+    {
+      "label": "stat",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L50",
+      "_origin": "ast",
+      "id": "tauri_fs_stat",
+      "community": 264,
+      "norm_label": "stat"
+    },
+    {
+      "label": "pathExists",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L54",
+      "_origin": "ast",
+      "id": "tauri_fs_pathexists",
+      "community": 257,
+      "norm_label": "pathexists"
+    },
+    {
+      "label": "revealInExplorer",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L58",
+      "_origin": "ast",
+      "id": "tauri_fs_revealinexplorer",
+      "community": 263,
+      "norm_label": "revealinexplorer"
+    },
+    {
+      "label": "watchDirectory",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L62",
+      "_origin": "ast",
+      "id": "tauri_fs_watchdirectory",
+      "community": 267,
+      "norm_label": "watchdirectory"
+    },
+    {
+      "label": "unwatchDirectory",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L66",
+      "_origin": "ast",
+      "id": "tauri_fs_unwatchdirectory",
+      "community": 266,
+      "norm_label": "unwatchdirectory"
+    },
+    {
+      "label": "unwatchAll",
+      "file_type": "code",
+      "source_file": "src/tauri/fs.ts",
+      "source_location": "L70",
+      "_origin": "ast",
+      "id": "tauri_fs_unwatchall",
+      "community": 265,
+      "norm_label": "unwatchall"
+    },
+    {
+      "label": "gitStatus",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "tauri_git_gitstatus",
+      "community": 326,
+      "norm_label": "gitstatus"
+    },
+    {
+      "label": "gitDiff",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L37",
+      "_origin": "ast",
+      "id": "tauri_git_gitdiff",
+      "community": 291,
+      "norm_label": "gitdiff"
+    },
+    {
+      "label": "gitLog",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L41",
+      "_origin": "ast",
+      "id": "tauri_git_gitlog",
+      "community": 296,
+      "norm_label": "gitlog"
+    },
+    {
+      "label": "gitBranchList",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L45",
+      "_origin": "ast",
+      "id": "tauri_git_gitbranchlist",
+      "community": 278,
+      "norm_label": "gitbranchlist"
+    },
+    {
+      "label": "gitBranchCreate",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L49",
+      "_origin": "ast",
+      "id": "tauri_git_gitbranchcreate",
+      "community": 276,
+      "norm_label": "gitbranchcreate"
+    },
+    {
+      "label": "gitBranchDelete",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L53",
+      "_origin": "ast",
+      "id": "tauri_git_gitbranchdelete",
+      "community": 277,
+      "norm_label": "gitbranchdelete"
+    },
+    {
+      "label": "gitCheckout",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L57",
+      "_origin": "ast",
+      "id": "tauri_git_gitcheckout",
+      "community": 281,
+      "norm_label": "gitcheckout"
+    },
+    {
+      "label": "gitAdd",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L61",
+      "_origin": "ast",
+      "id": "tauri_git_gitadd",
+      "community": 269,
+      "norm_label": "gitadd"
+    },
+    {
+      "label": "gitReset",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L65",
+      "_origin": "ast",
+      "id": "tauri_git_gitreset",
+      "community": 312,
+      "norm_label": "gitreset"
+    },
+    {
+      "label": "gitCommit",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L69",
+      "_origin": "ast",
+      "id": "tauri_git_gitcommit",
+      "community": 287,
+      "norm_label": "gitcommit"
+    },
+    {
+      "label": "gitPush",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L73",
+      "_origin": "ast",
+      "id": "tauri_git_gitpush",
+      "community": 301,
+      "norm_label": "gitpush"
+    },
+    {
+      "label": "gitPull",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L77",
+      "_origin": "ast",
+      "id": "tauri_git_gitpull",
+      "community": 300,
+      "norm_label": "gitpull"
+    },
+    {
+      "label": "gitFetch",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L81",
+      "_origin": "ast",
+      "id": "tauri_git_gitfetch",
+      "community": 293,
+      "norm_label": "gitfetch"
+    },
+    {
+      "label": "gitRemoteList",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L85",
+      "_origin": "ast",
+      "id": "tauri_git_gitremotelist",
+      "community": 310,
+      "norm_label": "gitremotelist"
+    },
+    {
+      "label": "gitRemoteAdd",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L89",
+      "_origin": "ast",
+      "id": "tauri_git_gitremoteadd",
+      "community": 309,
+      "norm_label": "gitremoteadd"
+    },
+    {
+      "label": "gitRemoteRemove",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L93",
+      "_origin": "ast",
+      "id": "tauri_git_gitremoteremove",
+      "community": 311,
+      "norm_label": "gitremoteremove"
+    },
+    {
+      "label": "gitStashList",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L97",
+      "_origin": "ast",
+      "id": "tauri_git_gitstashlist",
+      "community": 321,
+      "norm_label": "gitstashlist"
+    },
+    {
+      "label": "gitStashPush",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L101",
+      "_origin": "ast",
+      "id": "tauri_git_gitstashpush",
+      "community": 324,
+      "norm_label": "gitstashpush"
+    },
+    {
+      "label": "gitStashPop",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L105",
+      "_origin": "ast",
+      "id": "tauri_git_gitstashpop",
+      "community": 323,
+      "norm_label": "gitstashpop"
+    },
+    {
+      "label": "gitStashDrop",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L109",
+      "_origin": "ast",
+      "id": "tauri_git_gitstashdrop",
+      "community": 320,
+      "norm_label": "gitstashdrop"
+    },
+    {
+      "label": "gitBlame",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L113",
+      "_origin": "ast",
+      "id": "tauri_git_gitblame",
+      "community": 274,
+      "norm_label": "gitblame"
+    },
+    {
+      "label": "gitSubmoduleStatus",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L117",
+      "_origin": "ast",
+      "id": "tauri_git_gitsubmodulestatus",
+      "community": 327,
+      "norm_label": "gitsubmodulestatus"
+    },
+    {
+      "label": "gitInit",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L121",
+      "_origin": "ast",
+      "id": "tauri_git_gitinit",
+      "community": 294,
+      "norm_label": "gitinit"
+    },
+    {
+      "label": "gitConfigGet",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L125",
+      "_origin": "ast",
+      "id": "tauri_git_gitconfigget",
+      "community": 289,
+      "norm_label": "gitconfigget"
+    },
+    {
+      "label": "gitConfigSet",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L129",
+      "_origin": "ast",
+      "id": "tauri_git_gitconfigset",
+      "community": 290,
+      "norm_label": "gitconfigset"
+    },
+    {
+      "label": "gitIsRepo",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L133",
+      "_origin": "ast",
+      "id": "tauri_git_gitisrepo",
+      "community": 295,
+      "norm_label": "gitisrepo"
+    },
+    {
+      "label": "gitDiffHunks",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L137",
+      "_origin": "ast",
+      "id": "tauri_git_gitdiffhunks",
+      "community": 292,
+      "norm_label": "gitdiffhunks"
+    },
+    {
+      "label": "gitStageHunk",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L141",
+      "_origin": "ast",
+      "id": "tauri_git_gitstagehunk",
+      "community": 317,
+      "norm_label": "gitstagehunk"
+    },
+    {
+      "label": "gitUnstageHunk",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L145",
+      "_origin": "ast",
+      "id": "tauri_git_gitunstagehunk",
+      "community": 332,
+      "norm_label": "gitunstagehunk"
+    },
+    {
+      "label": "gitStageLines",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L149",
+      "_origin": "ast",
+      "id": "tauri_git_gitstagelines",
+      "community": 318,
+      "norm_label": "gitstagelines"
+    },
+    {
+      "label": "gitLogGraph",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L153",
+      "_origin": "ast",
+      "id": "tauri_git_gitloggraph",
+      "community": 297,
+      "norm_label": "gitloggraph"
+    },
+    {
+      "label": "gitCommitDetail",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L157",
+      "_origin": "ast",
+      "id": "tauri_git_gitcommitdetail",
+      "community": 288,
+      "norm_label": "gitcommitdetail"
+    },
+    {
+      "label": "gitRebaseDetect",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L161",
+      "_origin": "ast",
+      "id": "tauri_git_gitrebasedetect",
+      "community": 304,
+      "norm_label": "gitrebasedetect"
+    },
+    {
+      "label": "gitRebaseTodoList",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L165",
+      "_origin": "ast",
+      "id": "tauri_git_gitrebasetodolist",
+      "community": 308,
+      "norm_label": "gitrebasetodolist"
+    },
+    {
+      "label": "gitRebaseStart",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L169",
+      "_origin": "ast",
+      "id": "tauri_git_gitrebasestart",
+      "community": 307,
+      "norm_label": "gitrebasestart"
+    },
+    {
+      "label": "gitRebaseEditTodo",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L173",
+      "_origin": "ast",
+      "id": "tauri_git_gitrebaseedittodo",
+      "community": 305,
+      "norm_label": "gitrebaseedittodo"
+    },
+    {
+      "label": "gitRebaseContinue",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L177",
+      "_origin": "ast",
+      "id": "tauri_git_gitrebasecontinue",
+      "community": 303,
+      "norm_label": "gitrebasecontinue"
+    },
+    {
+      "label": "gitRebaseSkip",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L181",
+      "_origin": "ast",
+      "id": "tauri_git_gitrebaseskip",
+      "community": 306,
+      "norm_label": "gitrebaseskip"
+    },
+    {
+      "label": "gitRebaseAbort",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L185",
+      "_origin": "ast",
+      "id": "tauri_git_gitrebaseabort",
+      "community": 302,
+      "norm_label": "gitrebaseabort"
+    },
+    {
+      "label": "gitTagList",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L189",
+      "_origin": "ast",
+      "id": "tauri_git_gittaglist",
+      "community": 330,
+      "norm_label": "gittaglist"
+    },
+    {
+      "label": "gitTagCreate",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L193",
+      "_origin": "ast",
+      "id": "tauri_git_gittagcreate",
+      "community": 328,
+      "norm_label": "gittagcreate"
+    },
+    {
+      "label": "gitTagDelete",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L197",
+      "_origin": "ast",
+      "id": "tauri_git_gittagdelete",
+      "community": 329,
+      "norm_label": "gittagdelete"
+    },
+    {
+      "label": "gitTagPush",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L201",
+      "_origin": "ast",
+      "id": "tauri_git_gittagpush",
+      "community": 331,
+      "norm_label": "gittagpush"
+    },
+    {
+      "label": "gitCherryPick",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L205",
+      "_origin": "ast",
+      "id": "tauri_git_gitcherrypick",
+      "community": 282,
+      "norm_label": "gitcherrypick"
+    },
+    {
+      "label": "gitCherryPickDetect",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L209",
+      "_origin": "ast",
+      "id": "tauri_git_gitcherrypickdetect",
+      "community": 285,
+      "norm_label": "gitcherrypickdetect"
+    },
+    {
+      "label": "gitCherryPickContinue",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L213",
+      "_origin": "ast",
+      "id": "tauri_git_gitcherrypickcontinue",
+      "community": 284,
+      "norm_label": "gitcherrypickcontinue"
+    },
+    {
+      "label": "gitCherryPickAbort",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L217",
+      "_origin": "ast",
+      "id": "tauri_git_gitcherrypickabort",
+      "community": 283,
+      "norm_label": "gitcherrypickabort"
+    },
+    {
+      "label": "gitRevert",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L221",
+      "_origin": "ast",
+      "id": "tauri_git_gitrevert",
+      "community": 313,
+      "norm_label": "gitrevert"
+    },
+    {
+      "label": "gitRevertDetect",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L225",
+      "_origin": "ast",
+      "id": "tauri_git_gitrevertdetect",
+      "community": 316,
+      "norm_label": "gitrevertdetect"
+    },
+    {
+      "label": "gitRevertContinue",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L229",
+      "_origin": "ast",
+      "id": "tauri_git_gitrevertcontinue",
+      "community": 315,
+      "norm_label": "gitrevertcontinue"
+    },
+    {
+      "label": "gitRevertAbort",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L233",
+      "_origin": "ast",
+      "id": "tauri_git_gitrevertabort",
+      "community": 314,
+      "norm_label": "gitrevertabort"
+    },
+    {
+      "label": "gitBranchCompare",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L237",
+      "_origin": "ast",
+      "id": "tauri_git_gitbranchcompare",
+      "community": 275,
+      "norm_label": "gitbranchcompare"
+    },
+    {
+      "label": "gitStashShow",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L241",
+      "_origin": "ast",
+      "id": "tauri_git_gitstashshow",
+      "community": 325,
+      "norm_label": "gitstashshow"
+    },
+    {
+      "label": "gitStashApply",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L245",
+      "_origin": "ast",
+      "id": "tauri_git_gitstashapply",
+      "community": 319,
+      "norm_label": "gitstashapply"
+    },
+    {
+      "label": "gitStashPartial",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L249",
+      "_origin": "ast",
+      "id": "tauri_git_gitstashpartial",
+      "community": 322,
+      "norm_label": "gitstashpartial"
+    },
+    {
+      "label": "gitWorktreeList",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L253",
+      "_origin": "ast",
+      "id": "tauri_git_gitworktreelist",
+      "community": 334,
+      "norm_label": "gitworktreelist"
+    },
+    {
+      "label": "gitWorktreeAdd",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L257",
+      "_origin": "ast",
+      "id": "tauri_git_gitworktreeadd",
+      "community": 333,
+      "norm_label": "gitworktreeadd"
+    },
+    {
+      "label": "gitWorktreeRemove",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L261",
+      "_origin": "ast",
+      "id": "tauri_git_gitworktreeremove",
+      "community": 336,
+      "norm_label": "gitworktreeremove"
+    },
+    {
+      "label": "gitWorktreePrune",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L265",
+      "_origin": "ast",
+      "id": "tauri_git_gitworktreeprune",
+      "community": 335,
+      "norm_label": "gitworktreeprune"
+    },
+    {
+      "label": "gitBisectStart",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L269",
+      "_origin": "ast",
+      "id": "tauri_git_gitbisectstart",
+      "community": 272,
+      "norm_label": "gitbisectstart"
+    },
+    {
+      "label": "gitBisectState",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L273",
+      "_origin": "ast",
+      "id": "tauri_git_gitbisectstate",
+      "community": 273,
+      "norm_label": "gitbisectstate"
+    },
+    {
+      "label": "gitBisectLog",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L277",
+      "_origin": "ast",
+      "id": "tauri_git_gitbisectlog",
+      "community": 270,
+      "norm_label": "gitbisectlog"
+    },
+    {
+      "label": "gitBisectReset",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L281",
+      "_origin": "ast",
+      "id": "tauri_git_gitbisectreset",
+      "community": 271,
+      "norm_label": "gitbisectreset"
+    },
+    {
+      "label": "gitMerge",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L285",
+      "_origin": "ast",
+      "id": "tauri_git_gitmerge",
+      "community": 298,
+      "norm_label": "gitmerge"
+    },
+    {
+      "label": "gitMergeAbort",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L289",
+      "_origin": "ast",
+      "id": "tauri_git_gitmergeabort",
+      "community": 299,
+      "norm_label": "gitmergeabort"
+    },
+    {
+      "label": "gitClone",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L293",
+      "_origin": "ast",
+      "id": "tauri_git_gitclone",
+      "community": 286,
+      "norm_label": "gitclone"
+    },
+    {
+      "label": "gitBranchRename",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L297",
+      "_origin": "ast",
+      "id": "tauri_git_gitbranchrename",
+      "community": 279,
+      "norm_label": "gitbranchrename"
+    },
+    {
+      "label": "gitBranchSetUpstream",
+      "file_type": "code",
+      "source_file": "src/tauri/git.ts",
+      "source_location": "L301",
+      "_origin": "ast",
+      "id": "tauri_git_gitbranchsetupstream",
+      "community": 280,
+      "norm_label": "gitbranchsetupstream"
+    },
+    {
+      "label": "SpawnPtyArgs",
+      "file_type": "code",
+      "source_file": "src/tauri/pty.ts",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "tauri_pty_spawnptyargs",
+      "community": 342,
+      "norm_label": "spawnptyargs"
+    },
+    {
+      "label": "spawnPty",
+      "file_type": "code",
+      "source_file": "src/tauri/pty.ts",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "tauri_pty_spawnpty",
+      "community": 341,
+      "norm_label": "spawnpty"
+    },
+    {
+      "label": "writePty",
+      "file_type": "code",
+      "source_file": "src/tauri/pty.ts",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "tauri_pty_writepty",
+      "community": 343,
+      "norm_label": "writepty"
+    },
+    {
+      "label": "resizePty",
+      "file_type": "code",
+      "source_file": "src/tauri/pty.ts",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "tauri_pty_resizepty",
+      "community": 340,
+      "norm_label": "resizepty"
+    },
+    {
+      "label": "killPty",
+      "file_type": "code",
+      "source_file": "src/tauri/pty.ts",
+      "source_location": "L30",
+      "_origin": "ast",
+      "id": "tauri_pty_killpty",
+      "community": 337,
+      "norm_label": "killpty"
+    },
+    {
+      "label": "onPtyStdout",
+      "file_type": "code",
+      "source_file": "src/tauri/pty.ts",
+      "source_location": "L34",
+      "_origin": "ast",
+      "id": "tauri_pty_onptystdout",
+      "community": 339,
+      "norm_label": "onptystdout"
+    },
+    {
+      "label": "onPtyExit",
+      "file_type": "code",
+      "source_file": "src/tauri/pty.ts",
+      "source_location": "L43",
+      "_origin": "ast",
+      "id": "tauri_pty_onptyexit",
+      "community": 338,
+      "norm_label": "onptyexit"
+    },
+    {
+      "label": "SearchOptions",
+      "file_type": "code",
+      "source_file": "src/tauri/search.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "tauri_search_searchoptions",
+      "community": 347,
+      "norm_label": "searchoptions"
+    },
+    {
+      "label": "SearchMatch",
+      "file_type": "code",
+      "source_file": "src/tauri/search.ts",
+      "source_location": "L12",
+      "_origin": "ast",
+      "id": "tauri_search_searchmatch",
+      "community": 346,
+      "norm_label": "searchmatch"
+    },
+    {
+      "label": "searchInFiles",
+      "file_type": "code",
+      "source_file": "src/tauri/search.ts",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "tauri_search_searchinfiles",
+      "community": 345,
+      "norm_label": "searchinfiles"
+    },
+    {
+      "label": "replaceInFiles",
+      "file_type": "code",
+      "source_file": "src/tauri/search.ts",
+      "source_location": "L28",
+      "_origin": "ast",
+      "id": "tauri_search_replaceinfiles",
+      "community": 344,
+      "norm_label": "replaceinfiles"
+    },
+    {
+      "label": "detectShells",
+      "file_type": "code",
+      "source_file": "src/tauri/shell.ts",
+      "source_location": "L4",
+      "_origin": "ast",
+      "id": "tauri_shell_detectshells",
+      "community": 348,
+      "norm_label": "detectshells"
+    },
+    {
+      "label": "CommandDefinition",
+      "file_type": "code",
+      "source_file": "src/types/commands.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "types_commands_commanddefinition",
+      "community": 361,
+      "norm_label": "commanddefinition"
+    },
+    {
+      "label": "CommandCategory",
+      "file_type": "code",
+      "source_file": "src/types/commands.ts",
+      "source_location": "L13",
+      "_origin": "ast",
+      "id": "types_commands_commandcategory",
+      "community": 360,
+      "norm_label": "commandcategory"
+    },
+    {
+      "label": "DebugStatus",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "types_debug_debugstatus",
+      "community": 366,
+      "norm_label": "debugstatus"
+    },
+    {
+      "label": "Source",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "types_debug_source",
+      "community": 370,
+      "norm_label": "source"
+    },
+    {
+      "label": "Breakpoint",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "types_debug_breakpoint",
+      "community": 362,
+      "norm_label": "breakpoint"
+    },
+    {
+      "label": "Thread",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L28",
+      "_origin": "ast",
+      "id": "types_debug_thread",
+      "community": 373,
+      "norm_label": "thread"
+    },
+    {
+      "label": "StackFrame",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "types_debug_stackframe",
+      "community": 371,
+      "norm_label": "stackframe"
+    },
+    {
+      "label": "Scope",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L47",
+      "_origin": "ast",
+      "id": "types_debug_scope",
+      "community": 369,
+      "norm_label": "scope"
+    },
+    {
+      "label": "Variable",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L61",
+      "_origin": "ast",
+      "id": "types_debug_variable",
+      "community": 374,
+      "norm_label": "variable"
+    },
+    {
+      "label": "DebugSession",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L77",
+      "_origin": "ast",
+      "id": "types_debug_debugsession",
+      "community": 365,
+      "norm_label": "debugsession"
+    },
+    {
+      "label": "DebugConfiguration",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L89",
+      "_origin": "ast",
+      "id": "types_debug_debugconfiguration",
+      "community": 364,
+      "norm_label": "debugconfiguration"
+    },
+    {
+      "label": "ExceptionBreakpointsFilter",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L108",
+      "_origin": "ast",
+      "id": "types_debug_exceptionbreakpointsfilter",
+      "community": 367,
+      "norm_label": "exceptionbreakpointsfilter"
+    },
+    {
+      "label": "ExceptionInfo",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L114",
+      "_origin": "ast",
+      "id": "types_debug_exceptioninfo",
+      "community": 368,
+      "norm_label": "exceptioninfo"
+    },
+    {
+      "label": "DebugAdapterCapabilities",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L128",
+      "_origin": "ast",
+      "id": "types_debug_debugadaptercapabilities",
+      "community": 4,
+      "norm_label": "debugadaptercapabilities"
+    },
+    {
+      "label": "WatchExpression",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L160",
+      "_origin": "ast",
+      "id": "types_debug_watchexpression",
+      "community": 375,
+      "norm_label": "watchexpression"
+    },
+    {
+      "label": "DapEvent",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L169",
+      "_origin": "ast",
+      "id": "types_debug_dapevent",
+      "community": 363,
+      "norm_label": "dapevent"
+    },
+    {
+      "label": "StoppedReason",
+      "file_type": "code",
+      "source_file": "src/types/debug.ts",
+      "source_location": "L187",
+      "_origin": "ast",
+      "id": "types_debug_stoppedreason",
+      "community": 372,
+      "norm_label": "stoppedreason"
+    },
+    {
+      "label": "Tab",
+      "file_type": "code",
+      "source_file": "src/types/editor.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "types_editor_tab",
+      "community": 377,
+      "norm_label": "tab"
+    },
+    {
+      "label": "EditorStoreState",
+      "file_type": "code",
+      "source_file": "src/types/editor.ts",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "types_editor_editorstorestate",
+      "community": 376,
+      "norm_label": "editorstorestate"
+    },
+    {
+      "label": "FileNodeKind",
+      "file_type": "code",
+      "source_file": "src/types/file.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "types_file_filenodekind",
+      "community": 380,
+      "norm_label": "filenodekind"
+    },
+    {
+      "label": "FileNode",
+      "file_type": "code",
+      "source_file": "src/types/file.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "types_file_filenode",
+      "community": 379,
+      "norm_label": "filenode"
+    },
+    {
+      "label": "FileEntry",
+      "file_type": "code",
+      "source_file": "src/types/file.ts",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "types_file_fileentry",
+      "community": 378,
+      "norm_label": "fileentry"
+    },
+    {
+      "label": "ReadDirResult",
+      "file_type": "code",
+      "source_file": "src/types/file.ts",
+      "source_location": "L17",
+      "_origin": "ast",
+      "id": "types_file_readdirresult",
+      "community": 384,
+      "norm_label": "readdirresult"
+    },
+    {
+      "label": "FsChangeEvent",
+      "file_type": "code",
+      "source_file": "src/types/file.ts",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "types_file_fschangeevent",
+      "community": 383,
+      "norm_label": "fschangeevent"
+    },
+    {
+      "label": "FileTreeWorkerRequest",
+      "file_type": "code",
+      "source_file": "src/types/file.ts",
+      "source_location": "L28",
+      "_origin": "ast",
+      "id": "types_file_filetreeworkerrequest",
+      "community": 381,
+      "norm_label": "filetreeworkerrequest"
+    },
+    {
+      "label": "FileTreeWorkerResponse",
+      "file_type": "code",
+      "source_file": "src/types/file.ts",
+      "source_location": "L37",
+      "_origin": "ast",
+      "id": "types_file_filetreeworkerresponse",
+      "community": 382,
+      "norm_label": "filetreeworkerresponse"
+    },
+    {
+      "label": "GitFileEntry",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "types_git_gitfileentry",
+      "community": 401,
+      "norm_label": "gitfileentry"
+    },
+    {
+      "label": "GitStatus",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L6",
+      "_origin": "ast",
+      "id": "types_git_gitstatus",
+      "community": 404,
+      "norm_label": "gitstatus"
+    },
+    {
+      "label": "GitCommit",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L16",
+      "_origin": "ast",
+      "id": "types_git_gitcommit",
+      "community": 399,
+      "norm_label": "gitcommit"
+    },
+    {
+      "label": "GitBranch",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L26",
+      "_origin": "ast",
+      "id": "types_git_gitbranch",
+      "community": 398,
+      "norm_label": "gitbranch"
+    },
+    {
+      "label": "GitRemote",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L35",
+      "_origin": "ast",
+      "id": "types_git_gitremote",
+      "community": 402,
+      "norm_label": "gitremote"
+    },
+    {
+      "label": "GitStash",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L41",
+      "_origin": "ast",
+      "id": "types_git_gitstash",
+      "community": 403,
+      "norm_label": "gitstash"
+    },
+    {
+      "label": "GitBlameLine",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L48",
+      "_origin": "ast",
+      "id": "types_git_gitblameline",
+      "community": 397,
+      "norm_label": "gitblameline"
+    },
+    {
+      "label": "GitSubmodule",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L57",
+      "_origin": "ast",
+      "id": "types_git_gitsubmodule",
+      "community": 406,
+      "norm_label": "gitsubmodule"
+    },
+    {
+      "label": "LogOptions",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L64",
+      "_origin": "ast",
+      "id": "types_git_logoptions",
+      "community": 14,
+      "norm_label": "logoptions"
+    },
+    {
+      "label": "PushOptions",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L73",
+      "_origin": "ast",
+      "id": "types_git_pushoptions",
+      "community": 415,
+      "norm_label": "pushoptions"
+    },
+    {
+      "label": "PullOptions",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L79",
+      "_origin": "ast",
+      "id": "types_git_pulloptions",
+      "community": 414,
+      "norm_label": "pulloptions"
+    },
+    {
+      "label": "FetchOptions",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L84",
+      "_origin": "ast",
+      "id": "types_git_fetchoptions",
+      "community": 395,
+      "norm_label": "fetchoptions"
+    },
+    {
+      "label": "GraphData",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L89",
+      "_origin": "ast",
+      "id": "types_git_graphdata",
+      "community": 408,
+      "norm_label": "graphdata"
+    },
+    {
+      "label": "GraphNode",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L94",
+      "_origin": "ast",
+      "id": "types_git_graphnode",
+      "community": 409,
+      "norm_label": "graphnode"
+    },
+    {
+      "label": "GraphRef",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L103",
+      "_origin": "ast",
+      "id": "types_git_graphref",
+      "community": 410,
+      "norm_label": "graphref"
+    },
+    {
+      "label": "CommitDetail",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L109",
+      "_origin": "ast",
+      "id": "types_git_commitdetail",
+      "community": 390,
+      "norm_label": "commitdetail"
+    },
+    {
+      "label": "FileStat",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L120",
+      "_origin": "ast",
+      "id": "types_git_filestat",
+      "community": 396,
+      "norm_label": "filestat"
+    },
+    {
+      "label": "DiffHunk",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L126",
+      "_origin": "ast",
+      "id": "types_git_diffhunk",
+      "community": 392,
+      "norm_label": "diffhunk"
+    },
+    {
+      "label": "DiffLine",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L137",
+      "_origin": "ast",
+      "id": "types_git_diffline",
+      "community": 393,
+      "norm_label": "diffline"
+    },
+    {
+      "label": "LineSelection",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L144",
+      "_origin": "ast",
+      "id": "types_git_lineselection",
+      "community": 411,
+      "norm_label": "lineselection"
+    },
+    {
+      "label": "DiffMode",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L149",
+      "_origin": "ast",
+      "id": "types_git_diffmode",
+      "community": 394,
+      "norm_label": "diffmode"
+    },
+    {
+      "label": "ConflictSide",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L150",
+      "_origin": "ast",
+      "id": "types_git_conflictside",
+      "community": 391,
+      "norm_label": "conflictside"
+    },
+    {
+      "label": "MergeConflictFile",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L152",
+      "_origin": "ast",
+      "id": "types_git_mergeconflictfile",
+      "community": 412,
+      "norm_label": "mergeconflictfile"
+    },
+    {
+      "label": "GitStatusType",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L159",
+      "_origin": "ast",
+      "id": "types_git_gitstatustype",
+      "community": 405,
+      "norm_label": "gitstatustype"
+    },
+    {
+      "label": "GitFileDecoration",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L161",
+      "_origin": "ast",
+      "id": "types_git_gitfiledecoration",
+      "community": 400,
+      "norm_label": "gitfiledecoration"
+    },
+    {
+      "label": "RebaseTodo",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L166",
+      "_origin": "ast",
+      "id": "types_git_rebasetodo",
+      "community": 417,
+      "norm_label": "rebasetodo"
+    },
+    {
+      "label": "RebaseStatus",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L174",
+      "_origin": "ast",
+      "id": "types_git_rebasestatus",
+      "community": 416,
+      "norm_label": "rebasestatus"
+    },
+    {
+      "label": "GitTag",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L184",
+      "_origin": "ast",
+      "id": "types_git_gittag",
+      "community": 407,
+      "norm_label": "gittag"
+    },
+    {
+      "label": "CherryPickOptions",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L192",
+      "_origin": "ast",
+      "id": "types_git_cherrypickoptions",
+      "community": 388,
+      "norm_label": "cherrypickoptions"
+    },
+    {
+      "label": "CherryPickStatus",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L198",
+      "_origin": "ast",
+      "id": "types_git_cherrypickstatus",
+      "community": 389,
+      "norm_label": "cherrypickstatus"
+    },
+    {
+      "label": "RevertOptions",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L204",
+      "_origin": "ast",
+      "id": "types_git_revertoptions",
+      "community": 418,
+      "norm_label": "revertoptions"
+    },
+    {
+      "label": "RevertStatus",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L209",
+      "_origin": "ast",
+      "id": "types_git_revertstatus",
+      "community": 419,
+      "norm_label": "revertstatus"
+    },
+    {
+      "label": "BranchCompareResult",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L215",
+      "_origin": "ast",
+      "id": "types_git_branchcompareresult",
+      "community": 387,
+      "norm_label": "branchcompareresult"
+    },
+    {
+      "label": "StashOptions",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L223",
+      "_origin": "ast",
+      "id": "types_git_stashoptions",
+      "community": 421,
+      "norm_label": "stashoptions"
+    },
+    {
+      "label": "StashApplyResult",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L230",
+      "_origin": "ast",
+      "id": "types_git_stashapplyresult",
+      "community": 420,
+      "norm_label": "stashapplyresult"
+    },
+    {
+      "label": "WorktreeEntry",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L236",
+      "_origin": "ast",
+      "id": "types_git_worktreeentry",
+      "community": 422,
+      "norm_label": "worktreeentry"
+    },
+    {
+      "label": "BisectStatus",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L245",
+      "_origin": "ast",
+      "id": "types_git_bisectstatus",
+      "community": 386,
+      "norm_label": "bisectstatus"
+    },
+    {
+      "label": "BisectStartOptions",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L257",
+      "_origin": "ast",
+      "id": "types_git_bisectstartoptions",
+      "community": 385,
+      "norm_label": "bisectstartoptions"
+    },
+    {
+      "label": "MergeOptions",
+      "file_type": "code",
+      "source_file": "src/types/git.ts",
+      "source_location": "L263",
+      "_origin": "ast",
+      "id": "types_git_mergeoptions",
+      "community": 413,
+      "norm_label": "mergeoptions"
+    },
+    {
+      "label": "GitHubUser",
+      "file_type": "code",
+      "source_file": "src/types/github.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "types_github_githubuser",
+      "community": 427,
+      "norm_label": "githubuser"
+    },
+    {
+      "label": "GitHubRepo",
+      "file_type": "code",
+      "source_file": "src/types/github.ts",
+      "source_location": "L8",
+      "_origin": "ast",
+      "id": "types_github_githubrepo",
+      "community": 426,
+      "norm_label": "githubrepo"
+    },
+    {
+      "label": "GitHubPullRequest",
+      "file_type": "code",
+      "source_file": "src/types/github.ts",
+      "source_location": "L15",
+      "_origin": "ast",
+      "id": "types_github_githubpullrequest",
+      "community": 425,
+      "norm_label": "githubpullrequest"
+    },
+    {
+      "label": "GitHubIssue",
+      "file_type": "code",
+      "source_file": "src/types/github.ts",
+      "source_location": "L33",
+      "_origin": "ast",
+      "id": "types_github_githubissue",
+      "community": 424,
+      "norm_label": "githubissue"
+    },
+    {
+      "label": "GitHubCheckRun",
+      "file_type": "code",
+      "source_file": "src/types/github.ts",
+      "source_location": "L46",
+      "_origin": "ast",
+      "id": "types_github_githubcheckrun",
+      "community": 423,
+      "norm_label": "githubcheckrun"
+    },
+    {
+      "label": "GitHubAuthState",
+      "file_type": "code",
+      "source_file": "src/types/github.ts",
+      "source_location": "L53",
+      "_origin": "ast",
+      "id": "types_github_githubauthstate",
+      "community": 15,
+      "norm_label": "githubauthstate"
+    },
+    {
+      "label": "GitHubStoreState",
+      "file_type": "code",
+      "source_file": "src/types/github.ts",
+      "source_location": "L59",
+      "_origin": "ast",
+      "id": "types_github_githubstorestate",
+      "community": 15,
+      "norm_label": "githubstorestate"
+    },
+    {
+      "label": "IconPackDefinition",
+      "file_type": "code",
+      "source_file": "src/types/icons.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "types_icons_iconpackdefinition",
+      "community": 10,
+      "norm_label": "iconpackdefinition"
+    },
+    {
+      "label": "MarketplaceExtension",
+      "file_type": "code",
+      "source_file": "src/types/marketplace.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "types_marketplace_marketplaceextension",
+      "community": 428,
+      "norm_label": "marketplaceextension"
+    },
+    {
+      "label": "MarketplaceRegistry",
+      "file_type": "code",
+      "source_file": "src/types/marketplace.ts",
+      "source_location": "L18",
+      "_origin": "ast",
+      "id": "types_marketplace_marketplaceregistry",
+      "community": 429,
+      "norm_label": "marketplaceregistry"
+    },
+    {
+      "label": "DockZone",
+      "file_type": "code",
+      "source_file": "src/types/panelRegistry.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "types_panelregistry_dockzone",
+      "community": 430,
+      "norm_label": "dockzone"
+    },
+    {
+      "label": "PanelId",
+      "file_type": "code",
+      "source_file": "src/types/panelRegistry.ts",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "types_panelregistry_panelid",
+      "community": 432,
+      "norm_label": "panelid"
+    },
+    {
+      "label": "DockState",
+      "file_type": "code",
+      "source_file": "src/types/panelRegistry.ts",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "types_panelregistry_dockstate",
+      "community": 11,
+      "norm_label": "dockstate"
+    },
+    {
+      "label": "Zones",
+      "file_type": "code",
+      "source_file": "src/types/panelRegistry.ts",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "types_panelregistry_zones",
+      "community": 433,
+      "norm_label": "zones"
+    },
+    {
+      "label": "PanelDefinition",
+      "file_type": "code",
+      "source_file": "src/types/panelRegistry.ts",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "types_panelregistry_paneldefinition",
+      "community": 431,
+      "norm_label": "paneldefinition"
+    },
+    {
+      "label": "EditorSettings",
+      "file_type": "code",
+      "source_file": "src/types/settings.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "types_settings_editorsettings",
+      "community": 435,
+      "norm_label": "editorsettings"
+    },
+    {
+      "label": "TerminalSettings",
+      "file_type": "code",
+      "source_file": "src/types/settings.ts",
+      "source_location": "L14",
+      "_origin": "ast",
+      "id": "types_settings_terminalsettings",
+      "community": 437,
+      "norm_label": "terminalsettings"
+    },
+    {
+      "label": "SearchSettings",
+      "file_type": "code",
+      "source_file": "src/types/settings.ts",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "types_settings_searchsettings",
+      "community": 436,
+      "norm_label": "searchsettings"
+    },
+    {
+      "label": "AppSettings",
+      "file_type": "code",
+      "source_file": "src/types/settings.ts",
+      "source_location": "L24",
+      "_origin": "ast",
+      "id": "types_settings_appsettings",
+      "community": 434,
+      "norm_label": "appsettings"
+    },
+    {
+      "label": "Shell",
+      "file_type": "code",
+      "source_file": "src/types/terminal.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "types_terminal_shell",
+      "community": 439,
+      "norm_label": "shell"
+    },
+    {
+      "label": "TerminalSession",
+      "file_type": "code",
+      "source_file": "src/types/terminal.ts",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "types_terminal_terminalsession",
+      "community": 440,
+      "norm_label": "terminalsession"
+    },
+    {
+      "label": "PtyExitPayload",
+      "file_type": "code",
+      "source_file": "src/types/terminal.ts",
+      "source_location": "L19",
+      "_origin": "ast",
+      "id": "types_terminal_ptyexitpayload",
+      "community": 438,
+      "norm_label": "ptyexitpayload"
+    },
+    {
+      "label": "ThemeDefinition",
+      "file_type": "code",
+      "source_file": "src/types/theme.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "types_theme_themedefinition",
+      "community": 12,
+      "norm_label": "themedefinition"
+    },
+    {
+      "label": "TokenColorEntry",
+      "file_type": "code",
+      "source_file": "src/types/theme.ts",
+      "source_location": "L10",
+      "_origin": "ast",
+      "id": "types_theme_tokencolorentry",
+      "community": 442,
+      "norm_label": "tokencolorentry"
+    },
+    {
+      "label": "ThemeColorKey",
+      "file_type": "code",
+      "source_file": "src/types/theme.ts",
+      "source_location": "L20",
+      "_origin": "ast",
+      "id": "types_theme_themecolorkey",
+      "community": 441,
+      "norm_label": "themecolorkey"
+    },
+    {
+      "label": "Theme",
+      "file_type": "code",
+      "source_file": "src/types/ui.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "types_ui_theme",
+      "community": 446,
+      "norm_label": "theme"
+    },
+    {
+      "label": "FocusPanel",
+      "file_type": "code",
+      "source_file": "src/types/ui.ts",
+      "source_location": "L3",
+      "_origin": "ast",
+      "id": "types_ui_focuspanel",
+      "community": 443,
+      "norm_label": "focuspanel"
+    },
+    {
+      "label": "SidebarView",
+      "file_type": "code",
+      "source_file": "src/types/ui.ts",
+      "source_location": "L5",
+      "_origin": "ast",
+      "id": "types_ui_sidebarview",
+      "community": 445,
+      "norm_label": "sidebarview"
+    },
+    {
+      "label": "PanelConstraints",
+      "file_type": "code",
+      "source_file": "src/types/ui.ts",
+      "source_location": "L7",
+      "_origin": "ast",
+      "id": "types_ui_panelconstraints",
+      "community": 444,
+      "norm_label": "panelconstraints"
+    },
+    {
+      "label": "GitWorkerRequest",
+      "file_type": "code",
+      "source_file": "src/workers/git.worker.ts",
+      "source_location": "L9",
+      "_origin": "ast",
+      "id": "workers_git_worker_gitworkerrequest",
+      "community": 14,
+      "norm_label": "gitworkerrequest"
+    },
+    {
+      "label": "GitWorkerResponse",
+      "file_type": "code",
+      "source_file": "src/workers/git.worker.ts",
+      "source_location": "L22",
+      "_origin": "ast",
+      "id": "workers_git_worker_gitworkerresponse",
+      "community": 452,
+      "norm_label": "gitworkerresponse"
+    },
+    {
+      "label": "New Features Roadmap",
+      "file_type": "document",
+      "source_file": "docs/superpowers/plans/New-features.md",
+      "id": "new_features_md",
+      "community": 230,
+      "norm_label": "new features roadmap"
+    },
+    {
+      "label": "useAutoSave Hook",
+      "file_type": "code",
+      "source_file": "src/hooks/useAutoSave.ts",
+      "id": "useautosave_ts",
+      "community": 0,
+      "norm_label": "useautosave hook"
+    },
+    {
+      "label": "MonacoEditor Component",
+      "file_type": "code",
+      "source_file": "src/components/editor/MonacoEditor.tsx",
+      "id": "monacoeditor_tsx",
+      "community": 0,
+      "norm_label": "monacoeditor component"
+    },
+    {
+      "label": "StatusBar Component",
+      "file_type": "code",
+      "source_file": "src/components/layout/StatusBar.tsx",
+      "id": "statusbar_tsx",
+      "community": 0,
+      "norm_label": "statusbar component"
+    },
+    {
+      "label": "Breadcrumbs Component",
+      "file_type": "code",
+      "source_file": "src/components/editor/Breadcrumbs.tsx",
+      "id": "breadcrumbs_tsx",
+      "community": 2,
+      "norm_label": "breadcrumbs component"
+    },
+    {
+      "label": "EditorArea Component",
+      "file_type": "code",
+      "source_file": "src/components/layout/EditorArea.tsx",
+      "id": "editorarea_tsx",
+      "community": 2,
+      "norm_label": "editorarea component"
+    },
+    {
+      "label": "useGitGutterDecorations Hook",
+      "file_type": "code",
+      "source_file": "src/hooks/useGitGutterDecorations.ts",
+      "id": "usegitgutterdecorations_ts",
+      "community": 0,
+      "norm_label": "usegitgutterdecorations hook"
+    },
+    {
+      "label": "Editor Store",
+      "file_type": "code",
+      "source_file": "src/stores/editorStore.ts",
+      "id": "editorstore_ts",
+      "community": 0,
+      "norm_label": "editor store"
+    },
+    {
+      "label": "Settings Store",
+      "file_type": "code",
+      "source_file": "src/stores/settingsStore.ts",
+      "id": "settingsstore_ts",
+      "community": 0,
+      "norm_label": "settings store"
+    },
+    {
+      "label": "File Store",
+      "file_type": "code",
+      "source_file": "src/stores/fileStore.ts",
+      "id": "filestore_ts",
+      "community": 0,
+      "norm_label": "file store"
+    },
+    {
+      "label": "Terminal Store",
+      "file_type": "code",
+      "source_file": "src/stores/terminalStore.ts",
+      "id": "terminalstore_ts",
+      "community": 2,
+      "norm_label": "terminal store"
+    },
+    {
+      "label": "Git Store",
+      "file_type": "code",
+      "source_file": "src/stores/gitStore.ts",
+      "id": "gitstore_ts",
+      "community": 84,
+      "norm_label": "git store"
+    },
+    {
+      "label": "Debug Store",
+      "file_type": "code",
+      "source_file": "src/stores/debugStore.ts",
+      "id": "debugstore_ts",
+      "community": 2,
+      "norm_label": "debug store"
+    },
+    {
+      "label": "UI Store",
+      "file_type": "code",
+      "source_file": "src/stores/uiStore.ts",
+      "id": "uistore_ts",
+      "community": 448,
+      "norm_label": "ui store"
+    },
+    {
+      "label": "RunButton Component",
+      "file_type": "code",
+      "source_file": "src/components/debug/RunButton.tsx",
+      "id": "runbutton_tsx",
+      "community": 2,
+      "norm_label": "runbutton component"
+    },
+    {
+      "label": "SearchBar Component",
+      "file_type": "code",
+      "source_file": "src/components/search/SearchBar.tsx",
+      "id": "searchbar_tsx",
+      "community": 13,
+      "norm_label": "searchbar component"
+    },
+    {
+      "label": "LSP Manager",
+      "file_type": "code",
+      "source_file": "src/lib/lsp/manager.ts",
+      "id": "lsp_manager_ts",
+      "community": 0,
+      "norm_label": "lsp manager"
+    },
+    {
+      "label": "ShellLayout Component",
+      "file_type": "code",
+      "source_file": "src/components/layout/ShellLayout.tsx",
+      "id": "shelllayout_tsx",
+      "community": 13,
+      "norm_label": "shelllayout component"
+    },
+    {
+      "label": "VariablesPanel",
+      "file_type": "code",
+      "source_file": "src/components/debug/VariablesPanel.tsx",
+      "id": "variablespanel_variablespanel",
+      "community": 449,
+      "norm_label": "variablespanel"
+    },
+    {
+      "label": "WatchPanel",
+      "file_type": "code",
+      "source_file": "src/components/debug/WatchPanel.tsx",
+      "id": "watchpanel_watchpanel",
+      "community": 450,
+      "norm_label": "watchpanel"
+    },
+    {
+      "label": "Breadcrumbs",
+      "file_type": "code",
+      "source_file": "src/components/editor/Breadcrumbs.tsx",
+      "id": "breadcrumbs_breadcrumbs",
+      "community": 1,
+      "norm_label": "breadcrumbs"
+    },
+    {
+      "label": "EditorEmptyState",
+      "file_type": "code",
+      "source_file": "src/components/editor/EditorEmptyState.tsx",
+      "id": "editoremptystate_editoremptystate",
+      "community": 49,
+      "norm_label": "editoremptystate"
+    },
+    {
+      "label": "EditorSplitView",
+      "file_type": "code",
+      "source_file": "src/components/editor/EditorSplitView.tsx",
+      "id": "editorsplitview_editorsplitview",
+      "community": 1,
+      "norm_label": "editorsplitview"
+    },
+    {
+      "label": "EditorTab",
+      "file_type": "code",
+      "source_file": "src/components/editor/EditorTab.tsx",
+      "id": "editortab_editortab",
+      "community": 1,
+      "norm_label": "editortab"
+    },
+    {
+      "label": "EditorTabs",
+      "file_type": "code",
+      "source_file": "src/components/editor/EditorTabs.tsx",
+      "id": "editortabs_editortabs",
+      "community": 1,
+      "norm_label": "editortabs"
+    },
+    {
+      "label": "MonacoEditor",
+      "file_type": "code",
+      "source_file": "src/components/editor/MonacoEditor.tsx",
+      "id": "monacoeditor_monacoeditor",
+      "community": 1,
+      "norm_label": "monacoeditor"
+    },
+    {
+      "label": "WelcomePage",
+      "file_type": "code",
+      "source_file": "src/components/editor/WelcomePage.tsx",
+      "id": "welcomepage_welcomepage",
+      "community": 451,
+      "norm_label": "welcomepage"
+    },
+    {
+      "label": "FileTree",
+      "file_type": "code",
+      "source_file": "src/components/explorer/FileTree.tsx",
+      "id": "filetree_filetree",
+      "community": 8,
+      "norm_label": "filetree"
+    },
+    {
+      "label": "FileTreeNode",
+      "file_type": "code",
+      "source_file": "src/components/explorer/FileTreeNode.tsx",
+      "id": "filetreenode_filetreenode",
+      "community": 8,
+      "norm_label": "filetreenode"
+    },
+    {
+      "label": "ExtensionMarketplace",
+      "file_type": "code",
+      "source_file": "src/components/extensions/ExtensionMarketplace.tsx",
+      "id": "extensionmarketplace_extensionmarketplace",
+      "community": 5,
+      "norm_label": "extensionmarketplace"
+    },
+    {
+      "label": "ExtensionsSidebar",
+      "file_type": "code",
+      "source_file": "src/components/extensions/ExtensionsSidebar.tsx",
+      "id": "extensionssidebar_extensionssidebar",
+      "community": 5,
+      "norm_label": "extensionssidebar"
+    },
+    {
+      "label": "QuickPickModal",
+      "file_type": "code",
+      "source_file": "src/components/extensions/QuickPickModal.tsx",
+      "id": "quickpickmodal_quickpickmodal",
+      "community": 231,
+      "norm_label": "quickpickmodal"
+    },
+    {
+      "label": "GitGraphView",
+      "file_type": "code",
+      "source_file": "src/components/git/GitGraphView.tsx",
+      "id": "gitgraphview_gitgraphview",
+      "community": 82,
+      "norm_label": "gitgraphview"
+    },
+    {
+      "label": "GitChanges",
+      "file_type": "code",
+      "source_file": "src/components/git/GitChanges.tsx",
+      "id": "gitchanges_gitchanges",
+      "community": 80,
+      "norm_label": "gitchanges"
+    },
+    {
+      "label": "GitDiffView",
+      "file_type": "code",
+      "source_file": "src/components/git/GitDiffView.tsx",
+      "id": "gitdiffview_gitdiffview",
+      "community": 81,
+      "norm_label": "gitdiffview"
+    }
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "context": "field",
+      "confidence": "EXTRACTED",
+      "source_file": "src/extensions/scanner.ts",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "extensions_scanner_scannedextension",
+      "target": "extensions_types_extensionmanifest",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "context": "type",
+      "confidence": "EXTRACTED",
+      "source_file": "src/extensions/types.ts",
+      "source_location": "L25",
+      "weight": 1.0,
+      "source": "extensions_types_statusbaritem",
+      "target": "extensions_types_disposable",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "field",
+      "confidence": "EXTRACTED",
+      "source_file": "src/hooks/useHotkey.ts",
+      "source_location": "L14",
+      "weight": 1.0,
+      "source": "hooks_usehotkey_usehotkeyoptions",
+      "target": "lib_hotkeys_hotkeyhandler",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "field",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/dap/protocol.ts",
+      "source_location": "L83",
+      "weight": 1.0,
+      "source": "dap_protocol_dapprotocolclient",
+      "target": "types_debug_debugadaptercapabilities",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/iconPackService.ts",
+      "source_location": "L10",
+      "weight": 1.0,
+      "source": "lib_iconpackservice_iconpackservice",
+      "target": "types_icons_iconpackdefinition",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "field",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/layoutPresets.ts",
+      "source_location": "L4",
+      "weight": 1.0,
+      "source": "lib_layoutpresets_presetzones",
+      "target": "types_panelregistry_dockstate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "field",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/lsp/client.ts",
+      "source_location": "L31",
+      "weight": 1.0,
+      "source": "lsp_client_lspclient",
+      "target": "lsp_types_diagnostic",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "field",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/lsp/client.ts",
+      "source_location": "L32",
+      "weight": 1.0,
+      "source": "lsp_client_lspclient",
+      "target": "lsp_types_lspconfig",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "field",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/lsp/client.ts",
+      "source_location": "L30",
+      "weight": 1.0,
+      "source": "lsp_client_lspclient",
+      "target": "lsp_types_servercapabilities",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "generic_arg",
+      "confidence": "EXTRACTED",
+      "source_file": "src/lib/themeService.ts",
+      "source_location": "L21",
+      "weight": 1.0,
+      "source": "lib_themeservice_themeservice",
+      "target": "types_theme_themedefinition",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "references",
+      "context": "field",
+      "confidence": "EXTRACTED",
+      "source_file": "src/workers/git.worker.ts",
+      "source_location": "L15",
+      "weight": 1.0,
+      "source": "workers_git_worker_gitworkerrequest",
+      "target": "types_git_logoptions",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "inherits",
+      "context": "type",
+      "confidence": "EXTRACTED",
+      "source_file": "src/types/github.ts",
+      "source_location": "L59",
+      "weight": 1.0,
+      "source": "types_github_githubstorestate",
+      "target": "types_github_githubauthstate",
+      "confidence_score": 1.0
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/editor/MonacoEditor.tsx",
+      "source": "monacoeditor_tsx",
+      "target": "useautosave_ts"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/hooks/useAutoSave.ts",
+      "source": "useautosave_ts",
+      "target": "editorstore_ts"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/hooks/useAutoSave.ts",
+      "source": "useautosave_ts",
+      "target": "settingsstore_ts"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "src/lib/lsp/manager.ts",
+      "source": "lsp_manager_ts",
+      "target": "monacoeditor_tsx"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/editor/MonacoEditor.tsx",
+      "source": "monacoeditor_tsx",
+      "target": "usegitgutterdecorations_ts"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/layout/StatusBar.tsx",
+      "source": "statusbar_tsx",
+      "target": "settingsstore_ts"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/layout/EditorArea.tsx",
+      "source": "editorarea_tsx",
+      "target": "breadcrumbs_tsx"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/layout/EditorArea.tsx",
+      "source": "editorarea_tsx",
+      "target": "runbutton_tsx"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/hooks/useGitGutterDecorations.ts",
+      "source": "usegitgutterdecorations_ts",
+      "target": "editorstore_ts"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/hooks/useGitGutterDecorations.ts",
+      "source": "usegitgutterdecorations_ts",
+      "target": "filestore_ts"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/debug/RunButton.tsx",
+      "source": "runbutton_tsx",
+      "target": "terminalstore_ts"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/debug/RunButton.tsx",
+      "source": "runbutton_tsx",
+      "target": "debugstore_ts"
+    },
+    {
+      "relation": "calls",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "src/components/layout/ShellLayout.tsx",
+      "source": "shelllayout_tsx",
+      "target": "searchbar_tsx"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/editor/EditorSplitView.tsx",
+      "source": "editorsplitview_editorsplitview",
+      "target": "breadcrumbs_breadcrumbs"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/editor/EditorSplitView.tsx",
+      "source": "editorsplitview_editorsplitview",
+      "target": "editortabs_editortabs"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/editor/EditorSplitView.tsx",
+      "source": "editorsplitview_editorsplitview",
+      "target": "monacoeditor_monacoeditor"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/editor/EditorTabs.tsx",
+      "source": "editortabs_editortabs",
+      "target": "editortab_editortab"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/explorer/FileTree.tsx",
+      "source": "filetree_filetree",
+      "target": "filetreenode_filetreenode"
+    },
+    {
+      "relation": "calls",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "src/components/extensions/ExtensionsSidebar.tsx",
+      "source": "extensionssidebar_extensionssidebar",
+      "target": "extensionmarketplace_extensionmarketplace"
+    }
+  ],
+  "hyperedges": [],
+  "built_at_commit": "0c8b1fb58841031f90c45807b57e536eb1a7c9ac"
+}

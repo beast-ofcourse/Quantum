@@ -9,6 +9,7 @@ import { useUiStore } from "@/stores/uiStore";
 import { ThemeService } from "@/lib/themeService";
 import { fuzzyFilter } from "@/lib/fuzzySearch";
 import { KeybindingSettings } from "./KeybindingSettings";
+import type { Theme } from "@/types/ui";
 
 
 interface SettingsPanelProps {
@@ -46,6 +47,7 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const [tab, setTab] = useState<"general" | "shortcuts">("general");
   const [search, setSearch] = useState("");
   const settings = useSettingsStore();
+  const theme = useUiStore((s) => s.theme);
   const setTheme = useUiStore((s) => s.setTheme);
 
   const filtered = useMemo(
@@ -61,8 +63,8 @@ export function SettingsPanel({ open, onClose }: SettingsPanelProps) {
       case "theme":
         return (
           <select
-            value={useUiStore.getState().theme}
-            onChange={(e) => setTheme(e.target.value)}
+            value={theme}
+            onChange={(e) => setTheme(e.target.value as Theme)}
             className="h-7 rounded border border-border bg-background px-2 text-xs"
           >
             {ThemeService.getAllThemes().map((t) => (

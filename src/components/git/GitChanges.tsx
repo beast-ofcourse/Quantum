@@ -151,7 +151,7 @@ export function GitChanges({ onOpenDiff, onOpenFile }: Props) {
           <span className="text-xs text-muted-foreground">
             Changes <span className="text-[10px]">({status.unstaged.length + status.untracked.length})</span>
           </span>
-          {hasUntracked && (
+          {(hasUnstaged || hasUntracked) && (
             <button
               onClick={handleStageAll}
               disabled={stagingAll}

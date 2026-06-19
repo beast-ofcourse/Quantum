@@ -8,6 +8,7 @@ import { GitChanges } from "./GitChanges";
 import { GitCommitBox } from "./GitCommitBox";
 import { GitDiffView } from "./GitDiffView";
 import { GitGraphView } from "./GitGraphView";
+import { GitHistoryView } from "./GitHistoryView";
 import { TagManager } from "./TagManager";
 import { BranchManager } from "./BranchManager";
 import { StashManager } from "./StashManager";
@@ -23,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { RefreshCw, GitBranch, ArrowUp, ArrowDown, Download, GitMerge } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-type Tab = "changes" | "graph" | "github" | "compare";
+type Tab = "changes" | "history" | "graph" | "github" | "compare";
 
 export function GitSidebar() {
   const isRepo = useGitStore((s) => s.isRepo);
@@ -95,7 +96,7 @@ export function GitSidebar() {
 
   const handleOpenFile = (path: string) => {
     const fullPath = repoRoot
-      ? `${repoRoot.replace(/[\\/]+$/, "")}/${path.replace(/^[\\/]+/, "")}`
+      ? `${repoRoot.replace(/[\\\/]+$/, "")}/${path.replace(/^[\\\/]+/, "")}`
       : path;
     void openFile(fullPath);
   };
@@ -114,85 +115,111 @@ export function GitSidebar() {
     );
   }
 
+  const TABS: { id: Tab; label: string }[] = [
+    { id: "changes", label: "Changes" },
+    { id: "history", label: "History" },
+    { id: "graph", label: "Graph" },
+    { id: "compare", label: "Compare" },
+    { id: "github", label: "GitHub" },
+  ];
+
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-end px-3 h-7">
+      {/* Top toolbar */}
+      <div className="flex items-center justify-between px-3 h-7 border-b border-border">
+        <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-mono truncate">
+          <GitBranch className="h-3 w-3 shrink-0" />
+          <span className="truncate">{currentBranch ?? "unknown"}</span>
+          {status && status.ahead > 0 && (
+            <span className="text-green-400 font-normal ml-1">↑{status.ahead}</span>
+          )}
+          {status && status.behind > 0 && (
+            <span className="text-yellow-400 font-normal ml-0.5">↓{status.behind}</span>
+          )}
+        </div>
         <Button variant="ghost" size="icon-xs" onClick={() => refreshStatus()} disabled={statusLoading} aria-label="Refresh status">
           <RefreshCw className={cn("h-3 w-3", statusLoading && "animate-spin")} />
         </Button>
       </div>
 
-      <div className="flex">
-        {(["changes", "graph", "compare", "github"] as const).map((t) => (
+      {/* Always-visible git actions: Push / Pull / Fetch / Merge */}
+      <div className="flex items-center gap-1 px-2 py-1 border-b border-border">
+        <button
+          onClick={() => push()}
+          disabled={pushing}
+          className={cn(
+            "flex items-center gap-1 px-2 py-0.5 rounded text-[10px] transition-colors",
+            "bg-accent/40 hover:bg-accent text-foreground disabled:opacity-40"
+          )}
+          title="Push commits to remote"
+        >
+          <ArrowUp className={cn("h-2.5 w-2.5", pushing && "animate-bounce")} />
+          Push{status && status.ahead > 0 ? ` (${status.ahead})` : ""}
+        </button>
+        <button
+          onClick={() => pull()}
+          disabled={pulling}
+          className={cn(
+            "flex items-center gap-1 px-2 py-0.5 rounded text-[10px] transition-colors",
+            "bg-accent/40 hover:bg-accent text-foreground disabled:opacity-40"
+          )}
+          title="Pull commits from remote"
+        >
+          <ArrowDown className={cn("h-2.5 w-2.5", pulling && "animate-bounce")} />
+          Pull{status && status.behind > 0 ? ` (${status.behind})` : ""}
+        </button>
+        <button
+          onClick={() => fetch()}
+          disabled={fetching}
+          className={cn(
+            "flex items-center gap-1 px-2 py-0.5 rounded text-[10px] transition-colors",
+            "bg-accent/40 hover:bg-accent text-foreground disabled:opacity-40"
+          )}
+          title="Fetch from remote"
+        >
+          <Download className={cn("h-2.5 w-2.5", fetching && "animate-bounce")} />
+          Fetch
+        </button>
+        <button
+          onClick={() => setMergeOpen(true)}
+          className={cn(
+            "flex items-center gap-1 px-2 py-0.5 rounded text-[10px] transition-colors",
+            "bg-accent/40 hover:bg-accent text-foreground"
+          )}
+          title="Merge branch"
+        >
+          <GitMerge className="h-2.5 w-2.5" />
+          Merge
+        </button>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex border-b border-border overflow-x-auto">
+        {TABS.map((t) => (
           <button
-            key={t}
-            onClick={() => setTab(t)}
+            key={t.id}
+            onClick={() => setTab(t.id)}
             className={cn(
-              "flex-1 text-xs py-1 transition-colors capitalize",
-              tab === t
-                ? "text-foreground font-medium"
+              "shrink-0 text-[10px] px-2 py-1 transition-colors whitespace-nowrap",
+              tab === t.id
+                ? "text-foreground font-medium border-b-2 border-primary"
                 : "text-muted-foreground hover:text-foreground"
             )}
           >
-            {t}
+            {t.label}
           </button>
         ))}
       </div>
 
+      {error && (
+        <div className="mx-2 mt-1 px-2 py-1 rounded text-[11px] bg-red-900/30 text-red-400 border border-red-900/50">
+          {error}
+        </div>
+      )}
+
+      {/* Tab content */}
       {tab === "changes" ? (
         <div className="flex flex-col flex-1 overflow-hidden">
-          <div className="flex items-center gap-1.5 px-3 py-1">
-            <GitBranch className="h-3 w-3 text-muted-foreground shrink-0" />
-            <span className="text-xs font-mono truncate flex-1">{currentBranch ?? "unknown"}</span>
-            {status && (status.ahead > 0 || status.behind > 0) && (
-              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                {status.ahead > 0 && (
-                  <button
-                    onClick={() => push()}
-                    disabled={pushing}
-                    className="flex items-center gap-0.5 hover:text-foreground transition-colors disabled:opacity-40"
-                    title={`Push ${status.ahead} commits`}
-                  >
-                    <ArrowUp className={cn("h-2.5 w-2.5", pushing && "animate-bounce")} />
-                    <span>{status.ahead}</span>
-                  </button>
-                )}
-                {status.behind > 0 && (
-                  <button
-                    onClick={() => pull()}
-                    disabled={pulling}
-                    className="flex items-center gap-0.5 hover:text-foreground transition-colors disabled:opacity-40"
-                    title={`Pull ${status.behind} commits`}
-                  >
-                    <ArrowDown className={cn("h-2.5 w-2.5", pulling && "animate-bounce")} />
-                    <span>{status.behind}</span>
-                  </button>
-                )}
-                <button
-                  onClick={() => fetch()}
-                  disabled={fetching}
-                  className="flex items-center gap-0.5 hover:text-foreground transition-colors disabled:opacity-40 ml-0.5"
-                  title="Fetch"
-                >
-                  <Download className={cn("h-2.5 w-2.5", fetching && "animate-bounce")} />
-                </button>
-                <button
-                  onClick={(e) => { e.stopPropagation(); setMergeOpen(true); }}
-                  className="flex items-center gap-0.5 hover:text-foreground transition-colors ml-0.5"
-                  title="Merge branch"
-                >
-                  <GitMerge className="h-2.5 w-2.5" />
-                </button>
-              </div>
-            )}
-          </div>
-
-          {error && (
-            <div className="mx-2 mb-1 px-2 py-1 rounded text-[11px] bg-red-900/30 text-red-400 border border-red-900/50">
-              {error}
-            </div>
-          )}
-
           <GitCommitBox />
           <ScrollArea className="flex-1">
             <GitChanges onOpenDiff={handleOpenDiff} onOpenFile={handleOpenFile} />
@@ -203,6 +230,10 @@ export function GitSidebar() {
             <GitWorktreePanel />
             <GitBisectWizard />
           </ScrollArea>
+        </div>
+      ) : tab === "history" ? (
+        <div className="flex flex-col flex-1 overflow-hidden">
+          <GitHistoryView />
         </div>
       ) : tab === "graph" ? (
         <GitGraphView />

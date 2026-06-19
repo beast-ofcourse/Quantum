@@ -44,14 +44,14 @@ function makeMockState(): SwarmState {
         dependsOn: ["task-1"],
         heartbeatAt: null,
         exitCode: null,
-        manifest: {},
+        manifest: { status: "running" },
       },
     },
     tasks: [
       {
         id: "task-1",
         description: "Refactor auth.ts",
-        status: "in_progress",
+        status: "running",
         assignedTo: "agent-1",
         dependsOn: [],
         priority: 1,

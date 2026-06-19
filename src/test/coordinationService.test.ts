@@ -47,11 +47,11 @@ function makeState(): SwarmState {
         dependsOn: ["task-1"],
         heartbeatAt: null,
         exitCode: null,
-        manifest: {},
+        manifest: { status: "idle" },
       },
     },
     tasks: [
-      { id: "task-1", description: "Task one", status: "in_progress", assignedTo: "agent-1", dependsOn: [], priority: 1 },
+      { id: "task-1", description: "Task one", status: "running", assignedTo: "agent-1", dependsOn: [], priority: 1 },
       { id: "task-2", description: "Task two", status: "pending", assignedTo: "agent-2", dependsOn: ["task-1"], priority: 2 },
     ],
     fileLocks: {},

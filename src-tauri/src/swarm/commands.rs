@@ -183,10 +183,15 @@ pub fn add_agent(
 
     // Create task
     let task_id = format!("task-{}", generate_task_id());
+    let task_status: String = if task.depends_on.is_empty() {
+        "pending".into()
+    } else {
+        "blocked".into()
+    };
     let swarm_task = Task {
         id: task_id.clone(),
         description: task.description,
-        status: "pending".into(),
+        status: task_status,
         assigned_to: Some(agent_id.clone()),
         depends_on: task.depends_on,
         priority: 0,

@@ -1,6 +1,7 @@
 import type { AgentManifest, AgentStatus, SwarmState } from "@/types/swarm";
 import * as swarmApi from "@/tauri/swarm";
 import { useSwarmStore } from "@/stores/swarmStore";
+import { getNextTasks } from "./dagEngine";
 
 const HEARTBEAT_INTERVAL_MS = 30_000;
 const HEARTBEAT_STALE_MS = 35_000;
@@ -121,7 +122,7 @@ export class CoordinationService {
       });
 
       this.markTaskCompleted(agentId);
-      await this.unblockDependents(agentId);
+      await this.processDagAfterCompletion(agentId);
     } catch (err) {
       console.error(`[coordination] merge failed for ${agentId}:`, err);
       store.updateAgentStatus(agentId, "failed");
@@ -133,36 +134,22 @@ export class CoordinationService {
     if (!store.state) return;
     const agent = store.state.agents[agentId];
     if (!agent) return;
-    store.setState({
-      ...store.state,
-      tasks: store.state.tasks.map((t) =>
-        t.id === agent.taskId ? { ...t, status: "completed" } : t,
-      ),
-    });
+    store.updateTaskStatus(agent.taskId, "completed");
   }
 
-  // ── 4.5.2 — Dependency unblocking ───────────────────
+  // ── 5.0 — DAG dependency unblocking ─────────────────
 
-  private async unblockDependents(completedAgentId: string): Promise<void> {
+  private async processDagAfterCompletion(agentId: string): Promise<void> {
     const store = useSwarmStore.getState();
     if (!store.state) return;
 
-    const completedAgent = store.state.agents[completedAgentId];
-    const completedTask = store.state.tasks.find(
-      (t) => t.id === completedAgent?.taskId,
-    );
-    if (!completedTask) return;
+    const agent = store.state.agents[agentId];
+    if (!agent) return;
 
-    const unblocked = store.state.tasks.filter((task) => {
-      if (task.status !== "pending") return false;
-      if (!task.dependsOn.includes(completedTask.id)) return false;
-      return task.dependsOn.every((depId) => {
-        const dep = store.state!.tasks.find((t) => t.id === depId);
-        return dep?.status === "completed";
-      });
-    });
+    const { runnable } = getNextTasks(store.state.tasks, agent.taskId);
 
-    for (const task of unblocked) {
+    for (const task of runnable) {
+      store.updateTaskStatus(task.id, "pending");
       if (task.assignedTo) {
         try {
           await swarmApi.spawnAgentPty(this.projectRoot, task.assignedTo);

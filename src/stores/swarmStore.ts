@@ -4,6 +4,7 @@ import type {
   AgentManifest,
   AgentStatus,
   SwarmState,
+  TaskStatus,
   TimelineEvent,
 } from "@/types/swarm";
 
@@ -16,6 +17,7 @@ interface SwarmStore {
   setState: (state: SwarmState) => void;
   updateAgentManifest: (agentId: string, manifest: AgentManifest) => void;
   updateAgentStatus: (agentId: string, status: AgentStatus) => void;
+  updateTaskStatus: (taskId: string, status: TaskStatus) => void;
   markManifestError: (agentId: string) => void;
   appendTimelineEvent: (event: TimelineEvent) => void;
   updateMergeQueueItem: (agentId: string, status: string) => void;
@@ -73,6 +75,19 @@ export const useSwarmStore = create<SwarmStore>()((set) => ({
             ...s.state.agents,
             [agentId]: { ...s.state.agents[agentId], status },
           },
+        },
+      };
+    }),
+
+  updateTaskStatus: (taskId, status) =>
+    set((s) => {
+      if (!s.state) return s;
+      return {
+        state: {
+          ...s.state,
+          tasks: s.state.tasks.map((t) =>
+            t.id === taskId ? { ...t, status } : t,
+          ),
         },
       };
     }),

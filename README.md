@@ -90,12 +90,12 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 - **Frontend types mirroring Rust state** — `SwarmState`, `AgentInfo`, `TaskSpec`, event payloads
 - **Zustand store** — `swarmStore` with all state mutations, file lock auto-update, timeline
 - **Tauri event bridge** — `startSwarmEventListeners` loads state, listens for manifest changes/errors
-- **Coordination service** — `onAgentExit` triggers merge flow, `unblockDependents` spawns next agent, `buildContextMd` generates context, 30s heartbeat
+- **Coordination service** — `onAgentExit` triggers merge flow, `processDagAfterCompletion` evaluates DAG to spawn parallel agents, `buildContextMd` generates context, 30s heartbeat
 - **Terminal integration** — `agentId` field on `TerminalSession`, exit events routed to coordination
 - **SwarmPanel** — main sidebar panel with empty/executing/conflict/done states, registered in panel system
 - **AgentCard** — per-agent card with status dot, currentThought, files list, "View Terminal" + "Kill" actions
 - **AgentGrid** — responsive grid layout of AgentCards (1 col narrow, 2-3 col wide)
-- **TaskBoard** — 3-column board (Pending / Running / Done) with dependency indicators
+- **TaskBoard** — 4-column board (Pending / Running / Done / Blocked) with dynamic column layout, dependency indicators
 - **NewTaskDialog** — task creation with agent type, model, description fields
 - **ActivityLog** — auto-scrolling timeline event list with typed color coding
 - **FileLocksPanel** — file lock table: file → locked by → timestamp
@@ -110,6 +110,8 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 - **Git-not-found detection** — user-readable error message instructing Git installation
 - **Kill escalation** — SIGTERM → 5s wait → SIGKILL (`taskkill /F` on Windows)
 - **Status coercion** — unknown manifest status values default to `"running"`, store never crashes
+- **DAG orchestration** — `dagEngine.ts` pure module: `getNextTasks()` unblocks parallel agents when deps met, `detectCycle()` prevents infinite loops, `classifyTasks()` groups by status
+- **Task "blocked" status** — Rust `add_agent` sets `"blocked"` when `depends_on` non-empty, coordination service re-evaluates DAG on each completion, spawning multiple agents in parallel
 - See [`docs/swarm-design.md`](docs/swarm-design.md) for full architecture
 
 ### Extension System

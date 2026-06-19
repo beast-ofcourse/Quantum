@@ -4,6 +4,9 @@ export type AgentStatus =
   | "idle" | "running" | "waiting" | "merging"
   | "done" | "failed" | "dead";
 
+export type TaskStatus =
+  | "pending" | "running" | "completed" | "failed" | "blocked";
+
 export type SwarmPhase =
   | "planning" | "executing" | "merging"
   | "conflict" | "done";
@@ -35,7 +38,7 @@ export interface AgentInfo {
 export interface Task {
   id: string;
   description: string;
-  status: string;
+  status: TaskStatus;
   assignedTo: string | null;
   dependsOn: string[];
   priority: number;

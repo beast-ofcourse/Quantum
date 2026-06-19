@@ -48,15 +48,22 @@ export function TaskBoard() {
     );
   }
 
-  const grouped: Record<string, Task[]> = { pending: [], running: [], done: [] };
+  const grouped: Record<string, Task[]> = { pending: [], running: [], completed: [], blocked: [] };
+  let hasBlocked = false;
   for (const t of tasks) {
-    const key = t.status === "running" ? "running" : t.status === "done" ? "done" : "pending";
-    grouped[key].push(t);
+    if (t.status === "running") grouped.running.push(t);
+    else if (t.status === "completed") grouped.completed.push(t);
+    else if (t.status === "blocked") { grouped.blocked.push(t); hasBlocked = true; }
+    else grouped.pending.push(t);
   }
 
+  const cols = hasBlocked
+    ? [...columnDefs, { key: "blocked", label: "Blocked", accent: "border-t-red-500/50" }]
+    : columnDefs;
+
   return (
-    <div className="grid grid-cols-3 gap-2">
-      {columnDefs.map((col) => (
+    <div className={cn("grid gap-2", hasBlocked ? "grid-cols-4" : "grid-cols-3")}>
+      {cols.map((col) => (
         <div key={col.key} className={cn("rounded-lg border border-border bg-muted/20", col.accent)}>
           <div className="border-b border-border px-2 py-1.5 text-[11px] font-medium text-muted-foreground">
             {col.label}

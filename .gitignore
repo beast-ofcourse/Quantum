@@ -80,5 +80,12 @@ release/
 *.jpg
 *.jpeg
 
+# Quantum Swarm state
+.quantum/worktrees/
+.quantum/swarm-state.json
+.quantum/timeline.jsonl
+.quantum/agents/*/manifest.json
+.quantum/.secrets.env
+
 # Dependency lock diffs
 package-lock.json

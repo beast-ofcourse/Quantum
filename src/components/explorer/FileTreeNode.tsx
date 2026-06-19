@@ -11,6 +11,8 @@ import {
 import { useFileStore } from "@/stores/fileStore";
 import { useGitStore } from "@/stores/gitStore";
 import { useGitDecorations } from "@/hooks/useGitDecorations";
+import { useSwarmStore } from "@/stores/swarmStore";
+import { useMemo } from "react";
 import type { FileNode } from "@/types/file";
 import type { GitStatusType } from "@/types/git";
 import { cn } from "@/lib/utils";
@@ -56,6 +58,8 @@ export const FileTreeNode = memo(function FileTreeNode({ node, depth, parentPath
     useExplorerActions();
   const { openFromExplorer } = useEditorActions();
 
+  const fileLocks = useSwarmStore((s) => s.state?.fileLocks);
+  const lockEntry = useMemo(() => fileLocks?.[node.path], [fileLocks, node.path]);
   const isDir = node.kind === "directory";
   const isSelected = selectedFile === node.path;
 
@@ -104,6 +108,7 @@ export const FileTreeNode = memo(function FileTreeNode({ node, depth, parentPath
       aria-expanded={isDir ? expanded : undefined}
       aria-selected={isSelected}
       data-path={node.path}
+      data-lock-agent={lockEntry?.lockedBy}
       tabIndex={0}
       style={dragStyle}
       {...listeners}
@@ -147,6 +152,11 @@ export const FileTreeNode = memo(function FileTreeNode({ node, depth, parentPath
         />
       ) : (
         <span className="truncate">{node.name}</span>
+      )}
+      {lockEntry && (
+        <span className="ml-1 text-[9px] text-amber-400/70" title={`Locked by ${lockEntry.lockedBy}`}>
+          L
+        </span>
       )}
       {gitStatus && (
         <span data-git-badge={gitStatus} className={cn("ml-auto text-[10px] font-bold tabular-nums", GIT_BADGE[gitStatus]?.className)}>

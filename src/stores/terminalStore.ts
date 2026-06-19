@@ -11,6 +11,7 @@ import {
 import { resolveHome } from "@/tauri/fs";
 import type { PtyExitPayload, Shell, TerminalSession } from "@/types/terminal";
 import { useToastStore } from "@/stores/toastStore";
+import { coordinationService } from "@/lib/swarm/coordinationService";
 
 export const MAX_TERMINAL_SESSIONS = 8;
 export const TERMINAL_BUFFER_LIMIT = 5000; // max lines in terminal scrollback
@@ -32,7 +33,7 @@ interface TerminalState {
   outputBuffers: Record<string, SessionOutputBuffer>;
 
   loadShells: () => Promise<void>;
-  createSession: (shellId?: string, cwd?: string) => Promise<string | null>;
+  createSession: (shellId?: string, cwd?: string, agentId?: string) => Promise<string | null>;
   closeSession: (id: string) => Promise<void>;
   setActiveSession: (id: string) => void;
   renameSession: (id: string, title: string) => void;
@@ -95,7 +96,7 @@ export const useTerminalStore = create<TerminalState>()(
         }
       },
 
-      createSession: async (shellId, cwd) => {
+      createSession: async (shellId, cwd, agentId) => {
         const state = get();
         if (state.sessions.length >= MAX_TERMINAL_SESSIONS) {
           useToastStore.getState().addToast("warn", `Maximum terminals (${MAX_TERMINAL_SESSIONS}) reached`);
@@ -142,6 +143,7 @@ export const useTerminalStore = create<TerminalState>()(
             (event) => {
               const code = event.payload.code;
               const signal = event.payload.signal;
+              const exitCode = code ?? signal ?? -1;
               if (code !== null && code !== 0) {
                 console.warn(
                   `[terminalStore] session ${id} exited with code ${code}${signal !== null ? `, signal ${signal}` : ""}`,
@@ -150,6 +152,9 @@ export const useTerminalStore = create<TerminalState>()(
                 console.warn(
                   `[terminalStore] session ${id} terminated by signal ${signal}`,
                 );
+              }
+              if (agentId) {
+                void coordinationService.onAgentExit(agentId, exitCode);
               }
               void get().closeSession(id);
             },
@@ -187,6 +192,7 @@ export const useTerminalStore = create<TerminalState>()(
           cwd: cwd ?? homeDir,
           createdAt: Date.now(),
           title: nextTitle(sessions),
+          agentId,
         };
         set((s) => ({
           sessions: [...s.sessions, session],

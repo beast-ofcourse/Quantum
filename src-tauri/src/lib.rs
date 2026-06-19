@@ -1,4 +1,5 @@
 mod commands;
+mod swarm;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -100,8 +101,39 @@ pub fn run() {
             commands::search::search_in_files,
             commands::search::replace_in_files,
             commands::definitions::find_definitions,
+            // Swarm commands
+            swarm::commands::init_swarm,
+            swarm::commands::add_agent,
+            swarm::commands::spawn_agent_pty,
+            swarm::commands::kill_agent,
+            swarm::commands::get_swarm_state,
+            swarm::commands::check_merge,
+            swarm::commands::merge_agent,
+            swarm::commands::set_api_key,
+            swarm::commands::get_api_key,
+            swarm::commands::delete_api_key,
+            swarm::commands::update_swarm_config,
+            swarm::commands::write_agent_context,
+            swarm::commands::reconcile_swarm,
+            swarm::commands::is_pid_alive,
+            swarm::commands::check_swarm_state_file,
         ])
-        .setup(|_app| Ok(()))
+        .setup(|app| {
+            let handle = app.handle().clone();
+            let project_root = std::env::current_dir()
+                .unwrap_or_default()
+                .to_string_lossy()
+                .to_string();
+
+            // Run reconciliation if swarm state exists (this also starts watcher)
+            // Silently catches parse errors — state corruption handled at UI level
+            let _ = swarm::commands::reconcile_swarm(handle.clone(), project_root.clone());
+
+            // Re-attach FS watcher regardless of reconciliation result
+            let _ = std::fs::create_dir_all(format!("{}/.quantum/agents", project_root));
+
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

@@ -22,6 +22,8 @@ Aways Track your progess whenever a task or phase is completed from tasks.md lea
 Always Start a new phase in a new Branch.
 Always write clear commit messages and do all the git operations autonomously without the user.
 Use github relevent skills properly.
+**Golden rule**
+Do not ever merge or push to main branch
 
 **Rule 4**  
 After Every phase update the readme. 

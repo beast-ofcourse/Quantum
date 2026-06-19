@@ -28,7 +28,7 @@ describe("uiStore", () => {
     expect(state.zones.left.size).toBe(260);
     expect(state.zones.left.isVisible).toBe(true);
 
-    expect(state.zones.right.panelIds).toHaveLength(2);
+    expect(state.zones.right.panelIds).toHaveLength(3);
     expect(state.zones.right.activePanelId).toBe("outline");
     expect(state.zones.right.size).toBe(260);
     expect(state.zones.right.isVisible).toBe(false);

@@ -76,6 +76,7 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 > **Phase 0: Foundation & Dependency Audit** completed 2026-06-19
 > **Phase 1: Rust Backend Core** completed 2026-06-19 (all commands compile, 45 unit tests)
 > **Phase 2: Types, Store & Events** completed 2026-06-19 (16 TS tests, 137 total passing)
+> **Phase 3: UI Components** completed 2026-06-19 (9 new components, 3 modified files, 137 tests passing)
 
 - **Git worktree isolation** — each AI agent runs in its own isolated checkout, no file collisions
 - **Multi-agent coordination** — sequential task execution with merge conflict detection
@@ -90,6 +91,17 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 - **Tauri event bridge** — `startSwarmEventListeners` loads state, listens for manifest changes/errors
 - **Coordination service** — `onAgentExit` triggers merge flow, `unblockDependents` spawns next agent, `buildContextMd` generates context, 30s heartbeat
 - **Terminal integration** — `agentId` field on `TerminalSession`, exit events routed to coordination
+- **SwarmPanel** — main sidebar panel with empty/executing/conflict/done states, registered in panel system
+- **AgentCard** — per-agent card with status dot, currentThought, files list, "View Terminal" + "Kill" actions
+- **AgentGrid** — responsive grid layout of AgentCards (1 col narrow, 2-3 col wide)
+- **TaskBoard** — 3-column board (Pending / Running / Done) with dependency indicators
+- **NewTaskDialog** — task creation with agent type, model, description fields
+- **ActivityLog** — auto-scrolling timeline event list with typed color coding
+- **FileLocksPanel** — file lock table: file → locked by → timestamp
+- **ConflictResolver** — blocking modal overlay on phase=conflict (Monaco diff placeholder)
+- **SwarmSettingsDialog** — default agent/model selectors, provider API key inputs (masked, save/delete/test)
+- **FileTree lock badges** — `data-lock-agent` attribute + "L" badge on locked files
+- **TerminalTab agent badges** — status dot + agent type prefix on agent-owned terminal tabs
 - See [`docs/swarm-design.md`](docs/swarm-design.md) for full architecture
 
 ### Extension System

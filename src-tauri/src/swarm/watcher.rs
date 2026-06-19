@@ -117,3 +117,62 @@ fn handle_fs_event(app: &AppHandle, event: &DebouncedEvent) {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::swarm::state::AgentManifest;
+
+    #[test]
+    fn test_manifest_parse_valid() {
+        let json = r#"{"status":"running","currentThought":"Refactoring auth","filesModified":["src/auth.ts"],"error":null}"#;
+        let manifest: AgentManifest = serde_json::from_str(json).unwrap();
+        assert_eq!(manifest.status, "running");
+        assert_eq!(manifest.current_thought, "Refactoring auth");
+        assert_eq!(manifest.files_modified, vec!["src/auth.ts"]);
+        assert_eq!(manifest.error, None);
+    }
+
+    #[test]
+    fn test_manifest_parse_minimal() {
+        let json = r#"{"status":"done"}"#;
+        let manifest: AgentManifest = serde_json::from_str(json).unwrap();
+        assert_eq!(manifest.status, "done");
+        assert!(manifest.current_thought.is_empty());
+        assert!(manifest.files_modified.is_empty());
+        assert_eq!(manifest.error, None);
+    }
+
+    #[test]
+    fn test_manifest_parse_invalid_json() {
+        let json = r#"{invalid json}"#;
+        let result: Result<AgentManifest, _> = serde_json::from_str(json);
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_manifest_parse_with_error() {
+        let json = r#"{"status":"failed","error":"Something broke"}"#;
+        let manifest: AgentManifest = serde_json::from_str(json).unwrap();
+        assert_eq!(manifest.status, "failed");
+        assert_eq!(manifest.error, Some("Something broke".into()));
+    }
+
+    #[test]
+    fn test_manifest_payload_serde() {
+        let manifest = AgentManifest {
+            status: "running".into(),
+            current_thought: "working".into(),
+            files_modified: vec!["a.ts".into()],
+            error: None,
+        };
+        let payload = ManifestChangedPayload {
+            agent_id: "agent-1".into(),
+            manifest,
+        };
+        let json = serde_json::to_string(&payload).unwrap();
+        assert!(json.contains("agent-1"));
+        assert!(json.contains("working"));
+        assert!(json.contains("agentId") || json.contains("agent_id"));
+    }
+}

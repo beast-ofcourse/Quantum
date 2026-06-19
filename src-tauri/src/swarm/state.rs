@@ -258,6 +258,42 @@ impl SwarmState {
             merge_queue: Vec::new(),
         }
     }
+
+    /// Validate state integrity. Returns first error found.
+    #[allow(dead_code)]
+    pub fn validate(&self) -> Result<(), String> {
+        if self.version < 1 {
+            return Err(format!("Invalid version: {}", self.version));
+        }
+        if self.swarm_id.is_empty() {
+            return Err("swarm_id is required".into());
+        }
+        if self.name.is_empty() {
+            return Err("name is required".into());
+        }
+        if self.created_at.is_empty() {
+            return Err("created_at is required".into());
+        }
+        // Validate agents
+        for (id, agent) in &self.agents {
+            if agent.id.is_empty() {
+                return Err(format!("Agent {} has empty id", id));
+            }
+            if agent.worktree_path.is_empty() {
+                return Err(format!("Agent {} has empty worktree_path", id));
+            }
+        }
+        // Validate tasks
+        for task in &self.tasks {
+            if task.id.is_empty() {
+                return Err("Task has empty id".into());
+            }
+            if task.description.is_empty() {
+                return Err(format!("Task {} has empty description", task.id));
+            }
+        }
+        Ok(())
+    }
 }
 
 // ── Task Spec (for commands) ───────────────────────────
@@ -291,11 +327,13 @@ pub struct ReconciliationReport {
 
 // ── SwarmManager (Tauri State) ─────────────────────────
 
+#[allow(dead_code)]
 pub struct SwarmManager {
     pub state: Arc<RwLock<SwarmState>>,
     pub project_root: RwLock<String>,
 }
 
+#[allow(dead_code)]
 impl SwarmManager {
     pub fn new(project_root: String, state: SwarmState) -> Self {
         Self {
@@ -354,6 +392,118 @@ fn chrono_now() -> String {
 
 fn is_leap(year: i64) -> bool {
     (year % 4 == 0 && year % 100 != 0) || year % 400 == 0
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_swarm_state_new() {
+        let state = SwarmState::new("swarm_test".into(), "Test Swarm".into());
+        assert_eq!(state.version, 1);
+        assert_eq!(state.swarm_id, "swarm_test");
+        assert_eq!(state.name, "Test Swarm");
+        assert_eq!(state.phase, SwarmPhase::Planning);
+        assert!(state.agents.is_empty());
+        assert!(state.tasks.is_empty());
+    }
+
+    #[test]
+    fn test_swarm_state_validate_ok() {
+        let state = SwarmState::new("swarm_test".into(), "Test Swarm".into());
+        assert!(state.validate().is_ok());
+    }
+
+    #[test]
+    fn test_swarm_state_validate_version() {
+        let mut state = SwarmState::new("swarm_test".into(), "Test Swarm".into());
+        state.version = 0;
+        assert!(state.validate().is_err());
+        assert!(state.validate().unwrap_err().contains("version"));
+    }
+
+    #[test]
+    fn test_swarm_state_validate_empty_swarm_id() {
+        let state = SwarmState::new("".into(), "Test Swarm".into());
+        assert!(state.validate().is_err());
+    }
+
+    #[test]
+    fn test_swarm_state_validate_empty_name() {
+        let state = SwarmState::new("swarm_test".into(), "".into());
+        assert!(state.validate().is_err());
+    }
+
+    #[test]
+    fn test_json_round_trip() {
+        let state = SwarmState::new("swarm_test".into(), "Test Swarm".into());
+        let json = serde_json::to_string_pretty(&state).unwrap();
+        let deserialized: SwarmState = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.swarm_id, "swarm_test");
+        assert_eq!(deserialized.name, "Test Swarm");
+        assert!(deserialized.validate().is_ok());
+    }
+
+    #[test]
+    fn test_agent_type_display() {
+        assert_eq!(AgentType::Opencode.to_string(), "opencode");
+        assert_eq!(AgentType::Kilocode.to_string(), "kilocode");
+    }
+
+    #[test]
+    fn test_swarm_phase_default() {
+        assert_eq!(SwarmPhase::default(), SwarmPhase::Planning);
+    }
+
+    #[test]
+    fn test_swarm_config_default() {
+        let config = SwarmConfig::default();
+        assert_eq!(config.default_agent, "opencode");
+        assert_eq!(config.default_model, "deepseek-v4-flash-free");
+        assert_eq!(config.quick_presets.len(), 2);
+    }
+
+    #[test]
+    fn test_generate_swarm_id() {
+        let id = generate_swarm_id();
+        assert!(id.starts_with("swarm_"));
+        assert_eq!(id.len(), 13); // "swarm_" + 8 chars
+    }
+
+    #[test]
+    fn test_chrono_now_format() {
+        let now = chrono_now();
+        // Should be ISO 8601 format: YYYY-MM-DDTHH:MM:SS.sssZ
+        assert_eq!(now.len(), 24);
+        assert!(now.ends_with(".000Z"));
+        assert!(now.contains('T'));
+    }
+
+    #[test]
+    fn test_agent_info_serde() {
+        let agent = AgentInfo {
+            id: "agent-1".into(),
+            agent_type: AgentType::Opencode,
+            model: "deepseek-v4-flash-free".into(),
+            task_id: "task-1".into(),
+            status: AgentStatus::Running,
+            pid: Some(12345),
+            session_id: Some("term_abc".into()),
+            worktree_path: "/tmp/worktree".into(),
+            branch: "swarm/agent-1".into(),
+            depends_on: vec![],
+            heartbeat_at: Some("2026-01-01T00:00:00.000Z".into()),
+            exit_code: None,
+            manifest: serde_json::json!({"status": "running"}),
+        };
+        let json = serde_json::to_string(&agent).unwrap();
+        assert!(json.contains("agent-1"));
+        assert!(json.contains("opencode"));
+        let deserialized: AgentInfo = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.id, "agent-1");
+        assert_eq!(deserialized.status, AgentStatus::Running);
+    }
 }
 
 /// Generate a short swarm ID like "swarm_2xkt9m4j"

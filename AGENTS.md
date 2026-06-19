@@ -7,7 +7,7 @@
 - Run tests and review after each phase is implememted.
 - Stop after clean pass , if errors fix them.
 - You Have to stop after a phase is Fully Completed and reviewed perfectly. **Do not ever continue to new phase** without explicit permission of user.
-
+- **MOST IMPORTANT NOTE**After every phase you have to give user clear instrustions to Test it manually , tell the user which features were implemented in non-tech terms and tell them to try each and every feature via running the app**YOU CAN NOT SKIP THIS**
 
 **Rule 1**
 Never assume anything, always look up to swarn-design.md and tasks.md  go exactly as planned , if confused ask to user cleary.

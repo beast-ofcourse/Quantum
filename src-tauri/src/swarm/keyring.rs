@@ -11,6 +11,7 @@ pub const PROVIDER_ENV_MAP: &[(&str, &str)] = &[
 ];
 
 /// Get the env var name for a provider.
+#[allow(dead_code)]
 pub fn provider_to_env_var(provider: &str) -> Option<&'static str> {
     PROVIDER_ENV_MAP
         .iter()
@@ -144,7 +145,7 @@ mod tests {
 
     #[test]
     fn test_set_get_delete_key() {
-        let dir = tempfile::TempDir::new("swarm-keyring-test").unwrap();
+        let dir = tempfile::tempdir().unwrap();
         let root = dir.path().to_str().unwrap().to_string();
 
         // Initially empty
@@ -164,7 +165,7 @@ mod tests {
 
     #[test]
     fn test_build_agent_env() {
-        let dir = tempfile::TempDir::new("swarm-env-test").unwrap();
+        let dir = tempfile::tempdir().unwrap();
         let root = dir.path().to_str().unwrap().to_string();
 
         set_api_key(&root, "deepseek", "sk-ds-key").unwrap();

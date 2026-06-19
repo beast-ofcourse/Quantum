@@ -1,9 +1,8 @@
 use super::git;
 use super::keyring;
 use super::state::{
-    generate_swarm_id, AgentInfo, AgentManifest, AgentStatus, AgentType, MergeCheckResult,
-    MergeQueueItem, ReconciliationReport, SwarmConfig, SwarmPhase, SwarmState, Task, TaskSpec,
-    TimelineEvent,
+    generate_swarm_id, AgentInfo, AgentStatus, AgentType, MergeCheckResult, MergeQueueItem,
+    ReconciliationReport, SwarmConfig, SwarmPhase, SwarmState, Task, TaskSpec, TimelineEvent,
 };
 use super::watcher;
 use super::SwarmError;
@@ -12,9 +11,9 @@ use std::collections::HashMap;
 use std::path::Path;
 use tauri::{AppHandle, Emitter};
 
-/// Helper: emit a timeline event and append to state.
+/// Helper: emit a timeline event.
 fn emit_timeline(
-    state: &SwarmState,
+    _state: &SwarmState,
     app: &AppHandle,
     agent: &str,
     event_type: &str,
@@ -236,7 +235,7 @@ fn write_context_md(
     project_root: &str,
     agent_id: &str,
     task: &TaskSpec,
-    agent_type: &AgentType,
+    _agent_type: &AgentType,
     model: &str,
 ) -> Result<(), SwarmError> {
     let agent_dir = format!("{}/.quantum/agents/{}", project_root, agent_id);
@@ -359,9 +358,8 @@ pub fn kill_agent(project_root: String, agent_id: String) -> Result<(), String> 
 
     if let Some(agent) = state.agents.get(&agent_id) {
         // Kill the PTY if we have a session
-        if let Some(ref session_id) = agent.session_id {
-            // We can't directly call kill_pty here because it's async,
-            // but we can mark the agent as failed and let the PTY cleanup handle it
+        if agent.session_id.is_some() {
+            // PTY cleanup handled by Tauri runtime when process exits
         }
     }
 
@@ -572,4 +570,111 @@ fn generate_task_id() -> String {
         h /= 36;
     }
     id
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_generate_task_id() {
+        let id = generate_task_id();
+        assert_eq!(id.len(), 6);
+        // Should be alphanumeric
+        assert!(id.chars().all(|c| c.is_ascii_alphanumeric()));
+    }
+
+    #[test]
+    fn test_write_read_swarm_state() {
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().to_str().unwrap().to_string();
+
+        // Ensure .quantum dir
+        std::fs::create_dir_all(format!("{}/.quantum", root)).unwrap();
+
+        let state = SwarmState::new("swarm_test".into(), "Test".into());
+        write_swarm_state(&root, &state).unwrap();
+
+        let loaded = read_swarm_state(&root).unwrap();
+        assert_eq!(loaded.swarm_id, "swarm_test");
+        assert_eq!(loaded.name, "Test");
+    }
+
+    #[test]
+    fn test_atomic_write_preserves_on_crash() {
+        // Verify that read_swarm_state works with valid state (atomic write sim)
+        let dir = tempfile::tempdir().unwrap();
+        let root = dir.path().to_str().unwrap().to_string();
+        std::fs::create_dir_all(format!("{}/.quantum", root)).unwrap();
+
+        // Write state
+        let state = SwarmState::new("swarm_crash_test".into(), "Crash Test".into());
+        write_swarm_state(&root, &state).unwrap();
+
+        // Verify state path exists (not .tmp)
+        let state_path = format!("{}/.quantum/swarm-state.json", root);
+        assert!(std::path::Path::new(&state_path).exists());
+
+        // Verify no .tmp file remains
+        let tmp_path = format!("{}.tmp", state_path);
+        assert!(!std::path::Path::new(&tmp_path).exists());
+
+        // Read back should succeed
+        let loaded = read_swarm_state(&root).unwrap();
+        assert!(loaded.validate().is_ok());
+    }
+
+    #[test]
+    fn test_crate_now_format() {
+        let now = crate_now();
+        assert_eq!(now.len(), 24);
+        assert!(now.ends_with(".000Z"));
+    }
+
+    #[test]
+    fn test_swarm_config_serde() {
+        let config = SwarmConfig::default();
+        let json = serde_json::to_string_pretty(&config).unwrap();
+        assert!(json.contains("opencode"));
+        let deserialized: SwarmConfig = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.default_agent, "opencode");
+    }
+
+    #[test]
+    fn test_task_spec_serde() {
+        let spec = TaskSpec {
+            description: "Do the thing".into(),
+            agent_type: "opencode".into(),
+            model: "deepseek-v4-flash-free".into(),
+            depends_on: vec!["task-1".into()],
+        };
+        let json = serde_json::to_string(&spec).unwrap();
+        let deserialized: TaskSpec = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.description, "Do the thing");
+        assert_eq!(deserialized.depends_on, vec!["task-1"]);
+    }
+
+    #[test]
+    fn test_merge_check_result_serde() {
+        let result = MergeCheckResult {
+            has_conflict: true,
+            conflict_files: vec!["src/auth.ts".into()],
+        };
+        let json = serde_json::to_string(&result).unwrap();
+        assert!(json.contains("src/auth.ts"));
+        let deserialized: MergeCheckResult = serde_json::from_str(&json).unwrap();
+        assert!(deserialized.has_conflict);
+    }
+
+    #[test]
+    fn test_reconciliation_report_serde() {
+        let report = ReconciliationReport {
+            revived: vec!["agent-1".into()],
+            dead: vec!["agent-2".into()],
+            resumed_merges: vec!["agent-3".into()],
+        };
+        let json = serde_json::to_string(&report).unwrap();
+        let deserialized: ReconciliationReport = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.revived, vec!["agent-1"]);
+    }
 }

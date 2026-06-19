@@ -48,3 +48,12 @@ export async function onPtyExit(
     handler(event.payload),
   );
 }
+
+export async function onSwarmTimelineEvent(
+  handler: (event: import("@/types/swarm").TimelineEvent) => void,
+): Promise<UnlistenFn> {
+  return listen<import("@/types/swarm").TimelineEvent>(
+    "swarm:timeline-event",
+    (event) => handler(event.payload),
+  );
+}

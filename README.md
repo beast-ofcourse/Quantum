@@ -74,7 +74,8 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 
 ### Multi-Agent Orchestration (Quantum Swarm) — In Progress
 > **Phase 0: Foundation & Dependency Audit** completed 2026-06-19
-> **Phase 1: Rust Backend Core** implemented 2026-06-19 (awaiting build verification)
+> **Phase 1: Rust Backend Core** completed 2026-06-19 (all commands compile, 45 unit tests)
+> **Phase 2: Types, Store & Events** completed 2026-06-19 (16 TS tests, 137 total passing)
 
 - **Git worktree isolation** — each AI agent runs in its own isolated checkout, no file collisions
 - **Multi-agent coordination** — sequential task execution with merge conflict detection
@@ -84,6 +85,11 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 - **PTY environment injection** — `QUANTUM_*` vars + API keys injected at spawn, no manual config
 - **IDE crash recovery** — reconciles agent state on restart, detects alive/dead processes
 - **Supported agents:** OpenCode, KiloCode (launch); Claude Code, Codex, Aider (future)
+- **Frontend types mirroring Rust state** — `SwarmState`, `AgentInfo`, `TaskSpec`, event payloads
+- **Zustand store** — `swarmStore` with all state mutations, file lock auto-update, timeline
+- **Tauri event bridge** — `startSwarmEventListeners` loads state, listens for manifest changes/errors
+- **Coordination service** — `onAgentExit` triggers merge flow, `unblockDependents` spawns next agent, `buildContextMd` generates context, 30s heartbeat
+- **Terminal integration** — `agentId` field on `TerminalSession`, exit events routed to coordination
 - See [`docs/swarm-design.md`](docs/swarm-design.md) for full architecture
 
 ### Extension System

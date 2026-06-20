@@ -54,7 +54,6 @@ pub fn run() {
             commands::git::git_config_get,
             commands::git::git_config_set,
             commands::git::git_is_repo,
-            commands::git::git_merge_base,
             commands::git::git_diff_hunks,
             commands::git::git_stage_hunk,
             commands::git::git_unstage_hunk,

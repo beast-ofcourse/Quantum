@@ -11,6 +11,7 @@ import { getActivityBarPanels } from "@/lib/panelRegistry";
 import { extensionViewRegistry } from "@/extensions/viewRegistry";
 import { focusDetachedPanel } from "@/lib/multiWindowService";
 import { LayoutCustomizationMenu } from "@/components/layout/LayoutCustomizationMenu";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { cn } from "@/lib/utils";
 import type { PanelDefinition } from "@/types/panelRegistry";
 
@@ -95,6 +96,8 @@ export function ActivityBar() {
           </Tooltip>
         );
       })}
+
+      <ThemeToggle className="size-10 rounded-none text-muted-foreground hover:text-foreground" />
 
       {/* Spacer pushes gear to bottom */}
       <div className="flex-1" />

@@ -73,6 +73,53 @@ export interface CodeActionContext {
 	only?: string[];
 }
 
+export interface Color {
+	red: number;
+	green: number;
+	blue: number;
+	alpha: number;
+}
+
+export interface ColorInformation {
+	range: Range;
+	color: Color;
+}
+
+export interface ColorPresentation {
+	label: string;
+	textEdit?: TextEdit;
+	additionalTextEdits?: TextEdit[];
+}
+
+export interface FoldingRange {
+	startLine: number;
+	endLine: number;
+	kind?: string;
+}
+
+export interface DocumentHighlight {
+	range: Range;
+	kind?: number;
+}
+
+export interface WorkspaceEdit {
+	changes: Record<string, TextEdit[]>;
+	documentChanges?: {
+		textDocument: { uri: string; version: number | null };
+		edits: TextEdit[];
+	}[];
+}
+
+export interface PrepareRenameResult {
+	range: Range;
+	placeholder: string;
+}
+
+export interface FormattingOptions {
+	tabSize: number;
+	insertSpaces: boolean;
+}
+
 export interface ServerCapabilities {
 	textDocumentSync?: number;
 	completionProvider?: { triggerCharacters?: string[] };
@@ -80,6 +127,13 @@ export interface ServerCapabilities {
 	definitionProvider?: boolean;
 	signatureHelpProvider?: { triggerCharacters?: string[] };
 	codeActionProvider?: boolean | { codeActionKinds?: string[] };
+	documentHighlightProvider?: boolean;
+	referencesProvider?: boolean;
+	renameProvider?: boolean | { prepareProvider: boolean };
+	documentFormattingProvider?: boolean;
+	colorProvider?: boolean;
+	foldingRangeProvider?: boolean | Record<string, never>;
+	implementationProvider?: boolean;
 }
 
 export interface LspConfig {
@@ -108,5 +162,14 @@ export const Methods = {
 	Hover: "textDocument/hover",
 	Definition: "textDocument/definition",
 	SignatureHelp: "textDocument/signatureHelp",
+	DocumentHighlight: "textDocument/documentHighlight",
+	References: "textDocument/references",
+	Rename: "textDocument/rename",
+	PrepareRename: "textDocument/prepareRename",
+	Formatting: "textDocument/formatting",
+	DocumentColor: "textDocument/documentColor",
+	ColorPresentation: "textDocument/colorPresentation",
+	FoldingRange: "textDocument/foldingRange",
+	Implementation: "textDocument/implementation",
 	PublishDiagnostics: "textDocument/publishDiagnostics",
 } as const;

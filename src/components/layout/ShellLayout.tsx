@@ -1,13 +1,10 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { ActivityBar } from "@/components/layout/ActivityBar";
-import { LeftDock } from "@/components/layout/LeftDock";
-import { RightDock } from "@/components/layout/RightDock";
-import { BottomDock } from "@/components/layout/BottomDock";
+import { Dock } from "@/components/layout/Dock";
 import { EditorArea } from "@/components/layout/EditorArea";
 
 import { Resizer } from "@/components/layout/Resizer";
 import { StatusBar } from "@/components/layout/StatusBar";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { TitleBar } from "@/components/layout/TitleBar";
 import { CommandPalette } from "@/components/command/CommandPalette";
 import { useSearchStore } from "@/stores/searchStore";
@@ -597,7 +594,7 @@ export function ShellLayout() {
             className="flex shrink-0 flex-col overflow-hidden"
             style={{ width: zones.left.size }}
           >
-            <LeftDock />
+            <Dock zone="left" />
           </div>
           {!isSidebarRight && (
             <Resizer
@@ -633,7 +630,7 @@ export function ShellLayout() {
             className="flex shrink-0 flex-col overflow-hidden"
             style={{ width: zones.right.size }}
           >
-            <RightDock />
+            <Dock zone="right" />
           </div>
         </>
       )}
@@ -685,7 +682,7 @@ export function ShellLayout() {
                   className={cn("shrink-0 overflow-hidden", panelAlignClass)}
                   style={{ height: zones.bottom.size }}
                 >
-                  <BottomDock />
+                  <Dock zone="bottom" />
                 </div>
               </>
             )}
@@ -704,12 +701,6 @@ export function ShellLayout() {
       <ThemeEditor open={themeEditorOpen} onClose={() => setThemeEditorOpen(false)} />
       <ToastContainer />
       <QuickPickModal />
-
-      <div className="pointer-events-none fixed bottom-8 right-4 z-50">
-        <div className="pointer-events-auto">
-          <ThemeToggle />
-        </div>
-      </div>
     </div>
   );
 }

@@ -9,7 +9,7 @@ import { ThemeService } from "@/lib/themeService";
 
 export const PANEL_CONSTRAINTS = {
   sidebar: { minSize: 160, maxSize: 480, defaultSize: 260 } as const,
-  terminal: { minSize: 100, maxSize: 600, defaultSize: 220 } as const,
+  terminal: { minSize: 100, maxSize: 99999, defaultSize: 220 } as const,
 } as const;
 
 interface UiState {
@@ -62,7 +62,7 @@ const clamp = (value: number, min: number, max: number) =>
 const ZONE_CONSTRAINTS: Record<DockZone, { minSize: number; maxSize: number }> = {
   left: { minSize: 160, maxSize: 480 },
   right: { minSize: 160, maxSize: 480 },
-  bottom: { minSize: 100, maxSize: 600 },
+  bottom: { minSize: 100, maxSize: 99999 },
 };
 
 export const useUiStore = create<UiState>()(

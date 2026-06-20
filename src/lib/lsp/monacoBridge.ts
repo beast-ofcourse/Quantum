@@ -223,6 +223,154 @@ export class MonacoBridge {
 				freeInlineCompletions: () => {},
 			}),
 		);
+
+		// ── Tier 1 providers ──
+
+		this.disposables.push(
+			monaco.languages.registerDocumentHighlightProvider(this.languageId, {
+				provideDocumentHighlights: async (model: any, position: any) => {
+					const result = await this.client.requestDocumentHighlight(
+						model.uri.toString(),
+						position,
+					);
+					if (!result) return undefined;
+					return result.map((h: any) => ({
+						range: rangeFromLsp(h.range),
+						kind: h.kind,
+					}));
+				},
+			}),
+		);
+
+		this.disposables.push(
+			monaco.languages.registerReferenceProvider(this.languageId, {
+				provideReferences: async (model: any, position: any) => {
+					const result = await this.client.requestReferences(
+						model.uri.toString(),
+						position,
+					);
+					if (!result) return undefined;
+					return result.map((loc: any) => ({
+						uri: monaco.Uri.parse(loc.uri),
+						range: rangeFromLsp(loc.range),
+					}));
+				},
+			}),
+		);
+
+		this.disposables.push(
+			monaco.languages.registerRenameProvider(this.languageId, {
+				prepareRename: async (model: any, position: any) => {
+					const word = model.getWordAtPosition(position);
+					if (!word) return null;
+					return {
+						range: new monaco.Range(
+							position.lineNumber,
+							word.startColumn,
+							position.lineNumber,
+							word.endColumn,
+						),
+						placeholder: word.word,
+					};
+				},
+				provideRenameEdits: async (
+					model: any,
+					position: any,
+					newName: string,
+				) => {
+					const result = await this.client.requestRename(
+						model.uri.toString(),
+						position,
+						newName,
+					);
+					if (!result) return undefined;
+					return result;
+				},
+			}),
+		);
+
+		this.disposables.push(
+			monaco.languages.registerDocumentFormattingEditProvider(this.languageId, {
+				provideDocumentFormattingEdits: async (model: any) => {
+					const result = await this.client.requestFormatting(
+						model.uri.toString(),
+					);
+					if (!result) return undefined;
+					return result.map((edit: any) => ({
+						range: rangeFromLsp(edit.range),
+						newText: edit.newText,
+					}));
+				},
+			}),
+		);
+
+		// ── Tier 2 providers ──
+
+		this.disposables.push(
+			monaco.languages.registerImplementationProvider(this.languageId, {
+				provideImplementation: async (model: any, position: any) => {
+					const result = await this.client.requestImplementation(
+						model.uri.toString(),
+						position,
+					);
+					if (!result) return undefined;
+					const locs = Array.isArray(result) ? result : [result];
+					return locs.map((loc: any) => ({
+						uri: monaco.Uri.parse(loc.uri),
+						range: rangeFromLsp(loc.range),
+					}));
+				},
+			}),
+		);
+
+		this.disposables.push(
+			monaco.languages.registerDocumentColorProvider(this.languageId, {
+				provideDocumentColors: async (model: any) => {
+					const result = await this.client.requestDocumentColors(
+						model.uri.toString(),
+					);
+					if (!result) return undefined;
+					return result.map((c: any) => ({
+						color: c.color,
+						range: rangeFromLsp(c.range),
+					}));
+				},
+				provideColorPresentations: async (model: any, colorInfo: any) => {
+					const result = await this.client.requestColorPresentations(
+						model.uri.toString(),
+						colorInfo.color,
+						colorInfo.range,
+					);
+					if (!result) return undefined;
+					return result.map((p: any) => ({
+						label: p.label,
+						textEdit: p.textEdit
+							? {
+									range: rangeFromLsp(p.textEdit.range),
+									newText: p.textEdit.newText,
+								}
+							: undefined,
+						additionalTextEdits: p.additionalTextEdits,
+					}));
+				},
+			}),
+		);
+
+		this.disposables.push(
+			monaco.languages.registerFoldingRangeProvider(this.languageId, {
+				provideFoldingRanges: async (model: any) => {
+					const result = await this.client.requestFoldingRanges(
+						model.uri.toString(),
+					);
+					if (!result) return undefined;
+					return result.map((r: any) => ({
+						start: r.startLine,
+						end: r.endLine,
+						kind: r.kind,
+					}));
+				},
+			}),
+		);
 	}
 
 	dispose(): void {

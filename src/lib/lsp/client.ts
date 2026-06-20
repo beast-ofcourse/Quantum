@@ -10,6 +10,13 @@ import type {
 	ServerCapabilities,
 	LspConfig,
 	Diagnostic,
+	DocumentHighlight,
+	WorkspaceEdit,
+	FormattingOptions,
+	TextEdit,
+	ColorInformation,
+	ColorPresentation,
+	FoldingRange,
 } from "./types";
 
 interface PendingRequest {
@@ -205,6 +212,106 @@ export class LspClient {
 			},
 			context,
 		}) as Promise<import("./types").CodeAction[] | null>;
+	}
+
+	// ── Tier 1 (already added but some may have been lost) ──
+
+	async requestDocumentHighlight(
+		uri: string,
+		position: { lineNumber: number; column: number },
+	): Promise<DocumentHighlight[] | null> {
+		if (!this.capabilities.documentHighlightProvider) return null;
+		return this.request("textDocument/documentHighlight", {
+			textDocument: { uri },
+			position: posToLsp(position),
+		}) as Promise<DocumentHighlight[] | null>;
+	}
+
+	async requestReferences(
+		uri: string,
+		position: { lineNumber: number; column: number },
+	): Promise<Location[] | null> {
+		if (!this.capabilities.referencesProvider) return null;
+		return this.request("textDocument/references", {
+			textDocument: { uri },
+			position: posToLsp(position),
+			context: { includeDeclaration: true },
+		}) as Promise<Location[] | null>;
+	}
+
+	async requestRename(
+		uri: string,
+		position: { lineNumber: number; column: number },
+		newName: string,
+	): Promise<WorkspaceEdit | null> {
+		if (!this.capabilities.renameProvider) return null;
+		return this.request("textDocument/rename", {
+			textDocument: { uri },
+			position: posToLsp(position),
+			newName,
+		}) as Promise<WorkspaceEdit | null>;
+	}
+
+	async requestFormatting(
+		uri: string,
+		options?: FormattingOptions,
+	): Promise<TextEdit[] | null> {
+		if (!this.capabilities.documentFormattingProvider) return null;
+		return this.request("textDocument/formatting", {
+			textDocument: { uri },
+			options: options ?? { tabSize: 4, insertSpaces: true },
+		}) as Promise<TextEdit[] | null>;
+	}
+
+	// ── Tier 2 ──
+
+	async requestDocumentColors(uri: string): Promise<ColorInformation[] | null> {
+		if (!this.capabilities.colorProvider) return null;
+		return this.request("textDocument/documentColor", {
+			textDocument: { uri },
+		}) as Promise<ColorInformation[] | null>;
+	}
+
+	async requestColorPresentations(
+		uri: string,
+		color: { red: number; green: number; blue: number; alpha: number },
+		range: {
+			startLineNumber: number;
+			startColumn: number;
+			endLineNumber: number;
+			endColumn: number;
+		},
+	): Promise<ColorPresentation[] | null> {
+		if (!this.capabilities.colorProvider) return null;
+		return this.request("textDocument/colorPresentation", {
+			textDocument: { uri },
+			color,
+			range: {
+				start: {
+					line: range.startLineNumber - 1,
+					character: range.startColumn - 1,
+				},
+				end: { line: range.endLineNumber - 1, character: range.endColumn - 1 },
+			},
+		}) as Promise<ColorPresentation[] | null>;
+	}
+
+	async requestFoldingRanges(uri: string): Promise<FoldingRange[] | null> {
+		if (!this.capabilities.foldingRangeProvider) return null;
+		return this.request("textDocument/foldingRange", {
+			textDocument: { uri },
+		}) as Promise<FoldingRange[] | null>;
+	}
+
+	async requestImplementation(
+		uri: string,
+		position: { lineNumber: number; column: number },
+	): Promise<Location | Location[] | null> {
+		if (!this.capabilities.implementationProvider) return null;
+		return this.request("textDocument/implementation", {
+			textDocument: { uri },
+			position: posToLsp(position),
+		}) as Promise<Location | Location[] | null>;
 	}
 
 	async shutdown(): Promise<void> {

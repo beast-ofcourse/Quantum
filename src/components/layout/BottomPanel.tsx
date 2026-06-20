@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Terminal as TerminalIcon, X, Bug } from "lucide-react";
+import { Terminal as TerminalIcon, X, Bug, Maximize2, Minimize2 } from "lucide-react";
 import type { Terminal as XTerm } from "@xterm/xterm";
 import { Button } from "@/components/ui/button";
 import { useUiStore } from "@/stores/uiStore";
@@ -22,10 +22,17 @@ export function BottomPanel() {
   const xtermRef = useRef<XTerm | null>(null);
   const active = sessions.find((s) => s.id === activeSessionId) ?? null;
   const [tab, setTab] = useState<"terminal" | "problems" | "output" | "debug">("terminal");
+  const [fullscreen, setFullscreen] = useState(false);
 
   useEffect(() => {
     void loadShells();
   }, [loadShells]);
+
+  const toggleFullscreen = () => {
+    const next = !fullscreen;
+    setFullscreen(next);
+    useUiStore.getState().setZoneSize("bottom", next ? window.innerHeight - 100 : 220);
+  };
 
   return (
     <section
@@ -98,6 +105,14 @@ export function BottomPanel() {
           </button>
         </div>
         <div className="flex items-center gap-1">
+          <Button
+            variant="ghost"
+            size="icon-xs"
+            aria-label={fullscreen ? "Exit full screen" : "Full screen"}
+            onClick={toggleFullscreen}
+          >
+            {fullscreen ? <Minimize2 className="size-3.5" /> : <Maximize2 className="size-3.5" />}
+          </Button>
           <Button
             variant="ghost"
             size="icon-xs"

@@ -264,16 +264,6 @@ pub struct BranchCompareResult {
 
 #[derive(Serialize, Deserialize, Clone, Debug, Default)]
 #[serde(rename_all = "camelCase")]
-#[allow(dead_code)]
-pub struct StashOptions {
-    pub paths: Option<Vec<String>>,
-    pub message: Option<String>,
-    pub keep_index: Option<bool>,
-    pub staged: Option<bool>,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug, Default)]
-#[serde(rename_all = "camelCase")]
 pub struct StashApplyResult {
     pub success: bool,
     pub has_conflict: bool,
@@ -1158,11 +1148,6 @@ pub async fn git_is_repo(root: String) -> Result<bool, String> {
         .output()
         .map_err(|e| format!("Git check failed: {}", e))?;
     Ok(output.status.success())
-}
-
-#[tauri::command]
-pub async fn git_merge_base(root: String, commit1: String, commit2: String) -> Result<String, String> {
-    run_git(&root, &["merge-base", &commit1, &commit2]).map(|s| s.trim().to_string())
 }
 
 fn parse_diff_hunks(diff_output: &str, file_path: &str) -> Vec<DiffHunk> {

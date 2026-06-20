@@ -101,6 +101,7 @@ export function MonacoEditor({
 				padding: { top: 8, bottom: 8 },
 				scrollbar: { verticalScrollbarSize: 10, horizontalScrollbarSize: 10 },
 				stickyScroll: { enabled: true },
+				links: true,
 				breadcrumbs: { enabled: settings.editor.breadcrumbs },
 			}),
 			[settings.editor],

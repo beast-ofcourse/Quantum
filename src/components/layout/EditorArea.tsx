@@ -13,6 +13,7 @@ import { DebugToolbar } from "@/components/debug/DebugToolbar";
 import { RunButton } from "@/components/debug/RunButton";
 import { Resizer } from "@/components/layout/Resizer";
 import { MarkdownPreview } from "@/components/markdown/MarkdownPreview";
+import { MarkdownEditorView } from "@/components/markdown/MarkdownEditorView";
 import { useEditorHotkeys } from "@/hooks/useEditorHotkeys";
 import { useFileChangeSync } from "@/hooks/useFileChangeSync";
 import { pickFiles, pickFolder } from "@/tauri";
@@ -122,6 +123,8 @@ export function EditorArea() {
                     </div>
                   </div>
                 </div>
+              ) : isMd ? (
+                <MarkdownEditorView />
               ) : (
                 <Suspense fallback={<EditorSkeleton />}>
                   <MonacoEditor

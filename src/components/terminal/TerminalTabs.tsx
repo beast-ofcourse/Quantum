@@ -1,3 +1,4 @@
+import { ChevronRight } from "lucide-react";
 import { useTerminalStore } from "@/stores/terminalStore";
 import { TerminalTab } from "./TerminalTab";
 import { ShellPicker } from "./ShellPicker";
@@ -12,6 +13,9 @@ export function TerminalTabs() {
       aria-label="Open terminals"
       className="flex h-9 shrink-0 items-center overflow-x-auto overflow-y-hidden border-b border-border bg-muted/20 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
     >
+      <div className="flex h-full items-center px-1.5 text-muted-foreground/50">
+        <ChevronRight className="size-3" />
+      </div>
       {sessions.map((session) => (
         <TerminalTab
           key={session.id}

@@ -43,4 +43,6 @@ export interface EditorStoreState {
   toggleSplitEditor: (id: string) => void;
   splitPosition: number;
   setSplitPosition: (position: number) => void;
+  markdownPreview: boolean;
+  toggleMarkdownPreview: () => void;
 }

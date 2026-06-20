@@ -5,6 +5,7 @@ import type { DockZone, PanelId, Zones } from "@/types/panelRegistry";
 import type { PresetZones } from "@/lib/layoutPresets";
 import { DEFAULT_ZONES, getPanel } from "@/lib/panelRegistry";
 import { BUILT_IN_PRESETS, BUILT_IN_PRESET_NAMES } from "@/lib/layoutPresets";
+import { ThemeService } from "@/lib/themeService";
 
 export const PANEL_CONSTRAINTS = {
   sidebar: { minSize: 160, maxSize: 480, defaultSize: 260 } as const,
@@ -258,14 +259,19 @@ export const useUiStore = create<UiState>()(
 
       setActivePanel: (panel) => set({ activePanel: panel }),
 
-      setTheme: (theme) => set({ theme }),
+      setTheme: (theme) => {
+        set({ theme });
+        ThemeService.applyTheme(theme);
+      },
 
-      toggleTheme: () =>
-        set((s) => {
-          const order: Theme[] = ["dark", "light", "catppuccin-mocha", "spiderman"];
-          const idx = order.indexOf(s.theme);
-          return { theme: order[(idx + 1) % order.length] };
-        }),
+      toggleTheme: () => {
+        const order: Theme[] = ["dark", "light", "catppuccin-mocha", "spiderman"];
+        const current = useUiStore.getState().theme;
+        const idx = order.indexOf(current);
+        const next = order[(idx + 1) % order.length];
+        set({ theme: next });
+        ThemeService.applyTheme(next);
+      },
 
       setSidebarPosition: (pos) => set({ sidebarPosition: pos }),
       setPanelAlignment: (align) => set({ panelAlignment: align }),

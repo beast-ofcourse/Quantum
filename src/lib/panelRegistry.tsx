@@ -1,4 +1,4 @@
-import { Files, Search, GitBranch, Puzzle, Terminal as TerminalIcon, AlertCircle, Bug, FileText, BugPlay, FileJson, Bot } from "lucide-react";
+import { Files, Search, GitBranch, Puzzle, Terminal as TerminalIcon, AlertCircle, Bug, FileText, BugPlay, FileJson } from "lucide-react";
 import { FileTree } from "@/components/explorer/FileTree";
 import { SearchSidebar } from "@/components/search/SearchSidebar";
 import { GitSidebar } from "@/components/git/GitSidebar";
@@ -10,7 +10,6 @@ import { DebugConsolePanel } from "@/components/terminal/DebugConsolePanel";
 import { MarkdownPreview } from "@/components/markdown/MarkdownPreview";
 import { DebugSidebar } from "@/components/debug/DebugSidebar";
 import { OutlinePanel } from "@/components/outline/OutlinePanel";
-import { SwarmPanel } from "@/components/swarm/SwarmPanel";
 import { useEditorStore } from "@/stores/editorStore";
 import type { PanelDefinition, DockZone, PanelId } from "@/types/panelRegistry";
 import { extensionViewRegistry } from "@/extensions/viewRegistry";
@@ -28,7 +27,6 @@ const builtinPanels: PanelDefinition[] = [
   { id: "git", title: "Source Control", icon: GitBranch, component: GitSidebar, defaultZone: "left", showInActivityBar: true },
   { id: "extensions", title: "Extensions", icon: Puzzle, component: ExtensionsSidebar, defaultZone: "left", showInActivityBar: true },
   { id: "debug", title: "Run and Debug", icon: BugPlay, component: DebugSidebar, defaultZone: "right", showInActivityBar: true },
-  { id: "swarm", title: "Swarm", icon: Bot, component: SwarmPanel, defaultZone: "right", showInActivityBar: true },
   { id: "outline", title: "Outline", icon: FileJson, component: OutlinePanel, defaultZone: "right", showInActivityBar: true },
   { id: "terminal", title: "Terminal", icon: TerminalIcon, component: TerminalPanel, defaultZone: "bottom" },
   { id: "problems", title: "Problems", icon: AlertCircle, component: ProblemsPanel, defaultZone: "bottom" },
@@ -89,7 +87,7 @@ export const DEFAULT_ZONES = {
     isVisible: true,
   },
   right: {
-    panelIds: ["debug", "swarm", "outline"] as PanelId[],
+    panelIds: ["debug", "outline"] as PanelId[],
     activePanelId: "outline" as PanelId,
     size: 260,
     isVisible: false,

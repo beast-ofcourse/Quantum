@@ -14,7 +14,6 @@ export interface TerminalSession {
   cwd: string;
   createdAt: number;
   title?: string;
-  agentId?: string;
 }
 
 export interface PtyExitPayload {

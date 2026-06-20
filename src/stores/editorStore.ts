@@ -378,6 +378,7 @@ export const useEditorStore = create<EditorStoreState>((set, get) => ({
 
   splitEditorId: null,
   splitPosition: 50,
+  markdownPreview: false,
 
   setSplitEditor: (id) => set({ splitEditorId: id }),
 
@@ -387,5 +388,9 @@ export const useEditorStore = create<EditorStoreState>((set, get) => ({
     set((s) => ({
       splitEditorId: s.splitEditorId === id ? null : id,
     }));
+  },
+
+  toggleMarkdownPreview: () => {
+    set((s) => ({ markdownPreview: !s.markdownPreview }));
   },
 }));

@@ -63,3 +63,30 @@ For documentation and Markdown files (`.md`), Quantum includes a built-in live p
   * **Live Reloading:** Updates in real-time as you type in the code editor.
   * **Rendered Elements:** Full support for GitHub Flavored Markdown (GFM) including checkboxes, tables, syntax-highlighted code blocks, and lists.
   * **Table of Contents (ToC):** Generates a clickable sidebar outlining headings for fast document navigation.
+
+---
+
+## 5. Keybinding Interception & Event Forwarding
+
+To ensure keyboard focus inside the text editor doesn't conflict with global workspace commands, Quantum implements keybinding interception at the Monaco instance level:
+
+* **Shortcuts Forwarded:** Monaco's native keyboard capture is bypassed for key combos that correspond to global IDE operations, including:
+  * `Ctrl+P` / `Cmd+P` $\rightarrow$ Unified quick-open files.
+  * `Ctrl+Shift+P` / `Cmd+Shift+P` $\rightarrow$ Unified command palette.
+  * `Ctrl+Shift+F` $\rightarrow$ Focus global Search Panel.
+  * `Ctrl+B` $\rightarrow$ Toggle Sidebar visibility.
+  * `Ctrl+,` $\rightarrow$ Open Settings Panel.
+  * `Ctrl+Alt+K` $\rightarrow$ Open Shortcuts Cheat Sheet.
+  * `` Ctrl+` `` $\rightarrow$ Toggle Bottom Terminal Panel.
+* **Mechanism:** The editor intercepts these events in `onKeyDown`, blocks Monaco's internal handling via `preventDefault()` / `stopPropagation()`, and dispatches a synthetic `KeyboardEvent` directly on the `window` context. This triggers the global hotkey listeners without losing editor focus.
+
+---
+
+## 6. Context Menu Customization
+
+Quantum configures custom context actions that appear inside the Monaco editor's native right-click menu:
+
+* **Format Document:** Injects a "Format Document" action at group `1_modification` (order `1.5`) that routes to registered code formatters.
+* **Run Active File:** Adds a "Run Active File" navigation command (order `2`) that dispatches the global `F5` debug run action for the active tab file.
+* **Toggle Git Blame Annotations:** Adds a toggle option (order `3`) to overlay inline Git Blame details directly in the editor lines.
+

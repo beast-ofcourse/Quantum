@@ -38,6 +38,10 @@ export async function gitDiff(root: string, path?: string, staged?: boolean): Pr
   return invoke<string>("git_diff", { root, path, staged });
 }
 
+export async function gitShowFile(root: string, path: string, revision: string): Promise<string> {
+  return invoke<string>("git_show_file", { root, path, revision });
+}
+
 export async function gitLog(root: string, options?: LogOptions): Promise<GitCommit[]> {
   return invoke<GitCommit[]>("git_log", { root, options });
 }

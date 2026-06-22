@@ -30,6 +30,7 @@ pub fn run() {
             commands::shell::detect_shells,
             commands::git::git_status,
             commands::git::git_diff,
+            commands::git::git_show_file,
             commands::git::git_log,
             commands::git::git_branch_list,
             commands::git::git_branch_create,

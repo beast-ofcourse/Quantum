@@ -1,4 +1,4 @@
-﻿use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use std::io::Write;
 use std::process::Command;
 
@@ -748,6 +748,16 @@ pub async fn git_diff(root: String, path: Option<String>, staged: Option<bool>) 
     if staged.unwrap_or(false) { args.push("--cached".to_string()); }
     if let Some(p) = path { args.push(p); }
     run_git_strings(&root, &args)
+}
+
+#[tauri::command]
+pub async fn git_show_file(root: String, path: String, revision: String) -> Result<String, String> {
+    let rev_path = if revision.is_empty() {
+        format!(":{}", path)
+    } else {
+        format!("{}:{}", revision, path)
+    };
+    run_git(&root, &["show", &rev_path])
 }
 
 #[tauri::command]

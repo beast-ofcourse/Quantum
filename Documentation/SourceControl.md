@@ -75,5 +75,31 @@ Quantum includes first-party integration with GitHub to connect your local repos
 
 * **OAuth Device Flow:** Click **Sign in to GitHub** in the activities menu. Quantum displays a device code and opens a browser page. Paste the code to securely authenticate. Your access token is stored securely in the app configuration.
 * **Pull Requests:** View open PRs for your repository, check their continuous integration (CI) status badges, and checkout PR branches directly.
-* **Issues:** View, search, and comment on repository issues.
 * **Workspace Detection:** When you open a project, Quantum reads the Git remote URLs. If it detects a GitHub URL (e.g. `github.com/org/repo`), it automatically links the workspace with GitHub and queries its API.
+
+---
+
+## 5. Monaco DiffEditor Integration
+
+When comparing changes for unstaged or staged files, Quantum replaces generic line comparisons with Monaco's native **`<DiffEditor>`**:
+
+* **Diff Modes:** Users can toggle between **Inline** and **Side-by-Side** views.
+* **Content Resolution:**
+  * **Unstaged changes:** Compares the version in the git index (`git show :path`) with the active file on disk.
+  * **Staged changes:** Compares the version in the `HEAD` commit (`git show HEAD:path`) with the index version.
+* **Capabilities:** Provides syntax highlighting, scroll syncing, line-collapsing, and Monaco's full search tools within diff sheets.
+
+---
+
+## 6. Interactive Merge Conflict Resolver
+
+When a git merge or rebase results in conflicts, opening the conflicted file loads it into Quantum's **Monaco-based Conflict Resolver**:
+
+* **Visual Range Highlights (Decorations):** 
+  * Green background overlays are applied to the local changes block ("Ours").
+  * Blue background overlays are applied to the incoming changes block ("Theirs").
+* **Interactive Resolution Actions (CodeLens):**
+  * Above each conflict header, floating links appear: **Accept Ours**, **Accept Theirs**, and **Accept Both**.
+  * Clicking any action executes a safe edit operation directly on the editor model, immediately resolving the conflict.
+* **Validation & Staging:** The editor monitors conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`) in real-time. Once all markers are resolved, the **Mark Resolved** action button becomes active, allowing the developer to stage the file instantly.
+

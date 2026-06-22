@@ -120,6 +120,76 @@ export function MonacoEditor({
 		registerLanguageCompletions();
 		registerHoverProvider();
 
+		// Intercept global keybindings inside Monaco and forward them to the window context
+		editor.onKeyDown((e) => {
+			const isMod = e.ctrlKey || e.metaKey;
+			const key = e.browserEvent.key.toLowerCase();
+			const isShift = e.shiftKey;
+			const isAlt = e.altKey;
+
+			const shouldForward =
+				(isMod && key === "p") ||            // Ctrl+P / Ctrl+Shift+P (Quick Open)
+				(isMod && key === "b") ||            // Ctrl+B (Toggle Sidebar)
+				(isMod && key === ",") ||            // Ctrl+, (Settings)
+				(isMod && key === "`") ||            // Ctrl+` (Terminal)
+				(isMod && key === "f" && isShift) ||   // Ctrl+Shift+F (Global Search)
+				(isMod && key === "e" && isShift) ||   // Ctrl+Shift+E (Focus Explorer)
+				(isMod && key === "g" && isShift) ||   // Ctrl+Shift+G (Focus Source Control)
+				(isMod && key === "d" && isShift) ||   // Ctrl+Shift+D (Focus Debugger)
+				(isMod && key === "o") ||            // Ctrl+O (Open File)
+				(isMod && key === "s") ||            // Ctrl+S (Save File)
+				(isMod && key === "w") ||            // Ctrl+W (Close Tab)
+				(isMod && key === "\\") ||           // Ctrl+\ (Split Editor)
+				(isMod && key === "tab") ||          // Ctrl+Tab (Cycle Tabs)
+				(key === "alt") ||                   // Alt (Toggle Menu Bar)
+				(key === "f5") ||                    // F5 / Shift+F5 / Ctrl+F5 (Debugging)
+				(isAlt && e.browserEvent.ctrlKey && key === "k"); // Ctrl+Alt+K (Shortcuts)
+
+			if (shouldForward) {
+				e.preventDefault();
+				e.stopPropagation();
+
+				const clone = new KeyboardEvent("keydown", {
+					key: e.browserEvent.key,
+					code: e.browserEvent.code,
+					ctrlKey: e.browserEvent.ctrlKey,
+					metaKey: e.browserEvent.metaKey,
+					shiftKey: e.browserEvent.shiftKey,
+					altKey: e.browserEvent.altKey,
+					bubbles: true,
+				});
+				window.dispatchEvent(clone);
+			}
+		});
+
+		// 1. Format Document (custom entry mapping to built-in command)
+		editor.addAction({
+			id: "editor.action.formatDocument.custom",
+			label: "Format Document",
+			contextMenuGroupId: "1_modification",
+			contextMenuOrder: 1.5,
+			run: () => {
+				editor.getAction("editor.action.formatDocument")?.run();
+			},
+		});
+
+		// 2. Run Active File (fires F5 global debug run)
+		editor.addAction({
+			id: "editor.action.runActiveFile",
+			label: "Run Active File",
+			contextMenuGroupId: "navigation",
+			contextMenuOrder: 2,
+			run: () => {
+				const clone = new KeyboardEvent("keydown", {
+					key: "F5",
+					code: "F5",
+					bubbles: true,
+				});
+				window.dispatchEvent(clone);
+			},
+		});
+
+		// 3. Toggle Git Blame Annotations (integrated with context menu)
 		editor.addAction({
 			id: "editor.toggleBlame",
 			label: "Toggle Git Blame Annotations",
@@ -128,6 +198,8 @@ export function MonacoEditor({
 					monacoInstance.KeyMod.Shift |
 					monacoInstance.KeyCode.KeyB,
 			],
+			contextMenuGroupId: "navigation",
+			contextMenuOrder: 3,
 			run: () => setShowBlame((prev) => !prev),
 		});
 	};

@@ -27,6 +27,9 @@ interface UiState {
   statusBarVisible: boolean;
   shortcutCheatSheetOpen: boolean;
 
+  bottomMaximized: boolean;
+  _preMaximizeBottomSize: number;
+
   setZoneVisibility: (zone: DockZone, visible: boolean) => void;
   toggleZone: (zone: DockZone) => void;
   setZoneSize: (zone: DockZone, size: number) => void;
@@ -47,6 +50,8 @@ interface UiState {
   setActivePanel: (panel: FocusPanel) => void;
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
+
+  toggleBottomMaximized: () => void;
 
   setSidebarPosition: (pos: "left" | "right") => void;
   setPanelAlignment: (align: "left" | "center" | "right" | "justify") => void;
@@ -86,6 +91,9 @@ export const useUiStore = create<UiState>()(
       activityBarVisible: true,
       statusBarVisible: true,
       shortcutCheatSheetOpen: false,
+
+      bottomMaximized: false,
+      _preMaximizeBottomSize: 220,
 
       setZoneVisibility: (zone, visible) =>
         set((s) => ({
@@ -272,6 +280,37 @@ export const useUiStore = create<UiState>()(
         set({ theme: next });
         ThemeService.applyTheme(next);
       },
+
+      toggleBottomMaximized: () =>
+        set((s) => {
+          if (s.bottomMaximized) {
+            // Restore to pre-maximize size
+            return {
+              bottomMaximized: false,
+              zones: {
+                ...s.zones,
+                bottom: {
+                  ...s.zones.bottom,
+                  size: s._preMaximizeBottomSize,
+                },
+              },
+            };
+          } else {
+            // Maximize: save current size, then set to very large value
+            // The flex layout will clamp it to available space
+            return {
+              bottomMaximized: true,
+              _preMaximizeBottomSize: s.zones.bottom.size,
+              zones: {
+                ...s.zones,
+                bottom: {
+                  ...s.zones.bottom,
+                  size: 99999,
+                },
+              },
+            };
+          }
+        }),
 
       setSidebarPosition: (pos) => set({ sidebarPosition: pos }),
       setPanelAlignment: (align) => set({ panelAlignment: align }),

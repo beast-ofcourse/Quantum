@@ -19,7 +19,7 @@ export function Dock({ zone }: DockProps) {
   }
 
   return (
-    <div className="flex min-h-0 w-full flex-col overflow-hidden bg-muted/20">
+    <div className="flex h-full min-h-0 w-full flex-col overflow-hidden bg-muted/20">
       <DockTabs zone={zone} />
       <div className="flex-1 overflow-hidden">
         <PanelRenderer panelId={zoneState.activePanelId} />

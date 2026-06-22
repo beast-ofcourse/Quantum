@@ -10,6 +10,7 @@ import { useTerminalStore } from "@/stores/terminalStore";
 import { useUiStore } from "@/stores/uiStore";
 import { ThemeService } from "@/lib/themeService";
 
+
 interface TerminalProps {
   session: TerminalSession;
   xtermRef?: RefObject<XTerm | null>;
@@ -69,7 +70,7 @@ export function Terminal({ session, xtermRef, onSearchOpen }: TerminalProps) {
     });
 
     // Ctrl+Shift+C copy, Ctrl+Shift+V paste, Ctrl+Shift+F search
-    const keyDisposer = term.attachCustomKeyEventHandler((e) => {
+    term.attachCustomKeyEventHandler((e) => {
       if (e.type !== "keydown") return true;
       if (!e.ctrlKey || !e.shiftKey) return true;
 
@@ -134,7 +135,8 @@ export function Terminal({ session, xtermRef, onSearchOpen }: TerminalProps) {
       clearTimeout(fitTimeout);
       ro.disconnect();
       detach();
-      keyDisposer.dispose();
+      // ponytail: attachCustomKeyEventHandler returns void in xterm 5.x, no dispose needed
+
       worker.postMessage({ type: "shutdown" });
       worker.terminate();
       workerRef.current = null;

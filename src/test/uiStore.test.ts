@@ -96,9 +96,9 @@ describe("uiStore", () => {
     expect(useUiStore.getState().zones.bottom.size).toBe(100);
   });
 
-  it("setZoneSize clamps terminal/bottom size to max 600", () => {
-    useUiStore.getState().setZoneSize("bottom", 999);
-    expect(useUiStore.getState().zones.bottom.size).toBe(600);
+  it("setZoneSize clamps terminal/bottom size to max 99999", () => {
+    useUiStore.getState().setZoneSize("bottom", 999999);
+    expect(useUiStore.getState().zones.bottom.size).toBe(99999);
   });
 
   it("setZoneSize allows valid sizes within range", () => {

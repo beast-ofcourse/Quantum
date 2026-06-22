@@ -22,6 +22,7 @@ import {
   gitConfigGet,
   gitDiff,
   gitDiffHunks,
+  gitShowFile,
   gitFetch,
   gitInit,
   gitIsRepo,
@@ -138,6 +139,7 @@ interface GitActions {
   refreshStatus: () => Promise<void>;
   getDiff: (path: string, staged?: boolean) => Promise<string>;
   getDiffHunks: (path: string, staged?: boolean) => Promise<DiffHunk[]>;
+  showFile: (path: string, revision: string) => Promise<string>;
   getLog: (options?: LogOptions) => Promise<void>;
   getBlame: (path: string) => Promise<GitBlameLine[]>;
   refreshBranches: () => Promise<void>;
@@ -380,6 +382,17 @@ export const useGitStore = create<GitStore>()(
         } catch (err) {
           set({ error: parseGitError(err) });
           return [];
+        }
+      },
+
+      showFile: async (path, revision) => {
+        const { repoRoot } = get();
+        if (!repoRoot) return "";
+        try {
+          return await gitShowFile(repoRoot, path, revision);
+        } catch (err) {
+          set({ error: parseGitError(err) });
+          return "";
         }
       },
 

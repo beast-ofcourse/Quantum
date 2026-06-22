@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { X } from "lucide-react";
+import { X, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   ContextMenu,
@@ -53,7 +53,10 @@ export const TerminalTab = memo(function TerminalTab({ session, isActive }: Term
           {isActive && (
             <span className="pointer-events-none absolute inset-x-0 top-0 h-0.5 bg-primary" />
           )}
-          <span className="flex-1 truncate">{session.title ?? session.shellLabel}</span>
+          <Terminal className="size-3 shrink-0 text-muted-foreground" />
+          <span className="flex-1 truncate">
+            {session.title ?? session.shellLabel}
+          </span>
           <Button
             variant="ghost"
             size="icon-xs"

@@ -1,4 +1,4 @@
-﻿use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Serialize};
 use std::io::Write;
 use std::process::Command;
 
@@ -260,16 +260,6 @@ pub struct BranchCompareResult {
     pub files: Vec<FileStat>,
     pub ahead_count: usize,
     pub behind_count: usize,
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug, Default)]
-#[serde(rename_all = "camelCase")]
-#[allow(dead_code)]
-pub struct StashOptions {
-    pub paths: Option<Vec<String>>,
-    pub message: Option<String>,
-    pub keep_index: Option<bool>,
-    pub staged: Option<bool>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, Default)]
@@ -761,6 +751,16 @@ pub async fn git_diff(root: String, path: Option<String>, staged: Option<bool>) 
 }
 
 #[tauri::command]
+pub async fn git_show_file(root: String, path: String, revision: String) -> Result<String, String> {
+    let rev_path = if revision.is_empty() {
+        format!(":{}", path)
+    } else {
+        format!("{}:{}", revision, path)
+    };
+    run_git(&root, &["show", &rev_path])
+}
+
+#[tauri::command]
 pub async fn git_log(root: String, options: Option<LogOptions>) -> Result<Vec<GitCommit>, String> {
     let mut args = vec![
         "log".to_string(),
@@ -1158,11 +1158,6 @@ pub async fn git_is_repo(root: String) -> Result<bool, String> {
         .output()
         .map_err(|e| format!("Git check failed: {}", e))?;
     Ok(output.status.success())
-}
-
-#[tauri::command]
-pub async fn git_merge_base(root: String, commit1: String, commit2: String) -> Result<String, String> {
-    run_git(&root, &["merge-base", &commit1, &commit2]).map(|s| s.trim().to_string())
 }
 
 fn parse_diff_hunks(diff_output: &str, file_path: &str) -> Vec<DiffHunk> {

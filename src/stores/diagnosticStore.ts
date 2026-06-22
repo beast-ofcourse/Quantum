@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import * as monaco from "monaco-editor";
+import * as monaco from "@/lib/monaco-entry";
 
 export interface DiagnosticItem {
   path: string;

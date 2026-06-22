@@ -32,7 +32,7 @@ interface TerminalState {
   outputBuffers: Record<string, SessionOutputBuffer>;
 
   loadShells: () => Promise<void>;
-  createSession: (shellId?: string, cwd?: string) => Promise<string | null>;
+  createSession: (shellId?: string, cwd?: string, agentId?: string) => Promise<string | null>;
   closeSession: (id: string) => Promise<void>;
   setActiveSession: (id: string) => void;
   renameSession: (id: string, title: string) => void;

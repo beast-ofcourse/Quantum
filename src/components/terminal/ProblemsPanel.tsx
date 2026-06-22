@@ -1,15 +1,101 @@
-import { useCallback } from "react";
-import { AlertCircle, AlertTriangle, Info, X } from "lucide-react";
+import { useCallback, useState } from "react";
+import { AlertCircle, AlertTriangle, Info, X, ChevronRight, ChevronDown } from "lucide-react";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import * as monaco from "monaco-editor";
+import * as monaco from "@/lib/monaco-entry";
 import { useEditorStore } from "@/stores/editorStore";
 import { useDiagnosticStore } from "@/stores/diagnosticStore";
 import type { DiagnosticItem } from "@/stores/diagnosticStore";
 
-export function ProblemsPanel() {
-  const problems = useDiagnosticStore((s) => s.problems);
+function getFileName(path: string) {
+  return path.split(/[/\\]/).pop() || path;
+}
+
+function FileGroup({
+  file,
+  items,
+}: {
+  file: string;
+  items: DiagnosticItem[];
+}) {
+  const [open, setOpen] = useState(true);
   const openFile = useEditorStore((s) => s.openFile);
   const setActiveTab = useEditorStore((s) => s.setActiveTab);
+  const errCount = items.filter((p) => p.severity === "error").length;
+  const warnCount = items.filter((p) => p.severity === "warning").length;
+
+  const handleNavigate = useCallback(
+    async (p: DiagnosticItem) => {
+      await openFile(p.path);
+      setActiveTab(p.path);
+      const editors = monaco.editor.getEditors();
+      const editor = editors.find((e) => {
+        const model = e.getModel();
+        return model?.uri.path.endsWith(p.path);
+      });
+      if (editor) {
+        editor.setPosition(new monaco.Position(p.line, p.column));
+        editor.revealPosition(new monaco.Position(p.line, p.column));
+        editor.focus();
+      }
+    },
+    [openFile, setActiveTab],
+  );
+
+  return (
+    <div>
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center gap-1.5 px-3 py-1 text-xs hover:bg-accent/50 cursor-pointer"
+      >
+        {open ? <ChevronDown className="size-3 shrink-0 text-muted-foreground/60" /> : <ChevronRight className="size-3 shrink-0 text-muted-foreground/60" />}
+        <span className="font-medium truncate">{getFileName(file)}</span>
+        {errCount > 0 && (
+          <span className="ml-auto flex items-center gap-0.5 text-destructive">
+            <AlertCircle className="size-3" />{errCount}
+          </span>
+        )}
+        {warnCount > 0 && (
+          <span className="flex items-center gap-0.5 text-warning">
+            <AlertTriangle className="size-3" />{warnCount}
+          </span>
+        )}
+      </button>
+      {open && (
+        <div>
+          {items.map((p, i) => (
+            <div
+              key={`${p.line}:${p.column}:${i}`}
+              role="button"
+              tabIndex={0}
+              onClick={() => void handleNavigate(p)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  void handleNavigate(p);
+                }
+              }}
+              className="flex cursor-pointer items-start gap-2 py-0.5 pl-8 pr-3 text-xs hover:bg-accent/30 active:bg-accent/50"
+            >
+              {p.severity === "error" ? (
+                <AlertCircle className="mt-0.5 size-3 shrink-0 text-destructive" />
+              ) : p.severity === "warning" ? (
+                <AlertTriangle className="mt-0.5 size-3 shrink-0 text-warning" />
+              ) : (
+                <Info className="mt-0.5 size-3 shrink-0 text-blue-500" />
+              )}
+              <span className="truncate text-foreground/80">{p.message}</span>
+              <span className="shrink-0 text-muted-foreground/50 ml-auto pl-2">
+                line {p.line}, col {p.column}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export function ProblemsPanel() {
+  const problems = useDiagnosticStore((s) => s.problems);
 
   const handleClear = useCallback(() => {
     const models = monaco.editor.getModels();
@@ -20,30 +106,19 @@ export function ProblemsPanel() {
     }
   }, []);
 
-  const handleProblemClick = useCallback(
-    async (problem: DiagnosticItem) => {
-      await openFile(problem.path);
-      setActiveTab(problem.path);
-      const editors = monaco.editor.getEditors();
-      const editor = editors.find((e) => {
-        const model = e.getModel();
-        return model?.uri.path.endsWith(problem.path);
-      });
-      if (editor) {
-        editor.setPosition(new monaco.Position(problem.line, problem.column));
-        editor.revealPosition(new monaco.Position(problem.line, problem.column));
-      }
-    },
-    [openFile, setActiveTab],
-  );
-
   const errors = problems.filter((p) => p.severity === "error");
   const warnings = problems.filter((p) => p.severity === "warning");
+  const groups: Record<string, DiagnosticItem[]> = {};
+  for (const p of problems) {
+    if (!groups[p.path]) groups[p.path] = [];
+    groups[p.path].push(p);
+  }
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="flex items-center gap-3 px-3 py-1 text-xs text-muted-foreground">
-        <span className="flex items-center gap-1">
+      <div className="flex items-center gap-3 border-b border-border px-3 py-1.5 text-xs text-muted-foreground">
+        <span className="font-medium text-foreground">Problems</span>
+        <span className="flex items-center gap-1 ml-auto">
           <AlertCircle className="size-3 text-destructive" />
           {errors.length}
         </span>
@@ -53,7 +128,8 @@ export function ProblemsPanel() {
         </span>
         <button
           onClick={handleClear}
-          className="ml-auto text-muted-foreground hover:text-foreground"
+          className="text-muted-foreground hover:text-foreground cursor-pointer"
+          title="Clear all"
         >
           <X className="size-3" />
         </button>
@@ -64,37 +140,9 @@ export function ProblemsPanel() {
             No problems detected
           </div>
         ) : (
-          <div className="space-y-0.5 px-2 pb-2">
-            {problems.map((p, i) => {
-              const filename = (p.path || "").split(/(\\|\/)/).pop() || p.path || "";
-              return (
-              <div
-                key={`${p.path}:${p.line}:${p.column}:${i}`}
-                role="button"
-                tabIndex={0}
-                onClick={() => void handleProblemClick(p)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    void handleProblemClick(p);
-                  }
-                }}
-                className="flex cursor-pointer items-start gap-2 rounded px-2 py-1 text-xs hover:bg-muted/50 active:bg-muted/70"
-              >
-                {p.severity === "error" ? (
-                  <AlertCircle className="mt-0.5 size-3 shrink-0 text-destructive" />
-                ) : p.severity === "warning" ? (
-                  <AlertTriangle className="mt-0.5 size-3 shrink-0 text-warning" />
-                ) : (
-                  <Info className="mt-0.5 size-3 shrink-0 text-blue-500" />
-                )}
-                <span className="truncate text-foreground/80">{p.message}</span>
-                <span className="shrink-0 text-muted-foreground/60">
-                  {filename} ({p.line},{p.column})
-                </span>
-              </div>
-              );
-            })}
-          </div>
+          Object.entries(groups).map(([file, items]) => (
+            <FileGroup key={file} file={file} items={items} />
+          ))
         )}
       </ScrollArea>
     </div>

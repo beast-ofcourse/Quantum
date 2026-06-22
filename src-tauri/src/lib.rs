@@ -30,6 +30,7 @@ pub fn run() {
             commands::shell::detect_shells,
             commands::git::git_status,
             commands::git::git_diff,
+            commands::git::git_show_file,
             commands::git::git_log,
             commands::git::git_branch_list,
             commands::git::git_branch_create,
@@ -54,7 +55,6 @@ pub fn run() {
             commands::git::git_config_get,
             commands::git::git_config_set,
             commands::git::git_is_repo,
-            commands::git::git_merge_base,
             commands::git::git_diff_hunks,
             commands::git::git_stage_hunk,
             commands::git::git_unstage_hunk,
@@ -101,7 +101,9 @@ pub fn run() {
             commands::search::replace_in_files,
             commands::definitions::find_definitions,
         ])
-        .setup(|_app| Ok(()))
+        .setup(|_app| {
+            Ok(())
+        })
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

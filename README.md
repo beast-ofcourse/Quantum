@@ -72,6 +72,7 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 - Extension API for registering custom LSP servers per language
 - **Pyright** bundled as a first-party LSP server
 
+
 ### Extension System
 - Sandboxed extension host with lifecycle management (activation/deactivation/cleanup)
 - Extension manifest format: name, displayName, description, version, main entry

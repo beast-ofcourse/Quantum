@@ -275,13 +275,22 @@ function repoToExtension(repo: {
 }
 
 async function fetchFromGitHub(): Promise<MarketplaceExtension[]> {
-  const res = await fetch(
-    `${GITHUB_API}/search/repositories?q=topic:quantum-extension&sort=updated&per_page=50`,
-    { headers: { Accept: "application/vnd.github.v3+json", "User-Agent": "quantum-code-editor" } },
-  );
-  if (!res.ok) throw new Error(`GitHub API error (${res.status})`);
-  const data = (await res.json()) as { items: unknown[] };
-  return (data.items as Parameters<typeof repoToExtension>[0][]).map(repoToExtension);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 5000);
+  try {
+    const res = await fetch(
+      `${GITHUB_API}/search/repositories?q=topic:quantum-extension&sort=updated&per_page=50`,
+      {
+        signal: controller.signal,
+        headers: { Accept: "application/vnd.github.v3+json", "User-Agent": "quantum-code-editor" },
+      },
+    );
+    if (!res.ok) throw new Error(`GitHub API error (${res.status})`);
+    const data = (await res.json()) as { items: unknown[] };
+    return (data.items as Parameters<typeof repoToExtension>[0][]).map(repoToExtension);
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 function buildRegistry(apiExtensions: MarketplaceExtension[]): MarketplaceRegistry {

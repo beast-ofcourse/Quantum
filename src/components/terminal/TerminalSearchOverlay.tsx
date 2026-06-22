@@ -1,4 +1,4 @@
-import { type FormEvent, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type { SearchAddon } from "@xterm/addon-search";
 
 interface TerminalSearchOverlayProps {
@@ -12,22 +12,28 @@ export function TerminalSearchOverlay({ searchAddon, onClose }: TerminalSearchOv
   const [resultCount, setResultCount] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Focus input on mount
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
+
+  useEffect(() => {
+    if (!searchAddon) return;
+    const disposable = searchAddon.onDidChangeResults((e) => {
+      setResultCount(e.resultCount);
+      setResultIndex(e.resultIndex >= 0 ? e.resultIndex : 0);
+    });
+    return () => disposable.dispose();
+  }, [searchAddon]);
 
   const doSearch = useCallback(
     (q: string, incremental = false) => {
       if (!searchAddon || !q) {
         setResultCount(0);
         setResultIndex(0);
-        searchAddon?.clearActiveSearch();
+        searchAddon?.clearDecorations();
         return;
       }
-      const count = searchAddon.findOptions(q, { incremental, regex: false, caseSensitive: false, wholeWord: false });
-      setResultCount(count);
-      setResultIndex(count > 0 ? searchAddon.activeMatchIndex ?? 0 : 0);
+      searchAddon.findNext(q, { incremental, regex: false, caseSensitive: false, wholeWord: false });
     },
     [searchAddon],
   );
@@ -44,13 +50,11 @@ export function TerminalSearchOverlay({ searchAddon, onClose }: TerminalSearchOv
   const findNext = useCallback(() => {
     if (!searchAddon || !query) return;
     searchAddon.findNext(query, { regex: false, caseSensitive: false, wholeWord: false });
-    setResultIndex(searchAddon.activeMatchIndex ?? 0);
   }, [searchAddon, query]);
 
   const findPrev = useCallback(() => {
     if (!searchAddon || !query) return;
     searchAddon.findPrevious(query, { regex: false, caseSensitive: false, wholeWord: false });
-    setResultIndex(searchAddon.activeMatchIndex ?? 0);
   }, [searchAddon, query]);
 
   const handleKeyDown = useCallback(
@@ -62,7 +66,7 @@ export function TerminalSearchOverlay({ searchAddon, onClose }: TerminalSearchOv
       }
       if (e.key === "Escape") {
         e.preventDefault();
-        searchAddon?.clearActiveSearch();
+        searchAddon?.clearDecorations();
         onClose();
       }
     },
@@ -84,7 +88,7 @@ export function TerminalSearchOverlay({ searchAddon, onClose }: TerminalSearchOv
         value={query}
         onChange={handleInput}
         onKeyDown={handleKeyDown}
-        placeholder="Find…"
+        placeholder="Find..."
         className="w-40 bg-transparent border-none outline-none text-xs text-foreground placeholder:text-muted-foreground"
       />
       {query && (
@@ -115,7 +119,7 @@ export function TerminalSearchOverlay({ searchAddon, onClose }: TerminalSearchOv
         </button>
       </div>
       <button
-        onClick={() => { searchAddon?.clearActiveSearch(); onClose(); }}
+        onClick={() => { searchAddon?.clearDecorations(); onClose(); }}
         className="p-0.5 rounded hover:bg-[#333] text-muted-foreground ml-1"
         title="Close (Esc)"
       >

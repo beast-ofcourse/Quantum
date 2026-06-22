@@ -1,13 +1,10 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { ActivityBar } from "@/components/layout/ActivityBar";
-import { LeftDock } from "@/components/layout/LeftDock";
-import { RightDock } from "@/components/layout/RightDock";
-import { BottomDock } from "@/components/layout/BottomDock";
+import { Dock } from "@/components/layout/Dock";
 import { EditorArea } from "@/components/layout/EditorArea";
 
 import { Resizer } from "@/components/layout/Resizer";
 import { StatusBar } from "@/components/layout/StatusBar";
-import { ThemeToggle } from "@/components/layout/ThemeToggle";
 import { TitleBar } from "@/components/layout/TitleBar";
 import { CommandPalette } from "@/components/command/CommandPalette";
 import { useSearchStore } from "@/stores/searchStore";
@@ -45,6 +42,7 @@ export function ShellLayout() {
   const setActivePanelInZone = useUiStore((s) => s.setActivePanelInZone);
   const sidebarPosition = useUiStore((s) => s.sidebarPosition);
   const panelAlignment = useUiStore((s) => s.panelAlignment);
+  const bottomMaximized = useUiStore((s) => s.bottomMaximized);
 
   const activityBarVisible = useUiStore((s) => s.activityBarVisible);
   const statusBarVisible = useUiStore((s) => s.statusBarVisible);
@@ -597,7 +595,7 @@ export function ShellLayout() {
             className="flex shrink-0 flex-col overflow-hidden"
             style={{ width: zones.left.size }}
           >
-            <LeftDock />
+            <Dock zone="left" />
           </div>
           {!isSidebarRight && (
             <Resizer
@@ -633,7 +631,7 @@ export function ShellLayout() {
             className="flex shrink-0 flex-col overflow-hidden"
             style={{ width: zones.right.size }}
           >
-            <RightDock />
+            <Dock zone="right" />
           </div>
         </>
       )}
@@ -649,6 +647,8 @@ export function ShellLayout() {
           ? "ml-auto w-2/3"
           : "w-full";
 
+  const isBottomMaximized = zones.bottom.isVisible && bottomMaximized;
+
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-background text-foreground shell-container">
       <TitleBar />
@@ -663,29 +663,46 @@ export function ShellLayout() {
               zones.bottom.isVisible && "flex-col",
             )}
           >
-            <div
-              className={cn(
-                "min-h-0 min-w-0 flex-1 editor-area",
-                zones.bottom.isVisible && "flex-1",
-              )}
-            >
-              <EditorArea />
-            </div>
+            {/* Editor area: hidden when bottom panel is maximized */}
+            {!isBottomMaximized && (
+              <div
+                className={cn(
+                  "min-h-0 min-w-0 flex-1 editor-area",
+                  zones.bottom.isVisible && "flex-1",
+                )}
+              >
+                <EditorArea />
+              </div>
+            )}
 
             {zones.bottom.isVisible && (
               <>
-                <Resizer
-                  orientation="horizontal"
-                  ariaLabel="Resize terminal panel"
-                  onResize={(delta) =>
-                    setZoneSize("bottom", zones.bottom.size - delta)
-                  }
-                />
+                {/* Resizer: hidden when maximized since there's nothing to resize against */}
+                {!isBottomMaximized && (
+                  <Resizer
+                    orientation="horizontal"
+                    ariaLabel="Resize terminal panel"
+                    onResize={(delta) =>
+                      setZoneSize("bottom", zones.bottom.size - delta)
+                    }
+                  />
+                )}
                 <div
-                  className={cn("shrink-0 overflow-hidden", panelAlignClass)}
-                  style={{ height: zones.bottom.size }}
+                  className={cn(
+                    "min-h-0 overflow-hidden",
+                    panelAlignClass,
+                    isBottomMaximized && "flex-1",
+                  )}
+                  style={
+                    isBottomMaximized
+                      ? { flex: "1 1 0%" }
+                      : {
+                          flex: `0 1 ${zones.bottom.size}px`,
+                          maxHeight: zones.bottom.size,
+                        }
+                  }
                 >
-                  <BottomDock />
+                  <Dock zone="bottom" />
                 </div>
               </>
             )}
@@ -704,12 +721,6 @@ export function ShellLayout() {
       <ThemeEditor open={themeEditorOpen} onClose={() => setThemeEditorOpen(false)} />
       <ToastContainer />
       <QuickPickModal />
-
-      <div className="pointer-events-none fixed bottom-8 right-4 z-50">
-        <div className="pointer-events-auto">
-          <ThemeToggle />
-        </div>
-      </div>
     </div>
   );
 }

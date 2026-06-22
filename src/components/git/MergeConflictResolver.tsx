@@ -1,238 +1,399 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { AlertCircle, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { useGitStore } from "@/stores/gitStore";
-import { readFile } from "@/tauri/fs";
-import { cn } from "@/lib/utils";
+import { useUiStore } from "@/stores/uiStore";
+import { ThemeService } from "@/lib/themeService";
+import { readFile, writeFile } from "@/tauri/fs";
+import { getLanguageFromPath } from "@/lib/languages";
+import Editor, { type OnMount } from "@monaco-editor/react";
+import * as monaco from "@/lib/monaco-entry";
 
 interface Props {
   path: string;
 }
 
-type ConflictSide = "ours" | "theirs" | "both";
+interface ConflictInfo {
+  startLine: number;
+  splitLine: number;
+  endLine: number;
+  oursText: string;
+  theirsText: string;
+  fullRange: monaco.Range;
+}
+
+// Custom CSS styling injected dynamically
+const conflictStyles = `
+  .conflict-ours-bg { background-color: rgba(34, 197, 94, 0.08) !important; display: block; }
+  .conflict-theirs-bg { background-color: rgba(59, 130, 246, 0.08) !important; display: block; }
+  .conflict-ours-gutter { border-left: 3px solid #22c55e !important; }
+  .conflict-theirs-gutter { border-left: 3px solid #3b82f6 !important; }
+  .conflict-header-ours-bg { background-color: rgba(34, 197, 94, 0.20) !important; border-top: 1px solid rgba(34, 197, 94, 0.4); border-bottom: 1px solid rgba(34, 197, 94, 0.4); }
+  .conflict-header-theirs-bg { background-color: rgba(59, 130, 246, 0.20) !important; border-top: 1px solid rgba(59, 130, 246, 0.4); border-bottom: 1px solid rgba(59, 130, 246, 0.4); }
+`;
+
+function parseConflicts(model: monaco.editor.ITextModel): ConflictInfo[] {
+  const lineCount = model.getLineCount();
+  const conflicts: ConflictInfo[] = [];
+  
+  let currentOursStart: number | null = null;
+  let currentSplit: number | null = null;
+  
+  for (let i = 1; i <= lineCount; i++) {
+    const line = model.getLineContent(i);
+    if (line.startsWith("<<<<<<<")) {
+      currentOursStart = i;
+    } else if (line.startsWith("=======") && currentOursStart !== null) {
+      currentSplit = i;
+    } else if (line.startsWith(">>>>>>>") && currentOursStart !== null && currentSplit !== null) {
+      const oursLines = [];
+      for (let j = currentOursStart + 1; j < currentSplit; j++) {
+        oursLines.push(model.getLineContent(j));
+      }
+      const theirsLines = [];
+      for (let j = currentSplit + 1; j < i; j++) {
+        theirsLines.push(model.getLineContent(j));
+      }
+      
+      conflicts.push({
+        startLine: currentOursStart,
+        splitLine: currentSplit,
+        endLine: i,
+        oursText: oursLines.join("\n"),
+        theirsText: theirsLines.join("\n"),
+        fullRange: new monaco.Range(currentOursStart, 1, i, model.getLineMaxColumn(i))
+      });
+      
+      currentOursStart = null;
+      currentSplit = null;
+    }
+  }
+  
+  return conflicts;
+}
 
 export function MergeConflictResolver({ path }: Props) {
+  const theme = useUiStore((s) => s.theme);
   const stage = useGitStore((s) => s.stage);
-  const [content, setContent] = useState<string>("");
+
+  const [initialContent, setInitialContent] = useState<string>("");
+  const [currentContent, setCurrentContent] = useState<string>("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [resolved, setResolved] = useState<string[]>([]);
+
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const monacoRef = useRef<typeof monaco | null>(null);
+  const decorationsCollectionRef = useRef<monaco.editor.IEditorDecorationsCollection | null>(null);
+  const providerRef = useRef<monaco.IDisposable | null>(null);
 
   useEffect(() => {
     setLoading(true);
     setError(null);
     readFile(path)
-      .then((data) => { setContent(data); setLoading(false); })
-      .catch((err) => { setError(String(err)); setLoading(false); });
+      .then((data) => {
+        setInitialContent(data);
+        setCurrentContent(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(String(err));
+        setLoading(false);
+      });
+
+    return () => {
+      if (providerRef.current) {
+        providerRef.current.dispose();
+      }
+    };
   }, [path]);
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center p-4 text-sm text-muted-foreground">
-        Loading...
-      </div>
-    );
-  }
+  // Inject visual conflict styles dynamically
+  useEffect(() => {
+    const styleEl = document.createElement("style");
+    styleEl.innerHTML = conflictStyles;
+    document.head.appendChild(styleEl);
+    return () => {
+      document.head.removeChild(styleEl);
+    };
+  }, []);
 
-  if (error) {
-    return (
-      <div className="flex items-center justify-center p-4 text-sm text-red-500">
-        {error}
-      </div>
-    );
-  }
+  const updateDecorations = (editor: monaco.editor.IStandaloneCodeEditor, monacoInstance: typeof monaco) => {
+    const model = editor.getModel();
+    if (!model) return;
 
-  if (!content) {
-    return (
-      <div className="flex items-center justify-center p-4 text-sm text-yellow-500">
-        Empty file.
-      </div>
-    );
-  }
+    const conflicts = parseConflicts(model);
+    const newDecorations: monaco.editor.IModelDeltaDecoration[] = [];
 
-  const conflictBlocks = extractConflictBlocks(content);
+    conflicts.forEach((conflict) => {
+      // Ours block lines decoration
+      if (conflict.splitLine > conflict.startLine + 1) {
+        newDecorations.push({
+          range: new monacoInstance.Range(conflict.startLine + 1, 1, conflict.splitLine - 1, model.getLineMaxColumn(conflict.splitLine - 1)),
+          options: {
+            className: "conflict-ours-bg",
+            isWholeLine: true,
+            gutterClassName: "conflict-ours-gutter"
+          }
+        });
+      }
 
-  const handleAccept = (blockIndex: number, side: ConflictSide) => {
-    const block = conflictBlocks[blockIndex];
-    if (!block) return;
-    setContent((prev) => {
-      let replacement: string;
-      if (side === "ours") replacement = block.ours;
-      else if (side === "theirs") replacement = block.theirs;
-      else replacement = `${block.ours}\n${block.theirs}`;
-      return prev.replace(block.full, replacement);
+      // Theirs block lines decoration
+      if (conflict.endLine > conflict.splitLine + 1) {
+        newDecorations.push({
+          range: new monacoInstance.Range(conflict.splitLine + 1, 1, conflict.endLine - 1, model.getLineMaxColumn(conflict.endLine - 1)),
+          options: {
+            className: "conflict-theirs-bg",
+            isWholeLine: true,
+            gutterClassName: "conflict-theirs-gutter"
+          }
+        });
+      }
+
+      // Ours header line decoration
+      newDecorations.push({
+        range: new monacoInstance.Range(conflict.startLine, 1, conflict.startLine, model.getLineMaxColumn(conflict.startLine)),
+        options: {
+          className: "conflict-header-ours-bg",
+          isWholeLine: true
+        }
+      });
+
+      // Theirs header line decoration
+      newDecorations.push({
+        range: new monacoInstance.Range(conflict.endLine, 1, conflict.endLine, model.getLineMaxColumn(conflict.endLine)),
+        options: {
+          className: "conflict-header-theirs-bg",
+          isWholeLine: true
+        }
+      });
     });
-    setResolved((prev) => [...prev, `${blockIndex}`]);
+
+    if (decorationsCollectionRef.current) {
+      decorationsCollectionRef.current.set(newDecorations);
+    } else {
+      decorationsCollectionRef.current = editor.createDecorationsCollection(newDecorations);
+    }
   };
 
-  const handleAcceptAll = (side: ConflictSide) => {
-    setContent((prev) => {
-      const blocks = extractConflictBlocks(prev);
-      let result = prev;
-      let cursor = 0; // Track position to avoid .replace() matching wrong block
-      for (const block of blocks) {
-        const startIdx = result.indexOf(block.full, cursor);
-        if (startIdx === -1) continue;
-        let replacement: string;
-        if (side === "ours") replacement = block.ours;
-        else if (side === "theirs") replacement = block.theirs;
-        else replacement = `${block.ours}\n${block.theirs}`;
-        result = result.slice(0, startIdx) + replacement + result.slice(startIdx + block.full.length);
-        cursor = startIdx + replacement.length;
+  const resolveConflict = (blockIndex: number, side: "ours" | "theirs" | "both") => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const model = editor.getModel();
+    if (!model) return;
+
+    const conflicts = parseConflicts(model);
+    const block = conflicts[blockIndex];
+    if (!block) return;
+
+    let resolvedText = "";
+    if (side === "ours") {
+      resolvedText = block.oursText;
+    } else if (side === "theirs") {
+      resolvedText = block.theirsText;
+    } else {
+      resolvedText = block.oursText + (block.oursText && block.theirsText ? "\n" : "") + block.theirsText;
+    }
+
+    editor.executeEdits("merge-conflict-resolver", [
+      {
+        range: block.fullRange,
+        text: resolvedText,
+        forceMoveMarkers: true
       }
-      return result;
+    ]);
+  };
+
+  const handleAcceptAll = (side: "ours" | "theirs" | "both") => {
+    const editor = editorRef.current;
+    if (!editor) return;
+    const model = editor.getModel();
+    if (!model) return;
+
+    const conflicts = parseConflicts(model);
+    // Apply edits in reverse order to ensure line shifting doesn't disrupt ranges
+    const edits = conflicts.map((block, index) => {
+      let resolvedText = "";
+      if (side === "ours") {
+        resolvedText = block.oursText;
+      } else if (side === "theirs") {
+        resolvedText = block.theirsText;
+      } else {
+        resolvedText = block.oursText + (block.oursText && block.theirsText ? "\n" : "") + block.theirsText;
+      }
+
+      return {
+        range: block.fullRange,
+        text: resolvedText,
+        forceMoveMarkers: true
+      };
     });
-    setResolved(conflictBlocks.map((_, i) => `${i}`));
+
+    editor.executeEdits("merge-conflict-resolver-all", edits);
   };
 
   const handleStage = async () => {
     await stage([path]);
   };
 
+  const handleMount: OnMount = (editor, monacoInstance) => {
+    editorRef.current = editor;
+    monacoRef.current = monacoInstance;
+
+    // Register CodeLens Command Handlers
+    const cmdOursId = editor.addCommand(0, (_, blockIndex: number) => {
+      resolveConflict(blockIndex, "ours");
+    });
+    const cmdTheirsId = editor.addCommand(0, (_, blockIndex: number) => {
+      resolveConflict(blockIndex, "theirs");
+    });
+    const cmdBothId = editor.addCommand(0, (_, blockIndex: number) => {
+      resolveConflict(blockIndex, "both");
+    });
+
+    const model = editor.getModel();
+    if (model) {
+      updateDecorations(editor, monacoInstance);
+
+      // Register CodeLens Provider for this model URI
+      providerRef.current = monacoInstance.languages.registerCodeLensProvider(
+        getLanguageFromPath(path),
+        {
+          provideCodeLenses: (m) => {
+            if (m.uri.toString() !== model.uri.toString()) return;
+            const conflicts = parseConflicts(m);
+            const lenses: monaco.languages.CodeLens[] = [];
+
+            conflicts.forEach((conflict, index) => {
+              lenses.push({
+                range: new monacoInstance.Range(conflict.startLine, 1, conflict.startLine, 1),
+                command: {
+                  id: cmdOursId!,
+                  title: "Accept Ours",
+                  arguments: [index]
+                }
+              });
+              lenses.push({
+                range: new monacoInstance.Range(conflict.startLine, 1, conflict.startLine, 1),
+                command: {
+                  id: cmdTheirsId!,
+                  title: "Accept Theirs",
+                  arguments: [index]
+                }
+              });
+              lenses.push({
+                range: new monacoInstance.Range(conflict.startLine, 1, conflict.startLine, 1),
+                command: {
+                  id: cmdBothId!,
+                  title: "Accept Both",
+                  arguments: [index]
+                }
+              });
+            });
+
+            return { lenses, dispose: () => {} };
+          }
+        }
+      );
+    }
+  };
+
+  const handleEditorChange = (value: string | undefined) => {
+    if (value === undefined) return;
+    setCurrentContent(value);
+    
+    // Auto-save changes to disk
+    writeFile(path, value).catch(console.error);
+
+    // Refresh visual decorations collection
+    if (editorRef.current && monacoRef.current) {
+      updateDecorations(editorRef.current, monacoRef.current);
+    }
+  };
+
+  const conflictCount = (currentContent.match(/<<<<<<< /g) || []).length;
+
+  if (loading) {
+    return (
+      <div className="flex h-full items-center justify-center p-4 text-sm text-muted-foreground">
+        Loading merge conflict resolver…
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-full items-center justify-center p-4 text-sm text-red-500">
+        {error}
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full flex-col">
-      <div className="flex h-9 shrink-0 items-center justify-between border-b border-border px-3">
+      <div className="flex h-9 shrink-0 items-center justify-between border-b border-border px-3 bg-muted/20">
         <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-red-500">
           <AlertCircle className="size-4" />
-          Merge Conflict
-          <Badge variant="outline" className="text-[10px]">
-            {conflictBlocks.length} conflict{conflictBlocks.length !== 1 ? "s" : ""}
+          Conflict Resolver
+          <Badge variant="destructive" className="text-[10px] h-4 px-1.5 font-bold">
+            {conflictCount} Remaining
           </Badge>
         </div>
-        <div className="flex items-center gap-1">
-          <Button variant="ghost" size="xs" onClick={() => handleAcceptAll("ours")}>
+        <div className="flex items-center gap-1.5">
+          <Button
+            variant="ghost"
+            size="xs"
+            onClick={() => handleAcceptAll("ours")}
+            disabled={conflictCount === 0}
+            className="h-6 text-[11px]"
+          >
             Accept All Ours
           </Button>
-          <Button variant="ghost" size="xs" onClick={() => handleAcceptAll("theirs")}>
+          <Button
+            variant="ghost"
+            size="xs"
+            onClick={() => handleAcceptAll("theirs")}
+            disabled={conflictCount === 0}
+            className="h-6 text-[11px]"
+          >
             Accept All Theirs
           </Button>
           <Button
             size="xs"
             onClick={handleStage}
-            disabled={resolved.length < conflictBlocks.length}
+            disabled={conflictCount > 0}
+            className="h-6 text-[11px]"
           >
             <Check className="mr-1 size-3" />
             Mark Resolved
           </Button>
         </div>
       </div>
-      <ScrollArea className="flex-1 p-3 font-mono text-xs">
-        <div className="space-y-4">
-          {conflictBlocks.map((block, idx) => (
-            <div
-              key={idx}
-              className={cn(
-                "rounded-md border p-2",
-                resolved.includes(`${idx}`)
-                  ? "border-green-500/30 bg-green-500/5"
-                  : "border-red-500/30 bg-red-500/5",
-              )}
-            >
-              <div className="mb-2 flex items-center gap-2">
-                <span className="text-[10px] font-semibold text-muted-foreground">
-                  Conflict #{idx + 1}
-                </span>
-                {resolved.includes(`${idx}`) ? (
-                  <Badge variant="outline" className="text-[9px] text-green-500">
-                    Resolved
-                  </Badge>
-                ) : (
-                  <div className="flex gap-1">
-                    <Button
-                      variant="ghost"
-                      size="xs"
-                      className="h-5 text-[10px]"
-                      onClick={() => handleAccept(idx, "ours")}
-                    >
-                      Accept Ours
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="xs"
-                      className="h-5 text-[10px]"
-                      onClick={() => handleAccept(idx, "theirs")}
-                    >
-                      Accept Theirs
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="xs"
-                      className="h-5 text-[10px]"
-                      onClick={() => handleAccept(idx, "both")}
-                    >
-                      Accept Both
-                    </Button>
-                  </div>
-                )}
-              </div>
-              <div className="space-y-1">
-                <div className="rounded bg-muted/30 p-1 text-green-400/80">
-                  {block.ours.split("\n").map((l, i) => (
-                    <div key={i} className="leading-5">
-                      {l}
-                    </div>
-                  ))}
-                </div>
-                <div className="text-center text-[10px] text-muted-foreground">=======</div>
-                <div className="rounded bg-muted/30 p-1 text-red-400/80">
-                  {block.theirs.split("\n").map((l, i) => (
-                    <div key={i} className="leading-5">
-                      {l}
-                    </div>
-                  ))}
-                </div>
-              </div>
+      <div className="flex-1 min-h-0 relative">
+        <Editor
+          path={path}
+          defaultLanguage={getLanguageFromPath(path)}
+          defaultValue={initialContent}
+          theme={ThemeService.toMonacoThemeId(theme)}
+          onMount={handleMount}
+          onChange={handleEditorChange}
+          options={{
+            minimap: { enabled: false },
+            lineNumbers: "on",
+            glyphMargin: true,
+            folding: true,
+            smoothScrolling: true,
+            automaticLayout: true,
+            fixedOverflowWidgets: true,
+            codeLens: true,
+          }}
+          loading={
+            <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+              Loading editor…
             </div>
-          ))}
-        </div>
-      </ScrollArea>
+          }
+        />
+      </div>
     </div>
   );
-}
-
-interface ConflictBlock {
-  full: string;
-  ours: string;
-  theirs: string;
-}
-
-function advancePastLine(s: string, i: number): number {
-  const nl = s.indexOf("\n", i);
-  return nl === -1 ? s.length : nl + 1;
-}
-
-function extractConflictBlocks(content: string): ConflictBlock[] {
-  const blocks: ConflictBlock[] = [];
-  const markerStart = "<<<<<<< ";
-  const markerMid = "=======";
-  const markerEnd = ">>>>>>> ";
-
-  let pos = 0;
-  while (pos < content.length) {
-    const startIdx = content.indexOf(markerStart, pos);
-    if (startIdx === -1) break;
-
-    const oursStart = advancePastLine(content, startIdx);
-
-    const midIdx = content.indexOf(markerMid, oursStart);
-    if (midIdx === -1) break;
-
-    const theirsStart = advancePastLine(content, midIdx);
-
-    const endIdx = content.indexOf(markerEnd, theirsStart);
-    if (endIdx === -1) break;
-
-    const endLine = advancePastLine(content, endIdx);
-
-    const ours = content.slice(oursStart, midIdx).trimEnd();
-    const theirs = content.slice(theirsStart, endIdx).trimEnd();
-    const full = content.slice(startIdx, endLine);
-
-    blocks.push({ full, ours, theirs });
-    pos = endLine;
-  }
-
-  return blocks;
 }

@@ -5,6 +5,7 @@ import { getMonacoModule } from "@/extensions/editorRef";
 import type { LspConfig } from "./types";
 
 interface LspInstance {
+  languageId: string;
   client: LspClient;
   bridge: MonacoBridge | null;
   config: LspConfig;
@@ -31,7 +32,7 @@ class LspManager {
         const uri = uriFromPath(doc.path);
         inst.openDocs.set(uri, ++this.versionCounter);
         this.ensureRunning(lang, inst).then(() => {
-          inst.client.openDocument(uri, doc.content, this.versionCounter);
+          inst.client.openDocument(uri, doc.content, this.versionCounter, lang);
         });
       })
     );
@@ -61,14 +62,11 @@ class LspManager {
         }
       })
     );
-
-    this.unsubFns.push(
-      editorBus.onActiveEditor(() => {})
-    );
   }
 
   private languageForPath(path: string): string | null {
     if (path.endsWith(".py")) return "python";
+    if (path.endsWith(".cs")) return "csharp";
     return null;
   }
 
@@ -79,11 +77,15 @@ class LspManager {
       return;
     }
     if (inst.openDocs.size <= 1 && !inst.idleTimer) {
-      await inst.client.start();
-      const monaco = getMonacoModule();
-      if (monaco) {
-        inst.bridge = new MonacoBridge(monaco, inst.client, lang);
-        inst.bridge.register();
+      try {
+        await inst.client.start();
+        const monaco = getMonacoModule();
+        if (monaco) {
+          inst.bridge = new MonacoBridge(monaco, inst.client, lang);
+          inst.bridge.register();
+        }
+      } catch {
+        // LSP server binary not found or failed to start
       }
     }
   }
@@ -105,6 +107,7 @@ class LspManager {
       return { dispose: () => {} };
     }
     const instance: LspInstance = {
+      languageId,
       client: new LspClient(config),
       bridge: null,
       config,

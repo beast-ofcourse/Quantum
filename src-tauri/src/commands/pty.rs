@@ -106,7 +106,6 @@ pub async fn spawn_pty(
     if !cwd.is_empty() {
         cmd.cwd(cwd);
     }
-
     let child = pair
         .slave
         .spawn_command(cmd)

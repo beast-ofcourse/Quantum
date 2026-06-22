@@ -5,10 +5,11 @@ import type { DockZone, PanelId, Zones } from "@/types/panelRegistry";
 import type { PresetZones } from "@/lib/layoutPresets";
 import { DEFAULT_ZONES, getPanel } from "@/lib/panelRegistry";
 import { BUILT_IN_PRESETS, BUILT_IN_PRESET_NAMES } from "@/lib/layoutPresets";
+import { ThemeService } from "@/lib/themeService";
 
 export const PANEL_CONSTRAINTS = {
   sidebar: { minSize: 160, maxSize: 480, defaultSize: 260 } as const,
-  terminal: { minSize: 100, maxSize: 600, defaultSize: 220 } as const,
+  terminal: { minSize: 100, maxSize: 99999, defaultSize: 220 } as const,
 } as const;
 
 interface UiState {
@@ -25,6 +26,9 @@ interface UiState {
   activityBarVisible: boolean;
   statusBarVisible: boolean;
   shortcutCheatSheetOpen: boolean;
+
+  bottomMaximized: boolean;
+  _preMaximizeBottomSize: number;
 
   setZoneVisibility: (zone: DockZone, visible: boolean) => void;
   toggleZone: (zone: DockZone) => void;
@@ -47,6 +51,8 @@ interface UiState {
   setTheme: (theme: Theme) => void;
   toggleTheme: () => void;
 
+  toggleBottomMaximized: () => void;
+
   setSidebarPosition: (pos: "left" | "right") => void;
   setPanelAlignment: (align: "left" | "center" | "right" | "justify") => void;
   setMenuBarVisible: (v: boolean) => void;
@@ -61,7 +67,7 @@ const clamp = (value: number, min: number, max: number) =>
 const ZONE_CONSTRAINTS: Record<DockZone, { minSize: number; maxSize: number }> = {
   left: { minSize: 160, maxSize: 480 },
   right: { minSize: 160, maxSize: 480 },
-  bottom: { minSize: 100, maxSize: 600 },
+  bottom: { minSize: 100, maxSize: 99999 },
 };
 
 export const useUiStore = create<UiState>()(
@@ -85,6 +91,9 @@ export const useUiStore = create<UiState>()(
       activityBarVisible: true,
       statusBarVisible: true,
       shortcutCheatSheetOpen: false,
+
+      bottomMaximized: false,
+      _preMaximizeBottomSize: 220,
 
       setZoneVisibility: (zone, visible) =>
         set((s) => ({
@@ -258,13 +267,49 @@ export const useUiStore = create<UiState>()(
 
       setActivePanel: (panel) => set({ activePanel: panel }),
 
-      setTheme: (theme) => set({ theme }),
+      setTheme: (theme) => {
+        set({ theme });
+        ThemeService.applyTheme(theme);
+      },
 
-      toggleTheme: () =>
+      toggleTheme: () => {
+        const order: Theme[] = ["dark", "light", "catppuccin-mocha", "spiderman"];
+        const current = useUiStore.getState().theme;
+        const idx = order.indexOf(current);
+        const next = order[(idx + 1) % order.length];
+        set({ theme: next });
+        ThemeService.applyTheme(next);
+      },
+
+      toggleBottomMaximized: () =>
         set((s) => {
-          const order: Theme[] = ["dark", "light", "catppuccin-mocha", "spiderman"];
-          const idx = order.indexOf(s.theme);
-          return { theme: order[(idx + 1) % order.length] };
+          if (s.bottomMaximized) {
+            // Restore to pre-maximize size
+            return {
+              bottomMaximized: false,
+              zones: {
+                ...s.zones,
+                bottom: {
+                  ...s.zones.bottom,
+                  size: s._preMaximizeBottomSize,
+                },
+              },
+            };
+          } else {
+            // Maximize: save current size, then set to very large value
+            // The flex layout will clamp it to available space
+            return {
+              bottomMaximized: true,
+              _preMaximizeBottomSize: s.zones.bottom.size,
+              zones: {
+                ...s.zones,
+                bottom: {
+                  ...s.zones.bottom,
+                  size: 99999,
+                },
+              },
+            };
+          }
         }),
 
       setSidebarPosition: (pos) => set({ sidebarPosition: pos }),

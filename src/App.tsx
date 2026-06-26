@@ -16,6 +16,7 @@ import { initExtensionHost } from "@/extensions/host";
 import { emitAppClosing } from "@/lib/multiWindowService";
 import { initCSSInjector } from "@/lib/cssInjector";
 import { IconPackService } from "@/lib/iconPackService";
+import { initCompletionSystem } from "@/core/completion/bootstrap";
 
 function MainShell() {
   useFileDrop();
@@ -29,6 +30,7 @@ function MainShell() {
     void initExtensionHost();
     void initCSSInjector();
     void IconPackService.getInstance().scanUserPacks();
+    initCompletionSystem();
   }, []);
 
   useEffect(() => {

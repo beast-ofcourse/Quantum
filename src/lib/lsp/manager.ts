@@ -3,6 +3,7 @@ import { MonacoBridge } from "./monacoBridge";
 import { editorBus } from "@/extensions/api/editorBus";
 import { getMonacoModule } from "@/extensions/editorRef";
 import type { LspConfig } from "./types";
+import { registerLspClient } from "@/core/completion/bootstrap";
 
 interface LspInstance {
   languageId: string;
@@ -79,6 +80,8 @@ class LspManager {
     if (inst.openDocs.size <= 1 && !inst.idleTimer) {
       try {
         await inst.client.start();
+        // Register LSP client with CompletionEngine
+        registerLspClient(inst.client);
         const monaco = getMonacoModule();
         if (monaco) {
           inst.bridge = new MonacoBridge(monaco, inst.client, lang);

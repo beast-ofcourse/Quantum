@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Terminal as TerminalIcon, X, Bug } from "lucide-react";
+import { Terminal as TerminalIcon, X } from "lucide-react";
 import type { Terminal as XTerm } from "@xterm/xterm";
 import { Button } from "@/components/ui/button";
 import { useUiStore } from "@/stores/uiStore";
@@ -10,7 +10,7 @@ import { TerminalEmptyState } from "@/components/terminal/TerminalEmptyState";
 import { TerminalContextMenu } from "@/components/terminal/TerminalContextMenu";
 import { ProblemsPanel } from "@/components/terminal/ProblemsPanel";
 import { OutputPanel } from "@/components/terminal/OutputPanel";
-import { DebugConsolePanel } from "@/components/terminal/DebugConsolePanel";
+
 
 
 export function BottomPanel() {
@@ -21,7 +21,7 @@ export function BottomPanel() {
   const loadShells = useTerminalStore((s) => s.loadShells);
   const xtermRef = useRef<XTerm | null>(null);
   const active = sessions.find((s) => s.id === activeSessionId) ?? null;
-  const [tab, setTab] = useState<"terminal" | "problems" | "output" | "debug">("terminal");
+  const [tab, setTab] = useState<"terminal" | "problems" | "output">("terminal");
 
   useEffect(() => {
     void loadShells();
@@ -80,22 +80,7 @@ export function BottomPanel() {
           >
             Output
           </button>
-          <button
-            id="tab-debug"
-            role="tab"
-            aria-selected={tab === "debug"}
-            aria-controls="debug-content"
-            tabIndex={tab === "debug" ? 0 : -1}
-            onClick={() => setTab("debug")}
-            className={`flex items-center gap-1.5 px-2 py-1 ${
-              tab === "debug"
-                ? "text-foreground"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
-          >
-            <Bug className="size-3.5" />
-            Debug Console
-          </button>
+
         </div>
         <div className="flex items-center gap-1">
           <Button
@@ -148,17 +133,6 @@ export function BottomPanel() {
           onPointerDown={() => setActivePanel("terminal")}
         >
           <OutputPanel />
-        </div>
-      ) : null}
-      {tab === "debug" ? (
-        <div
-          id="debug-content"
-          className="flex min-h-0 flex-1 flex-col overflow-hidden"
-          role="tabpanel"
-          aria-labelledby="tab-debug"
-          onPointerDown={() => setActivePanel("terminal")}
-        >
-          <DebugConsolePanel />
         </div>
       ) : null}
     </section>

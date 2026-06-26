@@ -9,11 +9,12 @@ import { EditorSplitView } from "@/components/editor/EditorSplitView";
 import { EditorEmptyState } from "@/components/editor/EditorEmptyState";
 import { WelcomePage } from "@/components/editor/WelcomePage";
 import { EditorSkeleton } from "@/components/ui/skeleton";
-import { DebugToolbar } from "@/components/debug/DebugToolbar";
-import { RunButton } from "@/components/debug/RunButton";
+
 import { Resizer } from "@/components/layout/Resizer";
 import { MarkdownPreview } from "@/components/markdown/MarkdownPreview";
 import { MarkdownEditorView } from "@/components/markdown/MarkdownEditorView";
+import { RunButton } from "@/ui/RunButton";
+import { StopButton } from "@/ui/StopButton";
 import { useEditorHotkeys } from "@/hooks/useEditorHotkeys";
 import { useFileChangeSync } from "@/hooks/useFileChangeSync";
 import { pickFiles, pickFolder } from "@/tauri";
@@ -92,11 +93,11 @@ export function EditorArea() {
                   </button>
                 )}
                 <RunButton />
+                <StopButton />
               </div>
             )}
           </div>
           {activeTab && <Breadcrumbs path={activeTab.path} />}
-          <DebugToolbar />
           <div className="min-h-0 flex-1">
             {activeTab ? (
               isMd && markdownPreview ? (

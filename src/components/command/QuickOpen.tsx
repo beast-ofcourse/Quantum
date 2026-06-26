@@ -5,12 +5,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { fuzzyFilter } from "@/lib/fuzzySearch";
 import { getAllCommands } from "@/lib/commandRegistry";
-import { useFileStore } from "@/stores/fileStore";
+import { useFileStore, getFlatFileIndex } from "@/stores/fileStore";
 import { useEditorStore } from "@/stores/editorStore";
 import { useKeybindingStore } from "@/stores/keybindingStore";
 import { getPlatformModifier } from "@/lib/platform";
 import { getCurrentEditor, getMonacoModule } from "@/extensions/editorRef";
-import type { FileNode } from "@/types/file";
 import type * as monaco from "@/lib/monaco-entry";
 
 type Mode = "files" | "commands" | "symbols" | "goto";
@@ -25,27 +24,6 @@ interface SymbolInfo {
   name: string;
   kind: string;
   range: monaco.IRange;
-}
-
-function flattenTree(nodes: FileNode[], root: string): FlatFile[] {
-  const result: FlatFile[] = [];
-  const sep = root.includes("\\") ? "\\" : "/";
-  function walk(list: FileNode[]) {
-    for (const n of list) {
-      if (n.kind !== "directory") {
-        const rel = n.path.startsWith(root) ? n.path.slice(root.length + 1) : n.path;
-        const lastSep = rel.lastIndexOf(sep);
-        result.push({
-          path: n.path,
-          name: n.name,
-          dir: lastSep > 0 ? rel.slice(0, lastSep) : "",
-        });
-      }
-      if (n.children) walk(n.children);
-    }
-  }
-  walk(nodes);
-  return result;
 }
 
 function parseMode(query: string): { mode: Mode; text: string } {
@@ -91,8 +69,10 @@ export function QuickOpen({ open, initialMode, onClose }: QuickOpenProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const symbolCache = useRef<SymbolInfo[]>([]);
 
-  const fileTree = useFileStore((s) => s.fileTree);
+  // Use the pre-built flat file index (populated in background after openFolder).
+  // Avoids walking the in-memory tree on every keystroke.
   const rootPath = useFileStore((s) => s.rootPath);
+  const lastRefreshed = useFileStore((s) => s.lastRefreshed);
   const openFile = useEditorStore((s) => s.openFile);
   const setActiveTab = useEditorStore((s) => s.setActiveTab);
   const overrides = useKeybindingStore((s) => s.overrides);
@@ -110,7 +90,20 @@ export function QuickOpen({ open, initialMode, onClose }: QuickOpenProps) {
     [allCommands, overrides],
   );
 
-  const allFiles = useMemo(() => rootPath ? flattenTree(fileTree, rootPath) : [], [fileTree, rootPath]);
+  // Re-read the flat index whenever the tree refreshes (lastRefreshed tick).
+  const allFiles = useMemo((): FlatFile[] => {
+    if (!rootPath) return [];
+    return getFlatFileIndex().map((f) => {
+      const sep = f.rel.includes("\\") ? "\\" : "/";
+      const lastSep = f.rel.lastIndexOf(sep);
+      return {
+        path: f.path,
+        name: f.name,
+        dir: lastSep > 0 ? f.rel.slice(0, lastSep) : "",
+      };
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rootPath, lastRefreshed]);
 
   useEffect(() => {
     if (open) {

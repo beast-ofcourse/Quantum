@@ -14,7 +14,6 @@ import { useAutoSave } from "@/hooks/useAutoSave";
 import { useGitGutterDecorations } from "@/hooks/useGitGutterDecorations";
 import { useGitBlameDecorations } from "@/hooks/useGitBlameDecorations";
 import { registerDefinitionProvider } from "@/lib/definitionProvider";
-import { registerCodeLensProvider } from "@/lib/codeLensProvider";
 import { registerLanguageCompletions } from "@/lib/languageCompletions";
 import { registerHoverProvider } from "@/lib/hoverProvider";
 import { ContentStore } from "@/lib/contentStore";
@@ -116,7 +115,6 @@ export function MonacoEditor({
 		});
 		initDiagnostics();
 		registerDefinitionProvider();
-		registerCodeLensProvider(monacoInstance);
 		registerLanguageCompletions();
 		registerHoverProvider();
 
@@ -142,7 +140,6 @@ export function MonacoEditor({
 				(isMod && key === "\\") ||           // Ctrl+\ (Split Editor)
 				(isMod && key === "tab") ||          // Ctrl+Tab (Cycle Tabs)
 				(key === "alt") ||                   // Alt (Toggle Menu Bar)
-				(key === "f5") ||                    // F5 / Shift+F5 / Ctrl+F5 (Debugging)
 				(isAlt && e.browserEvent.ctrlKey && key === "k"); // Ctrl+Alt+K (Shortcuts)
 
 			if (shouldForward) {
@@ -173,23 +170,7 @@ export function MonacoEditor({
 			},
 		});
 
-		// 2. Run Active File (fires F5 global debug run)
-		editor.addAction({
-			id: "editor.action.runActiveFile",
-			label: "Run Active File",
-			contextMenuGroupId: "navigation",
-			contextMenuOrder: 2,
-			run: () => {
-				const clone = new KeyboardEvent("keydown", {
-					key: "F5",
-					code: "F5",
-					bubbles: true,
-				});
-				window.dispatchEvent(clone);
-			},
-		});
-
-		// 3. Toggle Git Blame Annotations (integrated with context menu)
+		// 2. Toggle Git Blame Annotations (integrated with context menu)
 		editor.addAction({
 			id: "editor.toggleBlame",
 			label: "Toggle Git Blame Annotations",

@@ -11,6 +11,7 @@ import { useFileStore } from "@/stores/fileStore";
 import { useEditorStore } from "@/stores/editorStore";
 import { useGitStore } from "@/stores/gitStore";
 import { saveSession, loadSession, addRecentFolder } from "@/lib/session";
+import { openTerminalAtPath } from "@/lib/terminal-helpers";
 import { initExtensionHost } from "@/extensions/host";
 import { emitAppClosing } from "@/lib/multiWindowService";
 import { initCSSInjector } from "@/lib/cssInjector";
@@ -70,10 +71,16 @@ function MainShell() {
 
   useEffect(() => {
     let prevRoot: string | null = null;
+    let terminalCreated = false;
     const unsub = useFileStore.subscribe((state) => {
       if (state.rootPath && state.rootPath !== prevRoot) {
         prevRoot = state.rootPath;
         addRecentFolder(state.rootPath);
+        // Auto-open terminal at the workspace root, once per session.
+        if (!terminalCreated) {
+          terminalCreated = true;
+          void openTerminalAtPath(state.rootPath);
+        }
       }
     });
     return unsub;

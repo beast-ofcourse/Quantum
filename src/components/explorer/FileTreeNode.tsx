@@ -1,5 +1,5 @@
 import React, { memo, useState } from "react";
-import { ChevronRight, Terminal } from "lucide-react";
+import { ChevronRight, Terminal, Loader2, Copy } from "lucide-react";
 import { useDraggable } from "@dnd-kit/core";
 import {
   ContextMenu,
@@ -46,8 +46,10 @@ function parentDir(path: string): string {
 export const FileTreeNode = memo(function FileTreeNode({ node, depth, parentPath }: FileTreeNodeProps) {
   const expanded = useFileStore((s) => s.expanded[node.path]) ?? false;
   const selectedFile = useFileStore((s) => s.selectedFile);
+  const rootPath = useFileStore((s) => s.rootPath);
   const toggleExpand = useFileStore((s) => s.toggleExpand);
   const selectFile = useFileStore((s) => s.selectFile);
+  const isDirLoading = useFileStore((s) => s.loadingDirs.has(node.path));
   const gitDecorations = useGitDecorations();
   const gitStatus = gitDecorations.get(node.path);
   const [renameTarget, setRenameTarget] = useState<string | null>(null);
@@ -97,6 +99,31 @@ export const FileTreeNode = memo(function FileTreeNode({ node, depth, parentPath
     setCreating(kind);
   };
 
+  const copyPath = async () => {
+    try {
+      await navigator.clipboard.writeText(node.path);
+    } catch (err) {
+      console.error("Failed to copy path:", err);
+    }
+  };
+
+  const copyRelativePath = async () => {
+    if (!rootPath) return;
+    try {
+      const rel = node.path.startsWith(rootPath)
+        ? node.path.slice(rootPath.length).replace(/^[/\\]/, "")
+        : node.path;
+      await navigator.clipboard.writeText(rel);
+    } catch (err) {
+      console.error("Failed to copy relative path:", err);
+    }
+  };
+
+  const handleOpenTerminal = () => {
+    const cwd = isDir ? node.path : parentPath;
+    void openTerminalAtPath(cwd);
+  };
+
   const row = (
     <div
       ref={setNodeRef}
@@ -120,12 +147,18 @@ export const FileTreeNode = memo(function FileTreeNode({ node, depth, parentPath
       )}
     >
       {isDir ? (
-        <ChevronRight
-          className={cn(
-            "file-tree-folder-icon size-3.5 shrink-0 text-muted-foreground transition-transform",
-            expanded && "rotate-90",
-          )}
-        />
+        isDirLoading ? (
+          <Loader2
+            className="size-3.5 shrink-0 animate-spin text-muted-foreground"
+          />
+        ) : (
+          <ChevronRight
+            className={cn(
+              "file-tree-folder-icon size-3.5 shrink-0 text-muted-foreground transition-transform",
+              expanded && "rotate-90",
+            )}
+          />
+        )
       ) : (
         <span className="size-3.5 shrink-0" />
       )}
@@ -175,13 +208,22 @@ export const FileTreeNode = memo(function FileTreeNode({ node, depth, parentPath
               New Folder…
             </ContextMenuItem>
             <ContextMenuSeparator />
-            <ContextMenuItem onSelect={() => void openTerminalAtPath(node.path)}>
-              <Terminal className="size-3.5" />
-              Open in Integrated Terminal
-            </ContextMenuItem>
-            <ContextMenuSeparator />
           </>
         )}
+        <ContextMenuItem onSelect={handleOpenTerminal}>
+          <Terminal className="size-3.5" />
+          Open in Integrated Terminal
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+        <ContextMenuItem onSelect={copyPath}>
+          <Copy className="size-3.5" />
+          Copy Path
+        </ContextMenuItem>
+        <ContextMenuItem onSelect={copyRelativePath}>
+          <Copy className="size-3.5" />
+          Copy Relative Path
+        </ContextMenuItem>
+        <ContextMenuSeparator />
         <ContextMenuItem onSelect={() => setRenameTarget(node.path)}>
           Rename
           <span className="ml-auto text-xs text-muted-foreground">F2</span>

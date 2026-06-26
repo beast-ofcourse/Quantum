@@ -17,6 +17,9 @@ The Rust backend detects available shells and defaults to the most appropriate s
 ### Tauri IPC Bridge
 The frontend xterm.js instance writes keystrokes to a Tauri IPC command. The Rust backend takes this input, feeds it into the PTY process, and streams back the output (standard output and standard error) to the frontend via event listeners. This asynchronous bridge ensures zero input latency.
 
+### Execution Engine Integration
+The same PTY backend powers the Execution Engine — when you click **Run** in the editor toolbar, the Execution Service spawns the target program via `PtyService.tauriSpawn()`. Output is piped through the same terminal infrastructure and displayed in the Terminal Panel. This means run output benefits from all terminal features: ANSI colors, scrollback, font customization, and theme sync.
+
 ---
 
 ## 2. Multi-Session Management

@@ -20,6 +20,7 @@ pub fn run() {
             commands::fs::stat,
             commands::fs::path_exists,
             commands::fs::reveal_in_explorer,
+            commands::fs::list_files,
             commands::watch::watch_directory,
             commands::watch::unwatch_directory,
             commands::watch::unwatch_all,

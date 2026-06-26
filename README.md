@@ -5,7 +5,7 @@
 
 **A modern, extensible desktop code editor** built with Tauri 2 + React 19 + TypeScript + Monaco Editor.
 
-Quantum is a feature-rich IDE designed for local development, with deep Git integration, a full debug adapter protocol client, LSP language server support, a flexible extension system, and a VS Code-inspired layout. Currently in active development.
+Quantum is a feature-rich IDE designed for local development, with deep Git integration, a layered execution engine for running code, LSP language server support, a flexible extension system, and a VS Code-inspired layout. Currently in active development.
 
 ---
 
@@ -52,17 +52,16 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 - Scrollback buffer (5000 lines)
 - Resize handling and clipboard integration
 
-### Debugging (DAP)
-- Built-in **Debug Adapter Protocol** client
-- **Editor toolbar Run button** — config dropdown with Play/Stop button in the tab bar; three states: idle (▶), running (■), paused (■)
-- **launch.json** support — configs stored in `.quantum/launch.json` with add/edit/delete via inline dialog
-- **CodeLens** — "▶ Run" inline action above functions/methods/classes
-- Launch and attach debug configurations
-- Breakpoints — add, remove, toggle, conditional, exception breakpoints
-- Call stack, variables/scopes inspection, watch expressions
-- Debug console / REPL
-- Full stepping controls (over, into, out, continue, pause)
-- Thread management, multiple concurrent debug sessions
+### Execution Engine
+- Layered architecture: UI → ExecutionService → ProcessManager → PtyService
+- **Run** (▶) button in editor toolbar — runs current file with auto-detected runtime
+- **Stop** (■) button to kill running processes
+- Language auto-detection from file extension (JS, TS, Python, C, C++, Rust, Go, Java)
+- Runtime resolution and command building (compile+run for C/C++/Java, single command for interpreted)
+- `TaskQueue` serializes execution, deduplicates by file+type
+- `ProcessRegistry` tracks all active processes
+- Output piped to Terminal Panel with full ANSI support
+- Extensible design: swap spawn function for SSH/Docker, add debug/AI-execute layers
 
 ### LSP Support
 - Built-in **Language Server Protocol** client
@@ -125,7 +124,7 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 ### Diagnostics & Problems
 - **Problems panel** — aggregated Monaco diagnostics with error/warning counts
 - **Output panel** — extension and build output
-- **Debug Console** — DAP REPL and evaluation
+- **Terminal Panel** — execution output with ANSI color support
 
 ---
 
@@ -234,9 +233,9 @@ Single WebView (React 19)
 │   ├── ThemeEditor              │
 │   └── ShortcutCheatSheet       │
 │                                │
-├── Zustand Stores (14) ─────────┤
+├── Zustand Stores (13) ─────────┤
 │   editor, file, ui, terminal,  │
-│   git, github, debug,          │
+│   git, github,                 │
 │   diagnostic, settings, search │
 │   keybinding, modal, toast,    │
 │   extensionStatusBar           │
@@ -246,7 +245,7 @@ Single WebView (React 19)
 │                                │
 ├── Services ────────────────────┤
 │   ThemeService, IconPackService │
-│   LspManager, DapManager       │
+│   LspManager, ExecutionService │
 │   HotkeyRegistry, CommandRegistry
 │                                │
 └── Extension Host ──────────────┘
@@ -283,7 +282,7 @@ Single WebView (React 19)
 │   │   ├── terminal/                 # xterm wrapper, sessions, shell picker
 │   │   ├── git/                      # Git sidebar, diff, history, graph, branch mgmt
 │   │   ├── github/                   # GitHub auth, PRs, issues
-│   │   ├── debug/                    # DAP debugger UI
+│   │   ├── ui/                       # Execution UI (RunButton, StopButton)
 │   │   ├── search/                   # Search bar + search sidebar
 │   │   ├── outline/                  # Document symbols outline
 │   │   ├── command/                  # Command palette, shortcuts
@@ -291,9 +290,13 @@ Single WebView (React 19)
 │   │   ├── theme/                    # Theme editor with live preview
 │   │   ├── extensions/               # Extension marketplace, install, toast, quick pick
 │   │   └── markdown/                 # Markdown preview
-│   ├── stores/                       # 14 Zustand stores
+│   ├── stores/                       # 13 Zustand stores
 │   ├── workers/                      # Web Workers (fileTree, git, terminal)
 │   ├── hooks/                        # Custom hooks (hotkeys, theme, git, zoom, etc.)
+│   ├── core/                         # Execution engine + terminal + backend
+│   │   ├── execution/                #   ExecutionService, ProcessManager, TaskQueue
+│   │   ├── terminal/                 #   PtyService, TerminalAdapter
+│   │   └── backend/                  #   Spawn, IPC, permissions
 │   ├── tauri/                        # Tauri IPC wrappers
 │   ├── lib/                          # Utilities, services, registries
 │   ├── extensions/                   # Extension host, API, view registry
@@ -335,14 +338,12 @@ Single WebView (React 19)
 | `` Ctrl+Shift+` `` | New terminal session |
 | `Alt` | Toggle menu bar |
 
-### Debug shortcuts
+### Execution shortcuts
 
 | Shortcut | Action |
 |----------|--------|
-| `F5` | Start/Continue debugging |
-| `Ctrl+F5` | Run without debugging |
-| `Shift+F5` | Stop debugging |
-| `Ctrl+Shift+D` | Focus debug sidebar |
+| `F5` | Run current file |
+| `Shift+F5` | Stop running process |
 
 ### Git shortcuts
 

@@ -29,8 +29,7 @@ import { formatKeybinding } from "@/lib/platform";
 import { registerCommandProvider } from "@/lib/commandRegistry";
 import { useToastStore } from "@/stores/toastStore";
 import { useModalStore } from "@/stores/modalStore";
-import { useDebugStore } from "@/stores/debugStore";
-import { DebugConfigurationService } from "@/lib/debugConfiguration";
+
 import { loadSession, saveSession } from "@/lib/sessionRestore";
 import { BUILT_IN_PRESET_NAMES } from "@/lib/layoutPresets";
 import type { CommandDefinition } from "@/types/commands";
@@ -188,58 +187,7 @@ export function ShellLayout() {
     },
   });
 
-  // Debug hotkeys
-  useHotkey({
-    combo: "F5",
-    commandId: "debug.start",
-    description: "Start/Continue Debugging",
-    handler: async () => {
-      const store = useDebugStore.getState();
-      if (store.activeSessionId) {
-        const s = store.sessions.find((s) => s.id === store.activeSessionId);
-        if (s && (s.status === "paused" || s.status === "stepping")) {
-          await store.continue();
-          return;
-        }
-        if (s && (s.status === "running")) return;
-      }
-      const configs = await DebugConfigurationService.loadConfigs();
-      const cfg = configs.length > 0 ? configs[0] : undefined;
-      if (cfg) await store.startSession(cfg);
-    },
-  });
-  useHotkey({
-    combo: "mod+F5",
-    commandId: "debug.runWithoutDebug",
-    description: "Run Without Debugging",
-    handler: async () => {
-      const store = useDebugStore.getState();
-      const configs = await DebugConfigurationService.loadConfigs();
-      const cfg = configs.length > 0 ? { ...configs[0], debugOptions: { noDebug: true } } : undefined;
-      if (cfg) await store.startSession(cfg);
-    },
-  });
-  useHotkey({
-    combo: "shift+F5",
-    commandId: "debug.stop",
-    description: "Stop Debugging",
-    handler: async () => {
-      const store = useDebugStore.getState();
-      if (store.activeSessionId) {
-        await store.stopSession(store.activeSessionId);
-      }
-    },
-  });
-  useHotkey({
-    combo: "ctrl+shift+d",
-    commandId: "view.debug",
-    description: "Show Debug",
-    handler: () => {
-      const ui = useUiStore.getState();
-      ui.setActivePanelInZone("left", "debug");
-      ui.setZoneVisibility("left", true);
-    },
-  });
+  // Debug hotkeys removed
 
   const registerCommands = useCallback(() => {
     const fileCommands: CommandDefinition[] = [
@@ -411,64 +359,6 @@ export function ShellLayout() {
       },
     ];
 
-    const debugCommands: CommandDefinition[] = [
-      {
-        id: "debug.start",
-        label: "Start/Continue Debugging",
-        category: "Debug",
-        keybinding: formatKeybinding("F5"),
-        action: async () => {
-          const store = useDebugStore.getState();
-          if (store.activeSessionId) {
-            const s = store.sessions.find((s) => s.id === store.activeSessionId);
-            if (s && (s.status === "paused" || s.status === "stepping")) {
-              await store.continue();
-              return;
-            }
-            if (s && (s.status === "running")) return;
-          }
-          const configs = await DebugConfigurationService.loadConfigs();
-          const cfg = configs.length > 0 ? configs[0] : undefined;
-          if (cfg) await store.startSession(cfg);
-        },
-      },
-      {
-        id: "debug.runWithoutDebug",
-        label: "Run Without Debugging",
-        category: "Debug",
-        keybinding: formatKeybinding("Ctrl+F5"),
-        action: async () => {
-          const store = useDebugStore.getState();
-          const configs = await DebugConfigurationService.loadConfigs();
-          const cfg = configs.length > 0 ? { ...configs[0], debugOptions: { noDebug: true } } : undefined;
-          if (cfg) await store.startSession(cfg);
-        },
-      },
-      {
-        id: "debug.stop",
-        label: "Stop Debugging",
-        category: "Debug",
-        keybinding: formatKeybinding("Shift+F5"),
-        action: async () => {
-          const store = useDebugStore.getState();
-          if (store.activeSessionId) {
-            await store.stopSession(store.activeSessionId);
-          }
-        },
-      },
-      {
-        id: "view.debug",
-        label: "Show Debug",
-        category: "View",
-        keybinding: formatKeybinding("Ctrl+Shift+D"),
-        action: () => {
-          const ui = useUiStore.getState();
-          ui.setActivePanelInZone("left", "debug");
-          ui.setZoneVisibility("left", true);
-        },
-      },
-    ];
-
     const layoutCommands: CommandDefinition[] = [
       {
         id: "layout.preset.default",
@@ -552,8 +442,6 @@ export function ShellLayout() {
     const unreg4 = registerCommandProvider(() => layoutCommands);
     const unreg5 = registerCommandProvider(() => themeCommands);
     const unreg6 = registerCommandProvider(() => visibilityCommands);
-    const unreg7 = registerCommandProvider(() => debugCommands);
-
     return () => {
       unreg1();
       unreg2();
@@ -561,7 +449,6 @@ export function ShellLayout() {
       unreg4();
       unreg5();
       unreg6();
-      unreg7();
     };
   }, [toggleZone, setActivePanelInZone]);
 

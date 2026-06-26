@@ -14,7 +14,7 @@ Quantum is engineered to be an IDE-grade desktop code editor that runs locally a
 * **High Efficiency:** Low memory overhead and fast startup, utilizing Rust for system operations and PTY management.
 * **Extensibility first:** A fully sandboxed JavaScript extension host allows third-party developers to register custom commands, add UI views, contribute status bar items, and interface directly with LSP servers.
 * **Familiar & Adaptable Workbench:** A highly customizable VS Code-inspired layout featuring detachable panels, custom status/title bars, and flexible docking zones.
-* **Deep Tooling Integration:** Out-of-the-box support for Language Server Protocol (LSP), Debug Adapter Protocol (DAP), and multi-tier Git repository management.
+* **Deep Tooling Integration:** Out-of-the-box support for Language Server Protocol (LSP), a layered Execution Engine (run code, manage processes, pipe output), and multi-tier Git repository management.
 
 ---
 
@@ -26,7 +26,7 @@ Quantum is structured as a hybrid desktop application utilizing **Tauri 2** as t
 The backend compiles to native machine code, running on the user's local operating system. It holds full system permissions and communicates with the frontend via Tauri's JSON-RPC-based IPC (Inter-Process Communication) bridge.
 * **File System Operations:** Fast recursive directory reading, `.gitignore`-aware file tree builders, and CRUD commands.
 * **Process Management:** Native PTY (Pseudo-Terminal) spawning, terminal session resizing, and shell shell-path detection.
-* **Process Execution:** Launches debug servers (DAP), git binaries, and language servers (LSP), handling standard inputs/outputs.
+* **Process Execution:** Launches user code (Execution Engine via PTY), git binaries, and language servers (LSP), handling standard inputs/outputs.
 
 ### The WebView Workspace (Frontend)
 The frontend runs within a sandboxed WebView instance. It manages the user interface, renders the code editor (Monaco), displays terminal outputs (xterm.js), and houses the core state machines.
@@ -46,7 +46,8 @@ graph TD
             PTY[PTY Session Manager]:::rust
             FS[Native File System]:::rust
             GIT[Git Wrapper / Shell Exec]:::rust
-            DAP[DAP / LSP Process Host]:::rust
+            EXEC[Execution Engine / PTY]:::rust
+            LSP[LSP Process Host]:::rust
         end
     end
 
@@ -109,7 +110,7 @@ To learn more about specific systems in Quantum, explore the following pages:
 * **[Code Editor](file:///C:/Users/Bhavin/Videos/WEB dev/Code-editor/Documentation/CodeEditor.md):** Monaco features, multi-tabs, document outlines, and Markdown live previews.
 * **[Terminal Integration](file:///C:/Users/Bhavin/Videos/WEB dev/Code-editor/Documentation/Terminal.md):** PTY setups, shell selection, and customization settings.
 * **[Source Control](file:///C:/Users/Bhavin/Videos/WEB dev/Code-editor/Documentation/SourceControl.md):** Staging, committing, stashes, worktrees, bisecting, and GitHub OAuth integration.
-* **[Debugging (DAP)](file:///C:/Users/Bhavin/Videos/WEB dev/Code-editor/Documentation/Debugging.md):** launch.json setup, stepping commands, breakpoints, and the Debug REPL.
+* **[Execution Engine](file:///C:/Users/Bhavin/Videos/WEB dev/Code-editor/Documentation/Debugging.md):** Run files, manage processes, language detection, and output terminal.
 * **[LSP Support](file:///C:/Users/Bhavin/Videos/WEB dev/Code-editor/Documentation/LSP.md):** Language server lifecycle, Monaco bridge, and Pyright integration.
 * **[Extension Host](file:///C:/Users/Bhavin/Videos/WEB dev/Code-editor/Documentation/ExtensionSystem.md):** Custom command registries, manifest settings, and extension APIs.
 * **[Settings & Themes](file:///C:/Users/Bhavin/Videos/WEB dev/Code-editor/Documentation/SettingsThemes.md):** System configurations, Custom CSS overrides, Theme Editor, and Hotkeys.

@@ -254,15 +254,21 @@ pub async fn reveal_in_explorer(path: String) -> Result<(), String> {
 }
 
 #[tauri::command]
-pub async fn list_files(root: String) -> Result<Vec<String>, String> {
+pub async fn list_files(
+    root: String,
+    max_depth: Option<u32>,
+) -> Result<(Vec<String>, bool), String> {
+    let max_depth = max_depth.unwrap_or(8);
     let root_path = PathBuf::from(&root);
     tauri::async_runtime::spawn_blocking(move || {
         if !root_path.exists() {
             return Err("Root path does not exist".to_string());
         }
+        let max_entries: usize = 50_000;
         let mut files = Vec::new();
         let walker = WalkDir::new(&root_path)
             .min_depth(1)
+            .max_depth(max_depth as usize)
             .follow_links(false)
             .into_iter()
             .filter_entry(|e| {
@@ -295,13 +301,16 @@ pub async fn list_files(root: String) -> Result<Vec<String>, String> {
                 true
             });
         for entry in walker.flatten() {
+            if files.len() >= max_entries {
+                return Ok((files, true));
+            }
             if entry.file_type().is_file() {
                 if let Ok(rel_path) = entry.path().strip_prefix(&root_path) {
                     files.push(rel_path.to_string_lossy().into_owned());
                 }
             }
         }
-        Ok(files)
+        Ok((files, false))
     })
     .await
     .map_err(|e| format!("Task join error: {}", e))?

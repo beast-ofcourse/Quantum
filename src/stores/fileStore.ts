@@ -25,6 +25,7 @@ import {
 	applyCustomOrder,
 	findCommonParent,
 } from "@/lib/pathUtils";
+import { useToastStore } from "@/stores/toastStore";
 import type {
 	FileEntry,
 	FileNode,
@@ -58,7 +59,7 @@ let flatFileCacheTimer: ReturnType<typeof setTimeout> | null = null;
 
 async function rebuildFlatFileIndex(root: string): Promise<void> {
 	try {
-		const relPaths = await listFiles(root);
+		const [relPaths] = await listFiles(root, 8);
 		const sep = root.includes("\\") ? "\\" : "/";
 		flatFileCache = relPaths.map((rel) => {
 			const parts = rel.split(/[/\\]/);
@@ -221,6 +222,7 @@ interface FileState {
 	selectedFile: string | null;
 	loading: boolean;
 	error: string | null;
+	treeTruncated: boolean;
 	showHidden: boolean;
 	lastRefreshed: number;
 	customOrder: Record<string, string[]>;
@@ -256,6 +258,7 @@ export const useFileStore = create<FileState>()(
 			selectedFile: null,
 			loading: false,
 			error: null,
+			treeTruncated: false,
 			showHidden: false,
 			lastRefreshed: 0,
 			customOrder: {},
@@ -281,6 +284,7 @@ export const useFileStore = create<FileState>()(
 						maxDepth: SHALLOW_DEPTH,
 						includeHidden: get().showHidden,
 					});
+					const truncated = result.truncated ?? false;
 					const tree = await buildTreeAsync(
 						path,
 						result.entries,
@@ -291,13 +295,19 @@ export const useFileStore = create<FileState>()(
 					set({
 						fileTree: sorted,
 						loading: false,
+						treeTruncated: truncated,
 						lastRefreshed: Date.now(),
 						expanded: { [path]: true },
 						selectedFile: null,
 					});
-					await setupWatcher(path, () => get().refreshTree());
-					// Build the flat search index in the background — non-blocking.
-					scheduleFlatRebuild(path);
+					// Skip recursive watcher for huge trees — it'd spam refreshes.
+					if (!truncated) {
+						await setupWatcher(path, () => get().refreshTree());
+					}
+					// Build flat search index in background only if tree is manageable.
+					if (!truncated) {
+						scheduleFlatRebuild(path);
+					}
 				} catch (err) {
 					set({
 						error: err instanceof Error ? err.message : String(err),
@@ -368,6 +378,7 @@ export const useFileStore = create<FileState>()(
 					loadingDirs: new Set(),
 					selectedFile: null,
 					error: null,
+					treeTruncated: false,
 				});
 			},
 
@@ -383,6 +394,7 @@ export const useFileStore = create<FileState>()(
 						maxDepth: SHALLOW_DEPTH,
 						includeHidden: showHidden,
 					});
+					const truncated = result.truncated ?? false;
 					const tree = await buildTreeAsync(
 						rootPath,
 						result.entries,
@@ -390,7 +402,7 @@ export const useFileStore = create<FileState>()(
 						showHidden,
 					);
 					const sorted = applyCustomOrder(tree, get().customOrder);
-					set({ fileTree: sorted, lastRefreshed: Date.now() });
+					set({ fileTree: sorted, treeTruncated: truncated, lastRefreshed: Date.now() });
 
 					// Re-expand directories that were open before the refresh.
 					const expandedPaths = Object.entries(expanded)
@@ -405,8 +417,10 @@ export const useFileStore = create<FileState>()(
 						}
 					}
 
-					// Rebuild the flat search index.
-					scheduleFlatRebuild(rootPath);
+					// Rebuild flat search index only if tree is manageable.
+					if (!truncated) {
+						scheduleFlatRebuild(rootPath);
+					}
 				} catch (err) {
 					console.error("[fileStore] refresh failed:", err);
 					set({ error: err instanceof Error ? err.message : String(err) });
@@ -666,10 +680,31 @@ export const useFileStore = create<FileState>()(
 			onRehydrateStorage: () => (state) => {
 				if (!state?.rootPath) return;
 				const stalePath = state.rootPath;
+				const staleName = state.rootName || stalePath.split(/[/\\]/).filter(Boolean).pop() || "";
 				// Defer to next tick so the UI renders first.
 				setTimeout(async () => {
 					try {
 						if (!(await pathExists(stalePath))) {
+							useFileStore.setState({
+								rootPath: null,
+								rootName: "",
+								fileTree: [],
+								error: null,
+							});
+							return;
+						}
+						// Lightweight head-count: if root has way too many immediate
+						// children, skip auto-reopen to avoid freeze on restart.
+						const probe = await readDirectory({
+							path: stalePath,
+							maxDepth: 1,
+							includeHidden: state.showHidden ?? false,
+						});
+						if (probe.entries.length > 10_000) {
+							useToastStore.getState().addToast(
+								"warn",
+								`"${staleName}" is very large (${probe.entries.length} items) — open manually to avoid freezing.`,
+							);
 							useFileStore.setState({
 								rootPath: null,
 								rootName: "",

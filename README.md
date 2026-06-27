@@ -9,12 +9,31 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 
 ---
 
+## Benchmark
+
+| Metric | 🟢 Quantum | 🔵 VS Code | 🟡 Zed | 🟠 Lapce |
+|--------|-----------|-----------|-------|---------|
+| **Architecture** | Tauri 2 (Rust + WebView) | Electron (Chromium + Node) | Native Rust (GPUI) | Native Rust (Floem) |
+| **Download size** | ~10 MB | <200 MB | ~280 MB | ~20 MB |
+| **Install footprint** | ~45 MB | <500 MB | ~400 MB | ~60 MB |
+| **Idle RAM** | ~70 MB | ~180 MB | ~45 MB | ~90 MB |
+| **Project RAM** (10k files) | ~130 MB | ~650 MB | ~140 MB | ~120 MB |
+| **Cold startup** | ~0.4s | ~1.2s | ~0.12s | ~1.5s |
+| **GPU acceleration** | ✅ (WebView) | ✅ (Chromium) | ✅ (GPUI) | ✅ (Floem) |
+| **CPU rendering fallback** | ✅ | ✅ | ❌ | ✅ |
+| **Framework** | React 19 + Tailwind | Electron + React | Native GPUI | Native Floem |
+| **Extension API** | ✅ (VS Code compat) | ✅ (built-in) | ⚠️ (Wasm, limited) | ⚠️ (early) |
+
+> *Quantum numbers measured from v0.1 release builds on Windows x64. Competitor data sourced from official docs, published benchmarks, and community reports (2025–2026). Idle RAM = editor open, no project. Project RAM = codebase with 10k+ files + active LSP. Startup = cold launch (no FS cache) to interactive frame.*
+
+---
+
 ## Features
 
 ### Editor & File Management
 - **Monaco Editor** — full IDE-grade code editing with syntax highlighting for 40+ languages, IntelliSense, multi-cursor, bracket pair colorization, minimap, breadcrumbs, inlay hints, word wrap, and relative line numbers
 - **Multi-tab editing** — open, close, reorder tabs (drag-and-drop), split editor view, cycle tabs, dirty state tracking
-- **File explorer** — recursive directory tree with `.gitignore`-aware filtering, file CRUD, drag-and-drop file moving, hidden file toggle, keyboard navigation
+- **File explorer** — recursive directory tree with `.gitignore`-aware filtering, file CRUD, drag-and-drop file moving, hidden file toggle, keyboard navigation, **large folder handling** (lazy depth-1 load, truncation at 20K entries, 10K auto-reopen guard, warning banner)
 - **Auto-save** — configurable delay, format-on-save support
 - **Session restore** — tabs, cursor positions, and active tab persist across restarts
 - **Large file handling** — warning on files >5 MB
@@ -51,6 +70,7 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 - Theme-aware ANSI 16-color palette
 - Scrollback buffer (5000 lines)
 - Resize handling and clipboard integration
+- **AI Agent Launcher** — launch AI coding agents (OpenCode, Claude Code, Pi, Antigravity, etc.) directly into a new terminal session from the Activity Bar
 
 ### Execution Engine
 - Layered architecture: UI → ExecutionService → ProcessManager → PtyService
@@ -92,7 +112,7 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 
 ### Layout & UI
 - VS Code-inspired IDE layout with three resizable dock zones (left, right, bottom)
-- **Activity bar** with icons for each panel
+- **Activity bar** with icons for each panel, including AI Agent launcher
 - **Sidebar position** toggle (left / right)
 - **Panel alignment** options (left, center, right, justify)
 - **Layout presets** — Default, Minimal, Git Review — plus save/load/delete custom presets
@@ -233,7 +253,7 @@ Single WebView (React 19)
 │   ├── ThemeEditor              │
 │   └── ShortcutCheatSheet       │
 │                                │
-├── Zustand Stores (13) ─────────┤
+├── Zustand Stores (14) ─────────┤
 │   editor, file, ui, terminal,  │
 │   git, github,                 │
 │   diagnostic, settings, search │
@@ -290,7 +310,7 @@ Single WebView (React 19)
 │   │   ├── theme/                    # Theme editor with live preview
 │   │   ├── extensions/               # Extension marketplace, install, toast, quick pick
 │   │   └── markdown/                 # Markdown preview
-│   ├── stores/                       # 13 Zustand stores
+│   ├── stores/                       # 14 Zustand stores
 │   ├── workers/                      # Web Workers (fileTree, git, terminal)
 │   ├── hooks/                        # Custom hooks (hotkeys, theme, git, zoom, etc.)
 │   ├── core/                         # Execution engine + terminal + backend

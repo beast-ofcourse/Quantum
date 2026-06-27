@@ -144,51 +144,6 @@
     "ast_hash": "76165cd340704cc59abd1c7c9f77a431",
     "semantic_hash": "76165cd340704cc59abd1c7c9f77a431"
   },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\components\\debug\\BreakpointsPanel.tsx": {
-    "mtime": 1780930887.3784676,
-    "ast_hash": "fc916bd13ee866c1ae2734584a3286f6",
-    "semantic_hash": "fc916bd13ee866c1ae2734584a3286f6"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\components\\debug\\CallStackPanel.tsx": {
-    "mtime": 1780930698.1258962,
-    "ast_hash": "b5febc03ca65f36ff8fa77d44718f8cf",
-    "semantic_hash": "b5febc03ca65f36ff8fa77d44718f8cf"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\components\\debug\\DebugConfigDialog.tsx": {
-    "mtime": 1781236335.6854155,
-    "ast_hash": "34994f049e7409c4bc4e72f4b64cb8a3",
-    "semantic_hash": "34994f049e7409c4bc4e72f4b64cb8a3"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\components\\debug\\DebugSidebar.tsx": {
-    "mtime": 1780931029.1603625,
-    "ast_hash": "0943e57f54934c7ce2834e83c5c5d9f8",
-    "semantic_hash": "0943e57f54934c7ce2834e83c5c5d9f8"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\components\\debug\\DebugToolbar.tsx": {
-    "mtime": 1781087668.558279,
-    "ast_hash": "b9ffa30b008553c72b8cc011fcae0e2a",
-    "semantic_hash": "b9ffa30b008553c72b8cc011fcae0e2a"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\components\\debug\\RunButton.tsx": {
-    "mtime": 1781708921.4003882,
-    "ast_hash": "6ddb4b0b13c16d53edafaac56166b8b6",
-    "semantic_hash": "6ddb4b0b13c16d53edafaac56166b8b6"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\components\\debug\\VariablesPanel.tsx": {
-    "mtime": 1780930791.5860095,
-    "ast_hash": "dba410d102c1d7c36b4167e3982e5666",
-    "semantic_hash": "dba410d102c1d7c36b4167e3982e5666"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\components\\debug\\WatchPanel.tsx": {
-    "mtime": 1780930988.8117614,
-    "ast_hash": "e5a4b2b3b25e963bf7d4a93bec56e1e0",
-    "semantic_hash": "e5a4b2b3b25e963bf7d4a93bec56e1e0"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\components\\debug\\index.ts": {
-    "mtime": 1780930741.6553829,
-    "ast_hash": "494e6dd393a8848b1c37f953bfe25ff0",
-    "semantic_hash": "494e6dd393a8848b1c37f953bfe25ff0"
-  },
   "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\components\\editor\\Breadcrumbs.tsx": {
     "mtime": 1780995992.5276246,
     "ast_hash": "913cb8637da866daa4a307f53c24d07a",
@@ -599,11 +554,6 @@
     "ast_hash": "e2b398254925191b0d86c98343dcb03e",
     "semantic_hash": "e2b398254925191b0d86c98343dcb03e"
   },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\components\\terminal\\DebugConsolePanel.tsx": {
-    "mtime": 1780749253.3205495,
-    "ast_hash": "e977e34fc6a590863485aeaddb60f4df",
-    "semantic_hash": "e977e34fc6a590863485aeaddb60f4df"
-  },
   "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\components\\terminal\\OutputPanel.tsx": {
     "mtime": 1780749226.9090338,
     "ast_hash": "0aa34a4064782f6a20586ab0c4e6014b",
@@ -854,11 +804,6 @@
     "ast_hash": "f24e9042ee46d1c85b48bb8c3baa99f0",
     "semantic_hash": "f24e9042ee46d1c85b48bb8c3baa99f0"
   },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\hooks\\useDebugDecorations.ts": {
-    "mtime": 1780977303.3164432,
-    "ast_hash": "121ae1dc7aa3b1a947c790a05f252f10",
-    "semantic_hash": "121ae1dc7aa3b1a947c790a05f252f10"
-  },
   "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\hooks\\useEditorHotkeys.ts": {
     "mtime": 1780725412.18072,
     "ast_hash": "6529e7523a9055e8a9cc5eecdec75c0d",
@@ -924,11 +869,6 @@
     "ast_hash": "d1046d94e722163c9a9bbfa26e535168",
     "semantic_hash": "d1046d94e722163c9a9bbfa26e535168"
   },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\lib\\codeLensProvider.ts": {
-    "mtime": 1781097421.1358366,
-    "ast_hash": "2094457c5739ea5bbf2abf05ee090b3f",
-    "semantic_hash": "2094457c5739ea5bbf2abf05ee090b3f"
-  },
   "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\lib\\commandRegistry.ts": {
     "mtime": 1780740205.876647,
     "ast_hash": "cc0cf3b64cc1ee5719ca9202437602ff",
@@ -943,31 +883,6 @@
     "mtime": 1780904392.2441814,
     "ast_hash": "2d7de873056fcc94329947a94ccab311",
     "semantic_hash": "2d7de873056fcc94329947a94ccab311"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\lib\\dap\\index.ts": {
-    "mtime": 1780930295.4673936,
-    "ast_hash": "885e9810f7ca1b7c3698757cc5ae911e",
-    "semantic_hash": "885e9810f7ca1b7c3698757cc5ae911e"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\lib\\dap\\manager.ts": {
-    "mtime": 1780977312.18528,
-    "ast_hash": "23850796bb09b1a3d1ffa4b86a921471",
-    "semantic_hash": "23850796bb09b1a3d1ffa4b86a921471"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\lib\\dap\\protocol.ts": {
-    "mtime": 1780977301.9653454,
-    "ast_hash": "25a59db757c40564c3efac0c72e4ea43",
-    "semantic_hash": "25a59db757c40564c3efac0c72e4ea43"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\lib\\dap\\transport.ts": {
-    "mtime": 1780977286.4954915,
-    "ast_hash": "2cb41c74186a4d29ffab0cdf4f172eaa",
-    "semantic_hash": "2cb41c74186a4d29ffab0cdf4f172eaa"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\lib\\debugConfiguration.ts": {
-    "mtime": 1781252628.481913,
-    "ast_hash": "5945def87a870f2a2d1ccaa2bdbc01e6",
-    "semantic_hash": "5945def87a870f2a2d1ccaa2bdbc01e6"
   },
   "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\lib\\defaultIconPack.ts": {
     "mtime": 1781078461.839815,
@@ -1149,11 +1064,6 @@
     "ast_hash": "2d955a7f190a2258ff34c1d1a819fd91",
     "semantic_hash": "2d955a7f190a2258ff34c1d1a819fd91"
   },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\stores\\debugStore.ts": {
-    "mtime": 1780977377.0925388,
-    "ast_hash": "c683a794931afed7ef008528284597e9",
-    "semantic_hash": "c683a794931afed7ef008528284597e9"
-  },
   "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\stores\\diagnosticStore.ts": {
     "mtime": 1780996167.4833884,
     "ast_hash": "dd158cac919a3e4019cf60970a606827",
@@ -1313,11 +1223,6 @@
     "mtime": 1781097261.550816,
     "ast_hash": "611b0f4f347bbe4a0c617c5e72cf9a7b",
     "semantic_hash": "611b0f4f347bbe4a0c617c5e72cf9a7b"
-  },
-  "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\types\\debug.ts": {
-    "mtime": 1780930958.3381362,
-    "ast_hash": "addf092c7cc6e07a63519cebe7fbf42c",
-    "semantic_hash": "addf092c7cc6e07a63519cebe7fbf42c"
   },
   "C:\\Users\\Bhavin\\Videos\\WEB dev\\Code-editor\\src\\types\\editor.ts": {
     "mtime": 1781238678.162289,
@@ -1558,5 +1463,90 @@
     "mtime": 1780804524.1050992,
     "ast_hash": "5cd86cb10ea3fd3127a1e434cf010bcb",
     "semantic_hash": "5cd86cb10ea3fd3127a1e434cf010bcb"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\execution\\\\types.ts": {
+    "mtime": 1782483310.4205039,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\execution\\\\LanguageDetector.ts": {
+    "mtime": 1782483310.420511,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\execution\\\\RuntimeResolver.ts": {
+    "mtime": 1782483310.4205134,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\execution\\\\CommandBuilder.ts": {
+    "mtime": 1782483310.4205148,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\execution\\\\ProcessManager.ts": {
+    "mtime": 1782483310.4205155,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\execution\\\\ProcessRegistry.ts": {
+    "mtime": 1782483310.420517,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\execution\\\\TaskQueue.ts": {
+    "mtime": 1782483310.420518,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\execution\\\\OutputParser.ts": {
+    "mtime": 1782483310.4205189,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\execution\\\\ExecutionService.ts": {
+    "mtime": 1782483310.4205203,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\terminal\\\\TerminalEvents.ts": {
+    "mtime": 1782483310.4205213,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\terminal\\\\TerminalAdapter.ts": {
+    "mtime": 1782483310.420522,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\terminal\\\\PtyService.ts": {
+    "mtime": 1782483310.4205298,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\backend\\\\spawn.ts": {
+    "mtime": 1782483310.420531,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\backend\\\\ipc.ts": {
+    "mtime": 1782483310.4205322,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\core\\\\backend\\\\permissions.ts": {
+    "mtime": 1782483310.4205334,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\ui\\\\RunButton.tsx": {
+    "mtime": 1782483310.4205346,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
+  },
+  "C:\\\\Users\\\\Bhavin\\\\Videos\\\\WEB dev\\\\Code-editor\\\\src\\\\ui\\\\StopButton.tsx": {
+    "mtime": 1782483310.4205358,
+    "ast_hash": "updated",
+    "semantic_hash": "updated"
   }
 }

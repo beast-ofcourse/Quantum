@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useCallback, useRef, lazy, Suspense } from "react";
 import { ActivityBar } from "@/components/layout/ActivityBar";
 import { Dock } from "@/components/layout/Dock";
 import { EditorArea } from "@/components/layout/EditorArea";
@@ -6,18 +6,21 @@ import { EditorArea } from "@/components/layout/EditorArea";
 import { Resizer } from "@/components/layout/Resizer";
 import { StatusBar } from "@/components/layout/StatusBar";
 import { TitleBar } from "@/components/layout/TitleBar";
-import { CommandPalette } from "@/components/command/CommandPalette";
 import { useSearchStore } from "@/stores/searchStore";
-import { ShortcutCheatSheet } from "@/components/command/ShortcutCheatSheet";
-import { SettingsPanel } from "@/components/settings/SettingsPanel";
-import { ThemeEditor } from "@/components/theme/ThemeEditor";
 import { ToastContainer } from "@/components/extensions/ToastContainer";
 import { QuickPickModal } from "@/components/extensions/QuickPickModal";
+
+const CommandPalette = lazy(() => import("@/components/command/CommandPalette").then(m => ({ default: m.CommandPalette })));
+const ShortcutCheatSheet = lazy(() => import("@/components/command/ShortcutCheatSheet").then(m => ({ default: m.ShortcutCheatSheet })));
+const SettingsPanel = lazy(() => import("@/components/settings/SettingsPanel").then(m => ({ default: m.SettingsPanel })));
+const ThemeEditor = lazy(() => import("@/components/theme/ThemeEditor").then(m => ({ default: m.ThemeEditor })));
 import { useHotkey } from "@/hooks/useHotkey";
 import { getCurrentEditor } from "@/extensions/editorRef";
 import { useTerminalHotkeys } from "@/hooks/useTerminalHotkeys";
 import { useZoomHotkeys } from "@/hooks/useZoomHotkeys";
+import { useZenHotkeys } from "@/hooks/useZenHotkeys";
 import { useUiStore } from "@/stores/uiStore";
+import { useZenStore } from "@/stores/zenStore";
 import { useFileStore } from "@/stores/fileStore";
 import { useEditorStore } from "@/stores/editorStore";
 import { useTerminalStore } from "@/stores/terminalStore";
@@ -29,8 +32,7 @@ import { formatKeybinding } from "@/lib/platform";
 import { registerCommandProvider } from "@/lib/commandRegistry";
 import { useToastStore } from "@/stores/toastStore";
 import { useModalStore } from "@/stores/modalStore";
-import { useDebugStore } from "@/stores/debugStore";
-import { DebugConfigurationService } from "@/lib/debugConfiguration";
+
 import { loadSession, saveSession } from "@/lib/sessionRestore";
 import { BUILT_IN_PRESET_NAMES } from "@/lib/layoutPresets";
 import type { CommandDefinition } from "@/types/commands";
@@ -46,6 +48,8 @@ export function ShellLayout() {
 
   const activityBarVisible = useUiStore((s) => s.activityBarVisible);
   const statusBarVisible = useUiStore((s) => s.statusBarVisible);
+
+  const isZen = useZenStore((s) => s.isZen);
 
   const [commandOpen, setCommandOpen] = useState(false);
   // QuickOpen removed — unified search bar in TitleBar handles it
@@ -170,6 +174,7 @@ export function ShellLayout() {
   });
   useTerminalHotkeys();
   useZoomHotkeys();
+  useZenHotkeys();
   useHotkey({
     combo: "mod+.",
     commandId: "editor.quickFix",
@@ -188,58 +193,7 @@ export function ShellLayout() {
     },
   });
 
-  // Debug hotkeys
-  useHotkey({
-    combo: "F5",
-    commandId: "debug.start",
-    description: "Start/Continue Debugging",
-    handler: async () => {
-      const store = useDebugStore.getState();
-      if (store.activeSessionId) {
-        const s = store.sessions.find((s) => s.id === store.activeSessionId);
-        if (s && (s.status === "paused" || s.status === "stepping")) {
-          await store.continue();
-          return;
-        }
-        if (s && (s.status === "running")) return;
-      }
-      const configs = await DebugConfigurationService.loadConfigs();
-      const cfg = configs.length > 0 ? configs[0] : undefined;
-      if (cfg) await store.startSession(cfg);
-    },
-  });
-  useHotkey({
-    combo: "mod+F5",
-    commandId: "debug.runWithoutDebug",
-    description: "Run Without Debugging",
-    handler: async () => {
-      const store = useDebugStore.getState();
-      const configs = await DebugConfigurationService.loadConfigs();
-      const cfg = configs.length > 0 ? { ...configs[0], debugOptions: { noDebug: true } } : undefined;
-      if (cfg) await store.startSession(cfg);
-    },
-  });
-  useHotkey({
-    combo: "shift+F5",
-    commandId: "debug.stop",
-    description: "Stop Debugging",
-    handler: async () => {
-      const store = useDebugStore.getState();
-      if (store.activeSessionId) {
-        await store.stopSession(store.activeSessionId);
-      }
-    },
-  });
-  useHotkey({
-    combo: "ctrl+shift+d",
-    commandId: "view.debug",
-    description: "Show Debug",
-    handler: () => {
-      const ui = useUiStore.getState();
-      ui.setActivePanelInZone("left", "debug");
-      ui.setZoneVisibility("left", true);
-    },
-  });
+  // Debug hotkeys removed
 
   const registerCommands = useCallback(() => {
     const fileCommands: CommandDefinition[] = [
@@ -411,61 +365,13 @@ export function ShellLayout() {
       },
     ];
 
-    const debugCommands: CommandDefinition[] = [
+    const zenCommands: CommandDefinition[] = [
       {
-        id: "debug.start",
-        label: "Start/Continue Debugging",
-        category: "Debug",
-        keybinding: formatKeybinding("F5"),
-        action: async () => {
-          const store = useDebugStore.getState();
-          if (store.activeSessionId) {
-            const s = store.sessions.find((s) => s.id === store.activeSessionId);
-            if (s && (s.status === "paused" || s.status === "stepping")) {
-              await store.continue();
-              return;
-            }
-            if (s && (s.status === "running")) return;
-          }
-          const configs = await DebugConfigurationService.loadConfigs();
-          const cfg = configs.length > 0 ? configs[0] : undefined;
-          if (cfg) await store.startSession(cfg);
-        },
-      },
-      {
-        id: "debug.runWithoutDebug",
-        label: "Run Without Debugging",
-        category: "Debug",
-        keybinding: formatKeybinding("Ctrl+F5"),
-        action: async () => {
-          const store = useDebugStore.getState();
-          const configs = await DebugConfigurationService.loadConfigs();
-          const cfg = configs.length > 0 ? { ...configs[0], debugOptions: { noDebug: true } } : undefined;
-          if (cfg) await store.startSession(cfg);
-        },
-      },
-      {
-        id: "debug.stop",
-        label: "Stop Debugging",
-        category: "Debug",
-        keybinding: formatKeybinding("Shift+F5"),
-        action: async () => {
-          const store = useDebugStore.getState();
-          if (store.activeSessionId) {
-            await store.stopSession(store.activeSessionId);
-          }
-        },
-      },
-      {
-        id: "view.debug",
-        label: "Show Debug",
+        id: "view.toggleZenMode",
+        label: "Toggle Zen Mode",
         category: "View",
-        keybinding: formatKeybinding("Ctrl+Shift+D"),
-        action: () => {
-          const ui = useUiStore.getState();
-          ui.setActivePanelInZone("left", "debug");
-          ui.setZoneVisibility("left", true);
-        },
+        keybinding: formatKeybinding("Ctrl+Shift+Z"),
+        action: () => useZenStore.getState().toggleZen(),
       },
     ];
 
@@ -552,8 +458,7 @@ export function ShellLayout() {
     const unreg4 = registerCommandProvider(() => layoutCommands);
     const unreg5 = registerCommandProvider(() => themeCommands);
     const unreg6 = registerCommandProvider(() => visibilityCommands);
-    const unreg7 = registerCommandProvider(() => debugCommands);
-
+    const unreg7 = registerCommandProvider(() => zenCommands);
     return () => {
       unreg1();
       unreg2();
@@ -649,76 +554,113 @@ export function ShellLayout() {
 
   const isBottomMaximized = zones.bottom.isVisible && bottomMaximized;
 
+  const zenBody = (
+    <div className="flex min-h-0 flex-1">
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex min-h-0 flex-1 items-center justify-center">
+          {/* Left padding */}
+          <div
+            className="h-full shrink-0 cursor-col-resize hover:bg-accent/20 transition-colors relative"
+            style={{ flex: "0.2", minWidth: 40 }}
+          >
+            <div className="absolute right-0 top-[10%] h-[80%] w-px bg-border" />
+          </div>
+          {/* Centered editor */}
+          <div className="flex min-w-0 flex-1 flex-col max-w-[960px]">
+            <EditorArea hideTabs />
+          </div>
+          {/* Right padding */}
+          <div
+            className="h-full shrink-0 cursor-col-resize hover:bg-accent/20 transition-colors relative"
+            style={{ flex: "0.2", minWidth: 40 }}
+          >
+            <div className="absolute left-0 top-[10%] h-[80%] w-px bg-border" />
+          </div>
+        </div>
+        {/* Zen status bar */}
+        <footer className="flex h-5 shrink-0 items-center justify-between border-t border-border px-2 text-[11px] text-muted-foreground">
+          <span className="flex items-center gap-2">
+            <span className="text-primary font-medium">✦ ZEN</span>
+          </span>
+          <span className="text-muted-foreground/60">double Esc to exit</span>
+        </footer>
+      </div>
+    </div>
+  );
+
+  const normalBody = (
+    <div className="flex min-h-0 flex-1">
+      {isSidebarRight ? secondarySection : sidebarSection}
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <div
+          className={cn(
+            "flex min-h-0 flex-1",
+            zones.bottom.isVisible && "flex-col",
+          )}
+        >
+          {/* Editor area: hidden when bottom panel is maximized */}
+          {!isBottomMaximized && (
+            <div
+              className={cn(
+                "min-h-0 min-w-0 flex-1 editor-area",
+                zones.bottom.isVisible && "flex-1",
+              )}
+            >
+              <EditorArea />
+            </div>
+          )}
+
+          {zones.bottom.isVisible && (
+            <>
+              {/* Resizer: hidden when maximized since there's nothing to resize against */}
+              {!isBottomMaximized && (
+                <Resizer
+                  orientation="horizontal"
+                  ariaLabel="Resize terminal panel"
+                  onResize={(delta) =>
+                    setZoneSize("bottom", zones.bottom.size - delta)
+                  }
+                />
+              )}
+              <div
+                className={cn(
+                  "min-h-0 overflow-hidden",
+                  panelAlignClass,
+                  isBottomMaximized && "flex-1",
+                )}
+                style={
+                  isBottomMaximized
+                    ? { flex: "1 1 0%" }
+                    : {
+                        flex: `0 1 ${zones.bottom.size}px`,
+                        maxHeight: zones.bottom.size,
+                      }
+                }
+              >
+                <Dock zone="bottom" />
+              </div>
+            </>
+          )}
+        </div>
+
+        {statusBarVisible && <StatusBar />}
+      </div>
+
+      {isSidebarRight ? sidebarSection : secondarySection}
+    </div>
+  );
+
   return (
     <div className="flex h-screen w-screen flex-col overflow-hidden bg-background text-foreground shell-container">
       <TitleBar />
+      {isZen ? zenBody : normalBody}
 
-      <div className="flex min-h-0 flex-1">
-        {isSidebarRight ? secondarySection : sidebarSection}
+      {commandOpen && <Suspense fallback={null}><CommandPalette open={commandOpen} onClose={() => setCommandOpen(false)} /></Suspense>}
 
-        <div className="flex min-w-0 flex-1 flex-col">
-          <div
-            className={cn(
-              "flex min-h-0 flex-1",
-              zones.bottom.isVisible && "flex-col",
-            )}
-          >
-            {/* Editor area: hidden when bottom panel is maximized */}
-            {!isBottomMaximized && (
-              <div
-                className={cn(
-                  "min-h-0 min-w-0 flex-1 editor-area",
-                  zones.bottom.isVisible && "flex-1",
-                )}
-              >
-                <EditorArea />
-              </div>
-            )}
-
-            {zones.bottom.isVisible && (
-              <>
-                {/* Resizer: hidden when maximized since there's nothing to resize against */}
-                {!isBottomMaximized && (
-                  <Resizer
-                    orientation="horizontal"
-                    ariaLabel="Resize terminal panel"
-                    onResize={(delta) =>
-                      setZoneSize("bottom", zones.bottom.size - delta)
-                    }
-                  />
-                )}
-                <div
-                  className={cn(
-                    "min-h-0 overflow-hidden",
-                    panelAlignClass,
-                    isBottomMaximized && "flex-1",
-                  )}
-                  style={
-                    isBottomMaximized
-                      ? { flex: "1 1 0%" }
-                      : {
-                          flex: `0 1 ${zones.bottom.size}px`,
-                          maxHeight: zones.bottom.size,
-                        }
-                  }
-                >
-                  <Dock zone="bottom" />
-                </div>
-              </>
-            )}
-          </div>
-
-          {statusBarVisible && <StatusBar />}
-        </div>
-
-        {isSidebarRight ? sidebarSection : secondarySection}
-      </div>
-
-      <CommandPalette open={commandOpen} onClose={() => setCommandOpen(false)} />
-
-      <ShortcutCheatSheet open={shortcutOpen} onClose={() => setShortcutOpen(false)} />
-      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
-      <ThemeEditor open={themeEditorOpen} onClose={() => setThemeEditorOpen(false)} />
+      {shortcutOpen && <Suspense fallback={null}><ShortcutCheatSheet open={shortcutOpen} onClose={() => setShortcutOpen(false)} /></Suspense>}
+      {settingsOpen && <Suspense fallback={null}><SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} /></Suspense>}
+      {themeEditorOpen && <Suspense fallback={null}><ThemeEditor open={themeEditorOpen} onClose={() => setThemeEditorOpen(false)} /></Suspense>}
       <ToastContainer />
       <QuickPickModal />
     </div>

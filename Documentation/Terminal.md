@@ -17,6 +17,9 @@ The Rust backend detects available shells and defaults to the most appropriate s
 ### Tauri IPC Bridge
 The frontend xterm.js instance writes keystrokes to a Tauri IPC command. The Rust backend takes this input, feeds it into the PTY process, and streams back the output (standard output and standard error) to the frontend via event listeners. This asynchronous bridge ensures zero input latency.
 
+### Execution Engine Integration
+The same PTY backend powers the Execution Engine — when you click **Run** in the editor toolbar, the Execution Service spawns the target program via `PtyService.tauriSpawn()`. Output is piped through the same terminal infrastructure and displayed in the Terminal Panel. This means run output benefits from all terminal features: ANSI colors, scrollback, font customization, and theme sync.
+
 ---
 
 ## 2. Multi-Session Management
@@ -57,6 +60,34 @@ You can customize the terminal behavior inside the Settings panel (`Ctrl+,`) or 
   "terminal.integrated.cursorStyle": "block"
 }
 ```
+
+---
+
+## 5. AI Agent Launcher
+
+Quantum includes an **AI Agent Launcher** — a Bot icon in the Activity Bar that launches supported AI coding agents directly into a new terminal session.
+
+### How it works
+
+1. Click the **Bot icon** (`🤖`) in the Activity Bar
+2. Select an agent from the dropdown (OpenCode, Claude Code, Pi Agent, Antigravity CLI, KiloCode, Aider, Cursor CLI)
+3. A new terminal session opens with the agent's command pre-executed
+
+The agent list is configurable and persisted locally. You can add, remove, or update agents programmatically via the `useAiAgentStore`.
+
+### Default agents
+
+| Agent | Command |
+|-------|---------|
+| OpenCode | `opencode` |
+| Claude Code | `claude` |
+| Pi Agent | `pi` |
+| Antigravity CLI | `agy` |
+| KiloCode | `kilocode` |
+| Aider | `aider` |
+| Cursor CLI | `cursor` |
+
+---
 
 ### Customization Options
 * **Font Customization:** Set the terminal font size and family independently from the main editor font.

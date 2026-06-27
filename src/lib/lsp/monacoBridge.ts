@@ -13,34 +13,6 @@ function rangeFromLsp(r: {
 	};
 }
 
-const completionKindMap: Record<number, number> = {
-	1: 0, // Text
-	2: 1, // Method
-	3: 2, // Function
-	4: 3, // Constructor
-	5: 4, // Field
-	6: 5, // Variable
-	7: 6, // Class
-	8: 7, // Interface
-	9: 8, // Module
-	10: 9, // Property
-	11: 10, // Unit
-	12: 11, // Value
-	13: 12, // Enum
-	14: 13, // Keyword
-	15: 14, // Snippet
-	16: 15, // Color
-	17: 16, // File
-	18: 17, // Reference
-	19: 18, // Folder
-	20: 19, // EnumMember
-	21: 20, // Constant
-	22: 21, // Struct
-	23: 22, // Event
-	24: 23, // Operator
-	25: 24, // TypeParameter
-};
-
 export class MonacoBridge {
 	private disposables: { dispose(): void }[] = [];
 	private monaco: any;
@@ -79,43 +51,9 @@ export class MonacoBridge {
 		);
 
 		const monaco = this.monaco;
-		const { CompletionItemKind } = monaco.languages;
-		const getId = (kindId: number) =>
-			completionKindMap[kindId] ?? CompletionItemKind.Text;
 
-		this.disposables.push(
-			monaco.languages.registerCompletionItemProvider(this.languageId, {
-				triggerCharacters: [".", "(", ","],
-				provideCompletionItems: async (model: any, position: any) => {
-					const result = await this.client.requestCompletions(
-						model.uri.toString(),
-						position,
-					);
-					if (!result) return undefined;
-					// Range is required - use current position as fallback
-					const word = model.getWordUntilPosition(position);
-					const range = {
-						startLineNumber: position.lineNumber,
-						endLineNumber: position.lineNumber,
-						startColumn: word.startColumn,
-						endColumn: word.endColumn,
-					};
-					return {
-						suggestions: result.items.map((item: any) => ({
-							label: item.label,
-							kind: getId(item.kind),
-							detail: item.detail,
-							documentation:
-								typeof item.documentation === "string"
-									? item.documentation
-									: (item.documentation?.value ?? ""),
-							insertText: item.insertText ?? item.label,
-							range,
-						})),
-					};
-				},
-			}),
-		);
+		// Completion item provider is now registered by the CompletionEngine
+		// via bootstrap.ts. LSP completions flow through LspCompletionProvider.
 
 		this.disposables.push(
 			monaco.languages.registerHoverProvider(this.languageId, {

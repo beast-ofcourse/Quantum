@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from "react";
 import { getCurrentEditor, getMonacoModule } from "@/extensions/editorRef";
 import { useGitStore } from "@/stores/gitStore";
+import { useEditorStore } from "@/stores/editorStore";
 import type * as monaco from "@/lib/monaco-entry";
 
 export function useGitGutterDecorations(path: string | undefined) {
@@ -68,6 +69,12 @@ export function useGitGutterDecorations(path: string | undefined) {
   }, []);
 
   useEffect(() => {
+    // ponytail: skip git gutter decorations for large files
+    if (path) {
+      const tab = useEditorStore.getState().openTabs.find((t) => t.path === path);
+      if (tab?.isLargeFile) return;
+    }
+
     const unsubscribe = useGitStore.subscribe((state, prevState) => {
       if (pathRef.current && state.diffHunkCache !== prevState.diffHunkCache) {
         if (debounceRef.current) clearTimeout(debounceRef.current);

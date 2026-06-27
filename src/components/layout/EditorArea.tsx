@@ -9,11 +9,12 @@ import { EditorSplitView } from "@/components/editor/EditorSplitView";
 import { EditorEmptyState } from "@/components/editor/EditorEmptyState";
 import { WelcomePage } from "@/components/editor/WelcomePage";
 import { EditorSkeleton } from "@/components/ui/skeleton";
-import { DebugToolbar } from "@/components/debug/DebugToolbar";
-import { RunButton } from "@/components/debug/RunButton";
+
 import { Resizer } from "@/components/layout/Resizer";
 import { MarkdownPreview } from "@/components/markdown/MarkdownPreview";
 import { MarkdownEditorView } from "@/components/markdown/MarkdownEditorView";
+import { RunButton } from "@/ui/RunButton";
+import { StopButton } from "@/ui/StopButton";
 import { useEditorHotkeys } from "@/hooks/useEditorHotkeys";
 import { useFileChangeSync } from "@/hooks/useFileChangeSync";
 import { pickFiles, pickFolder } from "@/tauri";
@@ -23,7 +24,11 @@ const MonacoEditor = lazy(async () => {
   return { default: mod.MonacoEditor };
 });
 
-export function EditorArea() {
+interface EditorAreaProps {
+  hideTabs?: boolean;
+}
+
+export function EditorArea({ hideTabs }: EditorAreaProps) {
   const activePanel = useUiStore((s) => s.activePanel);
   const openTabs = useEditorStore((s) => s.openTabs);
   const activeTabId = useEditorStore((s) => s.activeTabId);
@@ -77,26 +82,28 @@ export function EditorArea() {
         <EditorSplitView />
       ) : (
         <>
-          <div className="flex h-8 shrink-0 border-b border-border">
-            {openTabs.length > 0 && <EditorTabs />}
-            {openTabs.length > 0 && (
-              <div className="ml-auto flex items-center gap-0.5 pr-1">
-                {isMd && (
-                  <button
-                    type="button"
-                    onClick={toggleMarkdownPreview}
-                    className="flex size-6 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
-                    title={markdownPreview ? "Show Source" : "Show Preview"}
-                  >
-                    {markdownPreview ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
-                  </button>
-                )}
-                <RunButton />
-              </div>
-            )}
-          </div>
-          {activeTab && <Breadcrumbs path={activeTab.path} />}
-          <DebugToolbar />
+          {!hideTabs && (
+            <div className="flex h-8 shrink-0 border-b border-border">
+              {openTabs.length > 0 && <EditorTabs />}
+              {openTabs.length > 0 && (
+                <div className="ml-auto flex items-center gap-0.5 pr-1">
+                  {isMd && (
+                    <button
+                      type="button"
+                      onClick={toggleMarkdownPreview}
+                      className="flex size-6 items-center justify-center rounded text-muted-foreground hover:bg-muted hover:text-foreground"
+                      title={markdownPreview ? "Show Source" : "Show Preview"}
+                    >
+                      {markdownPreview ? <EyeOff className="size-3.5" /> : <Eye className="size-3.5" />}
+                    </button>
+                  )}
+                  <RunButton />
+                  <StopButton />
+                </div>
+              )}
+            </div>
+          )}
+          {!hideTabs && activeTab && <Breadcrumbs path={activeTab.path} />}
           <div className="min-h-0 flex-1">
             {activeTab ? (
               isMd && markdownPreview ? (

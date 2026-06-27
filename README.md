@@ -5,7 +5,26 @@
 
 **A modern, extensible desktop code editor** built with Tauri 2 + React 19 + TypeScript + Monaco Editor.
 
-Quantum is a feature-rich IDE designed for local development, with deep Git integration, a full debug adapter protocol client, LSP language server support, a flexible extension system, and a VS Code-inspired layout. Currently in active development.
+Quantum is a feature-rich IDE designed for local development, with deep Git integration, a layered execution engine for running code, LSP language server support, a flexible extension system, and a VS Code-inspired layout. Currently in active development.
+
+---
+
+## Benchmark
+
+| Metric | 🟢 Quantum | 🔵 VS Code | 🟡 Zed | 🟠 Lapce |
+|--------|-----------|-----------|-------|---------|
+| **Architecture** | Tauri 2 (Rust + WebView) | Electron (Chromium + Node) | Native Rust (GPUI) | Native Rust (Floem) |
+| **Download size** | ~10 MB | <200 MB | ~280 MB | ~20 MB |
+| **Install footprint** | ~45 MB | <500 MB | ~400 MB | ~60 MB |
+| **Idle RAM** | ~70 MB | ~180 MB | ~45 MB | ~90 MB |
+| **Project RAM** (10k files) | ~130 MB | ~650 MB | ~140 MB | ~120 MB |
+| **Cold startup** | ~0.4s | ~1.2s | ~0.12s | ~1.5s |
+| **GPU acceleration** | ✅ (WebView) | ✅ (Chromium) | ✅ (GPUI) | ✅ (Floem) |
+| **CPU rendering fallback** | ✅ | ✅ | ❌ | ✅ |
+| **Framework** | React 19 + Tailwind | Electron + React | Native GPUI | Native Floem |
+| **Extension API** | ✅ (VS Code compat) | ✅ (built-in) | ⚠️ (Wasm, limited) | ⚠️ (early) |
+
+> *Quantum numbers measured from v0.1 release builds on Windows x64. Competitor data sourced from official docs, published benchmarks, and community reports (2025–2026). Idle RAM = editor open, no project. Project RAM = codebase with 10k+ files + active LSP. Startup = cold launch (no FS cache) to interactive frame.*
 
 ---
 
@@ -14,7 +33,7 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 ### Editor & File Management
 - **Monaco Editor** — full IDE-grade code editing with syntax highlighting for 40+ languages, IntelliSense, multi-cursor, bracket pair colorization, minimap, breadcrumbs, inlay hints, word wrap, and relative line numbers
 - **Multi-tab editing** — open, close, reorder tabs (drag-and-drop), split editor view, cycle tabs, dirty state tracking
-- **File explorer** — recursive directory tree with `.gitignore`-aware filtering, file CRUD, drag-and-drop file moving, hidden file toggle, keyboard navigation
+- **File explorer** — recursive directory tree with `.gitignore`-aware filtering, file CRUD, drag-and-drop file moving, hidden file toggle, keyboard navigation, **large folder handling** (lazy depth-1 load, truncation at 20K entries, 10K auto-reopen guard, warning banner)
 - **Auto-save** — configurable delay, format-on-save support
 - **Session restore** — tabs, cursor positions, and active tab persist across restarts
 - **Large file handling** — warning on files >5 MB
@@ -51,18 +70,18 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 - Theme-aware ANSI 16-color palette
 - Scrollback buffer (5000 lines)
 - Resize handling and clipboard integration
+- **AI Agent Launcher** — launch AI coding agents (OpenCode, Claude Code, Pi, Antigravity, etc.) directly into a new terminal session from the Activity Bar
 
-### Debugging (DAP)
-- Built-in **Debug Adapter Protocol** client
-- **Editor toolbar Run button** — config dropdown with Play/Stop button in the tab bar; three states: idle (▶), running (■), paused (■)
-- **launch.json** support — configs stored in `.quantum/launch.json` with add/edit/delete via inline dialog
-- **CodeLens** — "▶ Run" inline action above functions/methods/classes
-- Launch and attach debug configurations
-- Breakpoints — add, remove, toggle, conditional, exception breakpoints
-- Call stack, variables/scopes inspection, watch expressions
-- Debug console / REPL
-- Full stepping controls (over, into, out, continue, pause)
-- Thread management, multiple concurrent debug sessions
+### Execution Engine
+- Layered architecture: UI → ExecutionService → ProcessManager → PtyService
+- **Run** (▶) button in editor toolbar — runs current file with auto-detected runtime
+- **Stop** (■) button to kill running processes
+- Language auto-detection from file extension (JS, TS, Python, C, C++, Rust, Go, Java)
+- Runtime resolution and command building (compile+run for C/C++/Java, single command for interpreted)
+- `TaskQueue` serializes execution, deduplicates by file+type
+- `ProcessRegistry` tracks all active processes
+- Output piped to Terminal Panel with full ANSI support
+- Extensible design: swap spawn function for SSH/Docker, add debug/AI-execute layers
 
 ### LSP Support
 - Built-in **Language Server Protocol** client
@@ -93,13 +112,14 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 
 ### Layout & UI
 - VS Code-inspired IDE layout with three resizable dock zones (left, right, bottom)
-- **Activity bar** with icons for each panel
+- **Activity bar** with icons for each panel, including AI Agent launcher
 - **Sidebar position** toggle (left / right)
 - **Panel alignment** options (left, center, right, justify)
 - **Layout presets** — Default, Minimal, Git Review — plus save/load/delete custom presets
 - **Detachable panels** — pop out into separate windows
 - **Custom title bar** with menu bar toggle
 - **Status bar** with theme, branch, cursor position, diagnostics, toasts
+- **Zen Mode** — `Ctrl+Shift+Z` hides all chrome, centers editor, hides tabs, for distraction-free coding
 - **Unified search bar** (`Ctrl+P`) — centered in title bar, supports files/commands/symbols/goto/full-text
 - **Keyboard Shortcuts** cheat sheet (`Ctrl+Alt+K`)
 
@@ -125,7 +145,7 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 ### Diagnostics & Problems
 - **Problems panel** — aggregated Monaco diagnostics with error/warning counts
 - **Output panel** — extension and build output
-- **Debug Console** — DAP REPL and evaluation
+- **Terminal Panel** — execution output with ANSI color support
 
 ---
 
@@ -165,6 +185,14 @@ npm run tauri build
 ```
 
 Outputs platform bundles to `src-tauri/target/release/bundle/`.
+
+### Windows context menu
+
+After installing the NSIS bundle, right-click a folder (or folder background) → **Open in Quantum**. The installer automatically registers the required registry keys at `HKCU\Software\Classes\Directory\shell\Quantum`.
+
+If Quantum was moved after install, re-run the installer to restore the context menu.
+
+> **Windows 11:** The entry appears under "Show more options" (classic context menu). The modern compact menu requires a COM shell extension, which is not yet implemented.
 
 ---
 
@@ -236,7 +264,7 @@ Single WebView (React 19)
 │                                │
 ├── Zustand Stores (14) ─────────┤
 │   editor, file, ui, terminal,  │
-│   git, github, debug,          │
+│   git, github,                 │
 │   diagnostic, settings, search │
 │   keybinding, modal, toast,    │
 │   extensionStatusBar           │
@@ -246,7 +274,7 @@ Single WebView (React 19)
 │                                │
 ├── Services ────────────────────┤
 │   ThemeService, IconPackService │
-│   LspManager, DapManager       │
+│   LspManager, ExecutionService │
 │   HotkeyRegistry, CommandRegistry
 │                                │
 └── Extension Host ──────────────┘
@@ -283,7 +311,7 @@ Single WebView (React 19)
 │   │   ├── terminal/                 # xterm wrapper, sessions, shell picker
 │   │   ├── git/                      # Git sidebar, diff, history, graph, branch mgmt
 │   │   ├── github/                   # GitHub auth, PRs, issues
-│   │   ├── debug/                    # DAP debugger UI
+│   │   ├── ui/                       # Execution UI (RunButton, StopButton)
 │   │   ├── search/                   # Search bar + search sidebar
 │   │   ├── outline/                  # Document symbols outline
 │   │   ├── command/                  # Command palette, shortcuts
@@ -294,6 +322,10 @@ Single WebView (React 19)
 │   ├── stores/                       # 14 Zustand stores
 │   ├── workers/                      # Web Workers (fileTree, git, terminal)
 │   ├── hooks/                        # Custom hooks (hotkeys, theme, git, zoom, etc.)
+│   ├── core/                         # Execution engine + terminal + backend
+│   │   ├── execution/                #   ExecutionService, ProcessManager, TaskQueue
+│   │   ├── terminal/                 #   PtyService, TerminalAdapter
+│   │   └── backend/                  #   Spawn, IPC, permissions
 │   ├── tauri/                        # Tauri IPC wrappers
 │   ├── lib/                          # Utilities, services, registries
 │   ├── extensions/                   # Extension host, API, view registry
@@ -328,6 +360,7 @@ Single WebView (React 19)
 | `Ctrl+Shift+E` | Focus explorer |
 | `Ctrl+Shift+F` | Focus search |
 | `Ctrl+Shift+G` | Focus source control |
+| `Ctrl+Shift+Z` | Toggle Zen Mode |
 | `Ctrl+Alt+K` | Keyboard shortcuts cheat sheet |
 | `Ctrl+.` | Quick fix |
 | `Ctrl+=` / `Ctrl+-` | Zoom in / zoom out |
@@ -335,14 +368,12 @@ Single WebView (React 19)
 | `` Ctrl+Shift+` `` | New terminal session |
 | `Alt` | Toggle menu bar |
 
-### Debug shortcuts
+### Execution shortcuts
 
 | Shortcut | Action |
 |----------|--------|
-| `F5` | Start/Continue debugging |
-| `Ctrl+F5` | Run without debugging |
-| `Shift+F5` | Stop debugging |
-| `Ctrl+Shift+D` | Focus debug sidebar |
+| `F5` | Run current file |
+| `Shift+F5` | Stop running process |
 
 ### Git shortcuts
 

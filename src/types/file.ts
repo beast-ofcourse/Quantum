@@ -17,6 +17,7 @@ export interface FileEntry {
 export interface ReadDirResult {
   entries: FileEntry[];
   gitignore: string | null;
+  truncated: boolean;
 }
 
 export interface FsChangeEvent {

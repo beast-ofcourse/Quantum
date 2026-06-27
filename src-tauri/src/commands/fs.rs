@@ -16,7 +16,10 @@ pub struct FileEntry {
 pub struct ReadDirResult {
     pub entries: Vec<FileEntry>,
     pub gitignore: Option<String>,
+    pub truncated: bool,
 }
+
+const MAX_WALK_ENTRIES: usize = 20_000;
 
 fn build_entry(path: &Path) -> Option<FileEntry> {
     let metadata = std::fs::symlink_metadata(path).ok()?;
@@ -39,7 +42,7 @@ fn is_hidden(path: &Path) -> bool {
         .unwrap_or(false)
 }
 
-fn walk_dir(path: &Path, max_depth: u32, include_hidden: bool) -> Vec<FileEntry> {
+fn walk_dir(path: &Path, max_depth: u32, include_hidden: bool) -> (Vec<FileEntry>, bool) {
     let mut entries: Vec<FileEntry> = Vec::new();
     let walker = WalkDir::new(path)
         .min_depth(1)
@@ -48,11 +51,14 @@ fn walk_dir(path: &Path, max_depth: u32, include_hidden: bool) -> Vec<FileEntry>
         .into_iter()
         .filter_entry(|e| include_hidden || !is_hidden(e.path()));
     for entry in walker.flatten() {
+        if entries.len() >= MAX_WALK_ENTRIES {
+            return (entries, true);
+        }
         if let Some(fe) = build_entry(entry.path()) {
             entries.push(fe);
         }
     }
-    entries
+    (entries, false)
 }
 
 fn read_gitignore(root: &Path) -> Option<String> {
@@ -80,9 +86,9 @@ pub async fn read_directory(
         if !meta.is_dir() {
             return Err(format!("Path is not a directory: {}", path));
         }
-        let entries = walk_dir(&root, max_depth, include_hidden);
+        let (entries, truncated) = walk_dir(&root, max_depth, include_hidden);
         let gitignore = read_gitignore(&root);
-        Ok(ReadDirResult { entries, gitignore })
+        Ok(ReadDirResult { entries, gitignore, truncated })
     })
     .await
     .map_err(|e| format!("Task join error: {}", e))?
@@ -246,3 +252,67 @@ pub async fn reveal_in_explorer(path: String) -> Result<(), String> {
     .await
     .map_err(|e| format!("Task join error: {}", e))?
 }
+
+#[tauri::command]
+pub async fn list_files(
+    root: String,
+    max_depth: Option<u32>,
+) -> Result<(Vec<String>, bool), String> {
+    let max_depth = max_depth.unwrap_or(8);
+    let root_path = PathBuf::from(&root);
+    tauri::async_runtime::spawn_blocking(move || {
+        if !root_path.exists() {
+            return Err("Root path does not exist".to_string());
+        }
+        let max_entries: usize = 50_000;
+        let mut files = Vec::new();
+        let walker = WalkDir::new(&root_path)
+            .min_depth(1)
+            .max_depth(max_depth as usize)
+            .follow_links(false)
+            .into_iter()
+            .filter_entry(|e| {
+                let name = e.file_name().to_string_lossy();
+                if name.starts_with('.') && name != "." && name != ".." {
+                    return false;
+                }
+                if e.file_type().is_dir() {
+                    return !matches!(
+                        name.as_ref(),
+                        "node_modules"
+                            | "target"
+                            | "build"
+                            | "dist"
+                            | ".next"
+                            | ".cache"
+                            | "vendor"
+                            | ".venv"
+                            | "env"
+                            | "bin"
+                            | "obj"
+                            | ".svelte-kit"
+                            | ".nuxt"
+                            | "__pycache__"
+                            | ".git"
+                            | ".hg"
+                            | ".svn"
+                    );
+                }
+                true
+            });
+        for entry in walker.flatten() {
+            if files.len() >= max_entries {
+                return Ok((files, true));
+            }
+            if entry.file_type().is_file() {
+                if let Ok(rel_path) = entry.path().strip_prefix(&root_path) {
+                    files.push(rel_path.to_string_lossy().into_owned());
+                }
+            }
+        }
+        Ok((files, false))
+    })
+    .await
+    .map_err(|e| format!("Task join error: {}", e))?
+}
+

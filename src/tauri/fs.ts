@@ -59,6 +59,10 @@ export async function revealInExplorer(path: string): Promise<void> {
   await invoke("reveal_in_explorer", { path });
 }
 
+export async function listFiles(root: string, maxDepth?: number): Promise<[string[], boolean]> {
+  return invoke<[string[], boolean]>("list_files", { root, maxDepth });
+}
+
 export async function watchDirectory(path: string): Promise<void> {
   await invoke("watch_directory", { path });
 }

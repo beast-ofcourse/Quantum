@@ -3,7 +3,7 @@ import { Search, File, Terminal, ArrowRight, X, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fuzzyFilter } from "@/lib/fuzzySearch";
 import { getAllCommands } from "@/lib/commandRegistry";
-import { useFileStore } from "@/stores/fileStore";
+import { useFileStore, getFlatFileIndex } from "@/stores/fileStore";
 import { useEditorStore } from "@/stores/editorStore";
 import { useSearchStore, type SearchMode, type SearchResult } from "@/stores/searchStore";
 import { searchInFiles } from "@/tauri/search";
@@ -12,7 +12,6 @@ import { useKeybindingStore } from "@/stores/keybindingStore";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getCurrentEditor, getMonacoModule } from "@/extensions/editorRef";
 import { getPlatformModifier } from "@/lib/platform";
-import type { FileNode } from "@/types/file";
 import type * as monaco from "monaco-editor";
 
 interface FlatFile {
@@ -56,26 +55,6 @@ const MODE_LABELS: Record<SearchMode, string> = {
   goto: "Go to Line",
 };
 
-function flattenTree(nodes: FileNode[], root: string): FlatFile[] {
-  const result: FlatFile[] = [];
-  const sep = root.includes("\\") ? "\\" : "/";
-  function walk(list: FileNode[]) {
-    for (const n of list) {
-      if (n.kind !== "directory") {
-        const rel = n.path.startsWith(root) ? n.path.slice(root.length + 1) : n.path;
-        const lastSep = rel.lastIndexOf(sep);
-        result.push({
-          path: n.path,
-          name: n.name,
-          dir: lastSep > 0 ? rel.slice(0, lastSep) : "",
-        });
-      }
-      if (n.children) walk(n.children);
-    }
-  }
-  walk(nodes);
-  return result;
-}
 
 function formatQuery(text: string): string {
   return text.trim();
@@ -101,8 +80,8 @@ export function SearchBar() {
   const inputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const fileTree = useFileStore((s) => s.fileTree);
   const rootPath = useFileStore((s) => s.rootPath);
+  const lastRefreshed = useFileStore((s) => s.lastRefreshed);
   const openFile = useEditorStore((s) => s.openFile);
   const setActiveTab = useEditorStore((s) => s.setActiveTab);
   const overrides = useKeybindingStore((s) => s.overrides);
@@ -111,7 +90,16 @@ export function SearchBar() {
 
   const { mode, text } = useMemo(() => detectMode(query), [query]);
 
-  const allFiles = useMemo(() => (rootPath ? flattenTree(fileTree, rootPath) : []), [fileTree, rootPath]);
+  // Use the pre-built flat index (populated after openFolder, background rebuild).
+  const allFiles = useMemo((): FlatFile[] => {
+    if (!rootPath) return [];
+    return getFlatFileIndex().map((f) => {
+      const sep = f.rel.includes("\\") ? "\\" : "/";
+      const lastSep = f.rel.lastIndexOf(sep);
+      return { path: f.path, name: f.name, dir: lastSep > 0 ? f.rel.slice(0, lastSep) : "" };
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rootPath, lastRefreshed]);
   const allCommands = useMemo(() => getAllCommands(), []);
 
   const enrichedCommands = useMemo(

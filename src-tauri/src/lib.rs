@@ -1,5 +1,15 @@
 mod commands;
 
+use std::sync::Mutex;
+use tauri::Manager;
+
+struct StartupPath(Mutex<Option<String>>);
+
+#[tauri::command]
+fn get_startup_path(state: tauri::State<'_, StartupPath>) -> Option<String> {
+    state.0.lock().unwrap().take()
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -20,6 +30,7 @@ pub fn run() {
             commands::fs::stat,
             commands::fs::path_exists,
             commands::fs::reveal_in_explorer,
+            commands::fs::list_files,
             commands::watch::watch_directory,
             commands::watch::unwatch_directory,
             commands::watch::unwatch_all,
@@ -100,8 +111,15 @@ pub fn run() {
             commands::search::search_in_files,
             commands::search::replace_in_files,
             commands::definitions::find_definitions,
+            get_startup_path,
         ])
-        .setup(|_app| {
+        .setup(|app| {
+            // Read first CLI arg as startup path (from "Open in Quantum" context menu)
+            let path = std::env::args().nth(1).map(|p| {
+                let trimmed = p.trim_matches('"').to_string();
+                if trimmed.is_empty() { p } else { trimmed }
+            });
+            app.manage(StartupPath(Mutex::new(path)));
             Ok(())
         })
         .run(tauri::generate_context!())

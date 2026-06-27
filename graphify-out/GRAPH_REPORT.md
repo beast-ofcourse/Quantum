@@ -12,9 +12,10 @@
 ## Community Hubs (Navigation)
 - [[_COMMUNITY_Core Editor Services|Core Editor Services]]
 - [[_COMMUNITY_Editor Tabs & Split View|Editor Tabs & Split View]]
-- [[_COMMUNITY_Debug & Run Tooling|Debug & Run Tooling]]
+- [[_COMMUNITY_Execution Engine|Execution Engine]]
 - [[_COMMUNITY_LSP Client Protocol|LSP Client Protocol]]
-- [[_COMMUNITY_DAP Debug Adapter|DAP Debug Adapter]]
+- [[_COMMUNITY_Terminal Layer|Terminal Layer]]
+- [[_COMMUNITY_Backend Services|Backend Services]]
 - [[_COMMUNITY_Extension Marketplace|Extension Marketplace]]
 - [[_COMMUNITY_Extension Scanner & Manifest|Extension Scanner & Manifest]]
 - [[_COMMUNITY_StatusBar & Disposables|StatusBar & Disposables]]
@@ -469,12 +470,12 @@
 2. `useAutoSave Hook` - 3 edges
 3. `MonacoEditor Component` - 3 edges
 4. `useGitGutterDecorations Hook` - 3 edges
-5. `RunButton Component` - 3 edges
+5. `ExecutionService` - 3 edges
 6. `EditorSplitView` - 3 edges
 7. `EditorArea Component` - 2 edges
 8. `Editor Store` - 2 edges
 9. `Settings Store` - 2 edges
-10. `EditorTabs` - 2 edges
+10. `ProcessManager` - 2 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `LSP Manager` --references--> `MonacoEditor Component`  [INFERRED]
@@ -485,8 +486,12 @@
   src/extensions/scanner.ts → src/extensions/types.ts
 - `UseHotkeyOptions` --references--> `HotkeyHandler`  [EXTRACTED]
   src/hooks/useHotkey.ts → src/lib/hotkeys.ts
-- `DapProtocolClient` --references--> `DebugAdapterCapabilities`  [EXTRACTED]
-  src/lib/dap/protocol.ts → src/types/debug.ts
+- `ExecutionService` --references--> `ProcessManager`  [EXTRACTED]
+  src/core/execution/ExecutionService.ts → src/core/execution/ProcessManager.ts
+- `ProcessManager` --references--> `ProcessRegistry`  [EXTRACTED]
+  src/core/execution/ProcessManager.ts → src/core/execution/ProcessRegistry.ts
+- `CommandBuilder` --references--> `LanguageDetector`  [EXTRACTED]
+  src/core/execution/CommandBuilder.ts → src/core/execution/LanguageDetector.ts
 
 ## Import Cycles
 - None detected.
@@ -501,21 +506,21 @@ Nodes (8): Editor Store, File Store, LSP Manager, MonacoEditor Component, Settin
 Cohesion: 0.40
 Nodes (5): Breadcrumbs, EditorSplitView, EditorTab, EditorTabs, MonacoEditor
 
-### Community 2 - "Debug & Run Tooling"
-Cohesion: 0.40
-Nodes (5): Breadcrumbs Component, Debug Store, EditorArea Component, RunButton Component, Terminal Store
+### Community 2 - "Execution Engine"
+Cohesion: 0.45
+Nodes (9): ExecutionService, ProcessManager, TaskQueue, LanguageDetector, RuntimeResolver, CommandBuilder, OutputParser, ProcessRegistry, RunButton
 
 ### Community 3 - "LSP Client Protocol"
 Cohesion: 0.50
 Nodes (4): LspClient, Diagnostic, LspConfig, ServerCapabilities
 
 ## Knowledge Gaps
-- **473 isolated node(s):** `ErrorBoundary`, `CallStackPanel`, `DebugConfigDialog`, `EditorErrorBoundary`, `ExternalChangeDialog` (+468 more)
+- **465 isolated node(s):** `ErrorBoundary`, `EditorErrorBoundary`, `ExternalChangeDialog`, `RunButton`, `StopButton` (+460 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **449 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **441 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **What connects `ErrorBoundary`, `CallStackPanel`, `DebugConfigDialog` to the rest of the system?**
-  _473 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **What connects the Execution Engine modules (`ExecutionService`, `ProcessManager`, `TaskQueue`) to the terminal and UI layers?**
+  _The execution layer currently has limited graph edges — likely missing cross-references between core/execution/ and ui/._

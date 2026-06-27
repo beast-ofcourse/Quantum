@@ -14,7 +14,6 @@ import { useAutoSave } from "@/hooks/useAutoSave";
 import { useGitGutterDecorations } from "@/hooks/useGitGutterDecorations";
 import { useGitBlameDecorations } from "@/hooks/useGitBlameDecorations";
 import { registerDefinitionProvider } from "@/lib/definitionProvider";
-import { registerCodeLensProvider } from "@/lib/codeLensProvider";
 import { registerLanguageCompletions } from "@/lib/languageCompletions";
 import { registerHoverProvider } from "@/lib/hoverProvider";
 import { ContentStore } from "@/lib/contentStore";
@@ -73,25 +72,27 @@ export function MonacoEditor({
 				lineHeight: Math.round(settings.editor.fontSize * 1.5),
 				tabSize: settings.editor.tabSize,
 				insertSpaces: true,
-				wordWrap: settings.editor.wordWrap,
+				wordWrap: isLargeFile ? "off" : settings.editor.wordWrap,
+				largeFileOptimizations: isLargeFile ? true : undefined,
+				maxTokenizationLength: isLargeFile ? 50000 : undefined,
 				minimap: {
-					enabled: settings.editor.minimap,
+					enabled: isLargeFile ? false : settings.editor.minimap,
 					scale: settings.editor.minimapScale,
 					renderCharacters: false,
 					maxColumn: 120,
 				},
 				lineNumbers: settings.editor.lineNumbers,
-				glyphMargin: true,
-				folding: true,
-				renderLineHighlight: "all",
+				glyphMargin: !isLargeFile,
+				folding: !isLargeFile,
+				renderLineHighlight: isLargeFile ? "line" : "all",
 				scrollBeyondLastLine: false,
-				smoothScrolling: true,
+				smoothScrolling: !isLargeFile,
 				cursorBlinking: "smooth",
-				cursorSmoothCaretAnimation: "on",
+				cursorSmoothCaretAnimation: isLargeFile ? "off" : "on",
 				automaticLayout: true,
 				fixedOverflowWidgets: true,
-				bracketPairColorization: { enabled: true },
-				inlayHints: { enabled: settings.editor.inlayHints ? "on" : "off" },
+				bracketPairColorization: isLargeFile ? { enabled: false } : { enabled: true },
+				inlayHints: isLargeFile ? { enabled: "off" } : { enabled: settings.editor.inlayHints ? "on" : "off" },
 				definitionLinkOpensInPeek: true,
 				gotoLocation: {
 					mouseRight: "peek",
@@ -100,11 +101,11 @@ export function MonacoEditor({
 				},
 				padding: { top: 8, bottom: 8 },
 				scrollbar: { verticalScrollbarSize: 10, horizontalScrollbarSize: 10 },
-				stickyScroll: { enabled: true },
+				stickyScroll: isLargeFile ? { enabled: false } : { enabled: true },
 				links: true,
 				breadcrumbs: { enabled: settings.editor.breadcrumbs },
 			}),
-			[settings.editor],
+			[settings.editor, isLargeFile],
 		);
 
 	const handleMount: OnMount = (editor, monacoInstance) => {
@@ -114,11 +115,15 @@ export function MonacoEditor({
 		editor.onDidChangeCursorPosition((e) => {
 			setCursor(tabId, e.position.lineNumber, e.position.column);
 		});
-		initDiagnostics();
-		registerDefinitionProvider();
-		registerCodeLensProvider(monacoInstance);
-		registerLanguageCompletions();
-		registerHoverProvider();
+		// ponytail: skip heavy language services + diagnostics for large files
+		const tab = useEditorStore.getState().openTabs.find((t) => t.id === tabId);
+		const isLarge = tab?.isLargeFile ?? false;
+		if (!isLarge) {
+			initDiagnostics();
+			registerDefinitionProvider();
+			registerLanguageCompletions();
+			registerHoverProvider();
+		}
 
 		// Intercept global keybindings inside Monaco and forward them to the window context
 		editor.onKeyDown((e) => {
@@ -142,7 +147,6 @@ export function MonacoEditor({
 				(isMod && key === "\\") ||           // Ctrl+\ (Split Editor)
 				(isMod && key === "tab") ||          // Ctrl+Tab (Cycle Tabs)
 				(key === "alt") ||                   // Alt (Toggle Menu Bar)
-				(key === "f5") ||                    // F5 / Shift+F5 / Ctrl+F5 (Debugging)
 				(isAlt && e.browserEvent.ctrlKey && key === "k"); // Ctrl+Alt+K (Shortcuts)
 
 			if (shouldForward) {
@@ -173,23 +177,7 @@ export function MonacoEditor({
 			},
 		});
 
-		// 2. Run Active File (fires F5 global debug run)
-		editor.addAction({
-			id: "editor.action.runActiveFile",
-			label: "Run Active File",
-			contextMenuGroupId: "navigation",
-			contextMenuOrder: 2,
-			run: () => {
-				const clone = new KeyboardEvent("keydown", {
-					key: "F5",
-					code: "F5",
-					bubbles: true,
-				});
-				window.dispatchEvent(clone);
-			},
-		});
-
-		// 3. Toggle Git Blame Annotations (integrated with context menu)
+		// 2. Toggle Git Blame Annotations (integrated with context menu)
 		editor.addAction({
 			id: "editor.toggleBlame",
 			label: "Toggle Git Blame Annotations",

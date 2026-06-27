@@ -21,7 +21,7 @@ export const BUILT_IN_PRESETS: Record<string, () => PresetZones> = {
       isVisible: false,
     },
     bottom: {
-      panelIds: ["terminal", "problems", "output", "debug-console"],
+      panelIds: ["terminal", "problems", "output"],
       activePanelId: "terminal",
       size: 220,
       isVisible: true,

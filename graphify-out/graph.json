@@ -1,7 +1,9 @@
 {
   "directed": false,
   "multigraph": false,
-  "graph": {},
+  "graph": {
+    "updated": "execution-engine-rebuild"
+  },
   "nodes": [
     {
       "label": "ErrorBoundary",
@@ -12,26 +14,6 @@
       "id": "components_errorboundary_errorboundary",
       "community": 35,
       "norm_label": "errorboundary"
-    },
-    {
-      "label": "CallStackPanel",
-      "file_type": "code",
-      "source_file": "src/components/debug/CallStackPanel.tsx",
-      "source_location": "L84",
-      "_origin": "ast",
-      "id": "debug_callstackpanel_callstackpanel",
-      "community": 43,
-      "norm_label": "callstackpanel"
-    },
-    {
-      "label": "DebugConfigDialog",
-      "file_type": "code",
-      "source_file": "src/components/debug/DebugConfigDialog.tsx",
-      "source_location": "L82",
-      "_origin": "ast",
-      "id": "debug_debugconfigdialog_debugconfigdialog",
-      "community": 44,
-      "norm_label": "debugconfigdialog"
     },
     {
       "label": "EditorErrorBoundary",
@@ -312,26 +294,6 @@
       "id": "settings_settingspanel_settingspanel",
       "community": 233,
       "norm_label": "settingspanel"
-    },
-    {
-      "label": "pushDebugMessage",
-      "file_type": "code",
-      "source_file": "src/components/terminal/DebugConsolePanel.tsx",
-      "source_location": "L17",
-      "_origin": "ast",
-      "id": "terminal_debugconsolepanel_pushdebugmessage",
-      "community": 350,
-      "norm_label": "pushdebugmessage"
-    },
-    {
-      "label": "clearDebugMessages",
-      "file_type": "code",
-      "source_file": "src/components/terminal/DebugConsolePanel.tsx",
-      "source_location": "L23",
-      "_origin": "ast",
-      "id": "terminal_debugconsolepanel_cleardebugmessages",
-      "community": 349,
-      "norm_label": "cleardebugmessages"
     },
     {
       "label": "pushLog",
@@ -934,16 +896,6 @@
       "norm_label": "usecursortrail"
     },
     {
-      "label": "useDebugDecorations",
-      "file_type": "code",
-      "source_file": "src/hooks/useDebugDecorations.ts",
-      "source_location": "L50",
-      "_origin": "ast",
-      "id": "hooks_usedebugdecorations_usedebugdecorations",
-      "community": 87,
-      "norm_label": "usedebugdecorations"
-    },
-    {
       "label": "useEditorHotkeys",
       "file_type": "code",
       "source_file": "src/hooks/useEditorHotkeys.ts",
@@ -1184,16 +1136,6 @@
       "norm_label": "browserfsentry"
     },
     {
-      "label": "registerCodeLensProvider",
-      "file_type": "code",
-      "source_file": "src/lib/codeLensProvider.ts",
-      "source_location": "L5",
-      "_origin": "ast",
-      "id": "lib_codelensprovider_registercodelensprovider",
-      "community": 125,
-      "norm_label": "registercodelensprovider"
-    },
-    {
       "label": "registerCommandProvider",
       "file_type": "code",
       "source_file": "src/lib/commandRegistry.ts",
@@ -1252,136 +1194,6 @@
       "id": "lib_cssinjector_reloadcss",
       "community": 131,
       "norm_label": "reloadcss"
-    },
-    {
-      "label": "DapRequest",
-      "file_type": "code",
-      "source_file": "src/lib/dap/protocol.ts",
-      "source_location": "L3",
-      "_origin": "ast",
-      "id": "dap_protocol_daprequest",
-      "community": 39,
-      "norm_label": "daprequest"
-    },
-    {
-      "label": "DapResponse",
-      "file_type": "code",
-      "source_file": "src/lib/dap/protocol.ts",
-      "source_location": "L10",
-      "_origin": "ast",
-      "id": "dap_protocol_dapresponse",
-      "community": 40,
-      "norm_label": "dapresponse"
-    },
-    {
-      "label": "DapEventMsg",
-      "file_type": "code",
-      "source_file": "src/lib/dap/protocol.ts",
-      "source_location": "L20",
-      "_origin": "ast",
-      "id": "dap_protocol_dapeventmsg",
-      "community": 36,
-      "norm_label": "dapeventmsg"
-    },
-    {
-      "label": "DapMessage",
-      "file_type": "code",
-      "source_file": "src/lib/dap/protocol.ts",
-      "source_location": "L27",
-      "_origin": "ast",
-      "id": "dap_protocol_dapmessage",
-      "community": 37,
-      "norm_label": "dapmessage"
-    },
-    {
-      "label": "encodeDapMessage",
-      "file_type": "code",
-      "source_file": "src/lib/dap/protocol.ts",
-      "source_location": "L40",
-      "_origin": "ast",
-      "id": "dap_protocol_encodedapmessage",
-      "community": 41,
-      "norm_label": "encodedapmessage"
-    },
-    {
-      "label": "DapMessageBuffer",
-      "file_type": "code",
-      "source_file": "src/lib/dap/protocol.ts",
-      "source_location": "L46",
-      "_origin": "ast",
-      "id": "dap_protocol_dapmessagebuffer",
-      "community": 38,
-      "norm_label": "dapmessagebuffer"
-    },
-    {
-      "label": "DapProtocolClient",
-      "file_type": "code",
-      "source_file": "src/lib/dap/protocol.ts",
-      "source_location": "L81",
-      "_origin": "ast",
-      "id": "dap_protocol_dapprotocolclient",
-      "community": 4,
-      "norm_label": "dapprotocolclient"
-    },
-    {
-      "label": "DapTransport",
-      "file_type": "code",
-      "source_file": "src/lib/dap/transport.ts",
-      "source_location": "L10",
-      "_origin": "ast",
-      "id": "dap_transport_daptransport",
-      "community": 42,
-      "norm_label": "daptransport"
-    },
-    {
-      "label": "resolveConfigVariables",
-      "file_type": "code",
-      "source_file": "src/lib/debugConfiguration.ts",
-      "source_location": "L9",
-      "_origin": "ast",
-      "id": "lib_debugconfiguration_resolveconfigvariables",
-      "community": 136,
-      "norm_label": "resolveconfigvariables"
-    },
-    {
-      "label": "getAvailableTypes",
-      "file_type": "code",
-      "source_file": "src/lib/debugConfiguration.ts",
-      "source_location": "L74",
-      "_origin": "ast",
-      "id": "lib_debugconfiguration_getavailabletypes",
-      "community": 134,
-      "norm_label": "getavailabletypes"
-    },
-    {
-      "label": "createTemplate",
-      "file_type": "code",
-      "source_file": "src/lib/debugConfiguration.ts",
-      "source_location": "L78",
-      "_origin": "ast",
-      "id": "lib_debugconfiguration_createtemplate",
-      "community": 132,
-      "norm_label": "createtemplate"
-    },
-    {
-      "label": "getDefaultConfigs",
-      "file_type": "code",
-      "source_file": "src/lib/debugConfiguration.ts",
-      "source_location": "L84",
-      "_origin": "ast",
-      "id": "lib_debugconfiguration_getdefaultconfigs",
-      "community": 135,
-      "norm_label": "getdefaultconfigs"
-    },
-    {
-      "label": "DebugConfigurationService",
-      "file_type": "code",
-      "source_file": "src/lib/debugConfiguration.ts",
-      "source_location": "L96",
-      "_origin": "ast",
-      "id": "lib_debugconfiguration_debugconfigurationservice",
-      "community": 133,
-      "norm_label": "debugconfigurationservice"
     },
     {
       "label": "DefaultKeybinding",
@@ -3544,156 +3356,6 @@
       "norm_label": "commandcategory"
     },
     {
-      "label": "DebugStatus",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L1",
-      "_origin": "ast",
-      "id": "types_debug_debugstatus",
-      "community": 366,
-      "norm_label": "debugstatus"
-    },
-    {
-      "label": "Source",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L3",
-      "_origin": "ast",
-      "id": "types_debug_source",
-      "community": 370,
-      "norm_label": "source"
-    },
-    {
-      "label": "Breakpoint",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L14",
-      "_origin": "ast",
-      "id": "types_debug_breakpoint",
-      "community": 362,
-      "norm_label": "breakpoint"
-    },
-    {
-      "label": "Thread",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L28",
-      "_origin": "ast",
-      "id": "types_debug_thread",
-      "community": 373,
-      "norm_label": "thread"
-    },
-    {
-      "label": "StackFrame",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L33",
-      "_origin": "ast",
-      "id": "types_debug_stackframe",
-      "community": 371,
-      "norm_label": "stackframe"
-    },
-    {
-      "label": "Scope",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L47",
-      "_origin": "ast",
-      "id": "types_debug_scope",
-      "community": 369,
-      "norm_label": "scope"
-    },
-    {
-      "label": "Variable",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L61",
-      "_origin": "ast",
-      "id": "types_debug_variable",
-      "community": 374,
-      "norm_label": "variable"
-    },
-    {
-      "label": "DebugSession",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L77",
-      "_origin": "ast",
-      "id": "types_debug_debugsession",
-      "community": 365,
-      "norm_label": "debugsession"
-    },
-    {
-      "label": "DebugConfiguration",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L89",
-      "_origin": "ast",
-      "id": "types_debug_debugconfiguration",
-      "community": 364,
-      "norm_label": "debugconfiguration"
-    },
-    {
-      "label": "ExceptionBreakpointsFilter",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L108",
-      "_origin": "ast",
-      "id": "types_debug_exceptionbreakpointsfilter",
-      "community": 367,
-      "norm_label": "exceptionbreakpointsfilter"
-    },
-    {
-      "label": "ExceptionInfo",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L114",
-      "_origin": "ast",
-      "id": "types_debug_exceptioninfo",
-      "community": 368,
-      "norm_label": "exceptioninfo"
-    },
-    {
-      "label": "DebugAdapterCapabilities",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L128",
-      "_origin": "ast",
-      "id": "types_debug_debugadaptercapabilities",
-      "community": 4,
-      "norm_label": "debugadaptercapabilities"
-    },
-    {
-      "label": "WatchExpression",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L160",
-      "_origin": "ast",
-      "id": "types_debug_watchexpression",
-      "community": 375,
-      "norm_label": "watchexpression"
-    },
-    {
-      "label": "DapEvent",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L169",
-      "_origin": "ast",
-      "id": "types_debug_dapevent",
-      "community": 363,
-      "norm_label": "dapevent"
-    },
-    {
-      "label": "StoppedReason",
-      "file_type": "code",
-      "source_file": "src/types/debug.ts",
-      "source_location": "L187",
-      "_origin": "ast",
-      "id": "types_debug_stoppedreason",
-      "community": 372,
-      "norm_label": "stoppedreason"
-    },
-    {
       "label": "Tab",
       "file_type": "code",
       "source_file": "src/types/editor.ts",
@@ -4580,28 +4242,12 @@
       "norm_label": "git store"
     },
     {
-      "label": "Debug Store",
-      "file_type": "code",
-      "source_file": "src/stores/debugStore.ts",
-      "id": "debugstore_ts",
-      "community": 2,
-      "norm_label": "debug store"
-    },
-    {
       "label": "UI Store",
       "file_type": "code",
       "source_file": "src/stores/uiStore.ts",
       "id": "uistore_ts",
       "community": 448,
       "norm_label": "ui store"
-    },
-    {
-      "label": "RunButton Component",
-      "file_type": "code",
-      "source_file": "src/components/debug/RunButton.tsx",
-      "id": "runbutton_tsx",
-      "community": 2,
-      "norm_label": "runbutton component"
     },
     {
       "label": "SearchBar Component",
@@ -4626,22 +4272,6 @@
       "id": "shelllayout_tsx",
       "community": 13,
       "norm_label": "shelllayout component"
-    },
-    {
-      "label": "VariablesPanel",
-      "file_type": "code",
-      "source_file": "src/components/debug/VariablesPanel.tsx",
-      "id": "variablespanel_variablespanel",
-      "community": 449,
-      "norm_label": "variablespanel"
-    },
-    {
-      "label": "WatchPanel",
-      "file_type": "code",
-      "source_file": "src/components/debug/WatchPanel.tsx",
-      "id": "watchpanel_watchpanel",
-      "community": 450,
-      "norm_label": "watchpanel"
     },
     {
       "label": "Breadcrumbs",
@@ -4762,6 +4392,136 @@
       "id": "gitdiffview_gitdiffview",
       "community": 81,
       "norm_label": "gitdiffview"
+    },
+    {
+      "label": "ExecutionService",
+      "file_type": "code",
+      "source_file": "src/core/execution/ExecutionService.ts",
+      "source_location": "L29",
+      "_origin": "ast",
+      "id": "core_execution_executionservice_executionservice",
+      "community": 2,
+      "norm_label": "executionservice"
+    },
+    {
+      "label": "ProcessManager",
+      "file_type": "code",
+      "source_file": "src/core/execution/ProcessManager.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "core_execution_processmanager_processmanager",
+      "community": 2,
+      "norm_label": "processmanager"
+    },
+    {
+      "label": "TaskQueue",
+      "file_type": "code",
+      "source_file": "src/core/execution/TaskQueue.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "core_execution_taskqueue_taskqueue",
+      "community": 2,
+      "norm_label": "taskqueue"
+    },
+    {
+      "label": "LanguageDetector",
+      "file_type": "code",
+      "source_file": "src/core/execution/LanguageDetector.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "core_execution_languagedetector_languagedetector",
+      "community": 2,
+      "norm_label": "languagedetector"
+    },
+    {
+      "label": "RuntimeResolver",
+      "file_type": "code",
+      "source_file": "src/core/execution/RuntimeResolver.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "core_execution_runtimeresolver_runtimeresolver",
+      "community": 2,
+      "norm_label": "runtimeresolver"
+    },
+    {
+      "label": "CommandBuilder",
+      "file_type": "code",
+      "source_file": "src/core/execution/CommandBuilder.ts",
+      "source_location": "L32",
+      "_origin": "ast",
+      "id": "core_execution_commandbuilder_commandbuilder",
+      "community": 2,
+      "norm_label": "commandbuilder"
+    },
+    {
+      "label": "OutputParser",
+      "file_type": "code",
+      "source_file": "src/core/execution/OutputParser.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "core_execution_outputparser_outputparser",
+      "community": 2,
+      "norm_label": "outputparser"
+    },
+    {
+      "label": "ProcessRegistry",
+      "file_type": "code",
+      "source_file": "src/core/execution/ProcessRegistry.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "core_execution_processregistry_processregistry",
+      "community": 2,
+      "norm_label": "processregistry"
+    },
+    {
+      "label": "PtyService",
+      "file_type": "code",
+      "source_file": "src/core/terminal/PtyService.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "core_terminal_ptyservice_ptyservice",
+      "community": 3,
+      "norm_label": "ptyservice"
+    },
+    {
+      "label": "TerminalAdapter",
+      "file_type": "code",
+      "source_file": "src/core/terminal/TerminalAdapter.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "core_terminal_terminaladapter_terminaladapter",
+      "community": 3,
+      "norm_label": "terminaladapter"
+    },
+    {
+      "label": "TerminalEvents",
+      "file_type": "code",
+      "source_file": "src/core/terminal/TerminalEvents.ts",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "core_terminal_terminalevents_terminalevents",
+      "community": 3,
+      "norm_label": "terminalevents"
+    },
+    {
+      "label": "RunButton",
+      "file_type": "code",
+      "source_file": "src/ui/RunButton.tsx",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "ui_runbutton_runbutton",
+      "community": 2,
+      "norm_label": "runbutton"
+    },
+    {
+      "label": "StopButton",
+      "file_type": "code",
+      "source_file": "src/ui/StopButton.tsx",
+      "source_location": "L1",
+      "_origin": "ast",
+      "id": "ui_stopbutton_stopbutton",
+      "community": 2,
+      "norm_label": "stopbutton"
     }
   ],
   "links": [
@@ -4796,17 +4556,6 @@
       "weight": 1.0,
       "source": "hooks_usehotkey_usehotkeyoptions",
       "target": "lib_hotkeys_hotkeyhandler",
-      "confidence_score": 1.0
-    },
-    {
-      "relation": "references",
-      "context": "field",
-      "confidence": "EXTRACTED",
-      "source_file": "src/lib/dap/protocol.ts",
-      "source_location": "L83",
-      "weight": 1.0,
-      "source": "dap_protocol_dapprotocolclient",
-      "target": "types_debug_debugadaptercapabilities",
       "confidence_score": 1.0
     },
     {
@@ -4954,14 +4703,6 @@
       "target": "breadcrumbs_tsx"
     },
     {
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/components/layout/EditorArea.tsx",
-      "source": "editorarea_tsx",
-      "target": "runbutton_tsx"
-    },
-    {
       "relation": "references",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
@@ -4976,22 +4717,6 @@
       "source_file": "src/hooks/useGitGutterDecorations.ts",
       "source": "usegitgutterdecorations_ts",
       "target": "filestore_ts"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/components/debug/RunButton.tsx",
-      "source": "runbutton_tsx",
-      "target": "terminalstore_ts"
-    },
-    {
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "src/components/debug/RunButton.tsx",
-      "source": "runbutton_tsx",
-      "target": "debugstore_ts"
     },
     {
       "relation": "calls",

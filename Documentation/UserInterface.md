@@ -36,6 +36,7 @@ A slim vertical bar on the edge of the screen containing shortcuts for each prim
 * **Source Control (Git)** (`Ctrl+Shift+G`)
 * **Run and Debug** (`Ctrl+Shift+D`)
 * **Extensions Marketplace**
+* **AI Agent Launcher** — launch AI coding agents (OpenCode, Claude Code, Pi, Antigravity, etc.) in a new terminal
 * **Settings & Themes** (`Ctrl+,`)
 
 ### 3. Layout Docks (Left, Right, Bottom Docks)
@@ -85,7 +86,29 @@ You can arrange panels to your liking, click **Save Current Layout Preset**, giv
 
 ---
 
-## 4. Detachable Panels
+## 4. Zen Mode
+
+Zen Mode strips away all chrome — activity bar, sidebar, editor tabs, terminal panel, status bar — leaving only the editor centered on screen for distraction-free coding.
+
+### Toggle
+- **`Ctrl+Shift+Z`** toggles Zen Mode on/off
+- **Double-Escape** exits Zen Mode when active
+- Also available via Command Palette: `Toggle Zen Mode`
+
+### Behavior
+- **State snapshot:** When entering Zen Mode, the current visibility of every panel (sidebar, terminal, activity bar, status bar) is saved. Exiting restores everything exactly as it was.
+- **Centered layout:** The editor is wrapped in flexible padding (20% on each side by default, 60% editor width) to prevent eye tracking across a wide monitor. Padding zones show a resize cursor on hover.
+- **Tabs hidden:** Editor tabs and breadcrumbs are hidden in Zen Mode.
+- **Minimal status bar:** A slim footer shows `✦ ZEN` on the left and `double Esc to exit` on the right — no git status, cursor position, or other distractions.
+
+### Interaction
+- The **Terminal** panel can still be shown with `` Ctrl+` `` even in Zen Mode, adding a resizer to split the view.
+- All **keyboard shortcuts** and **command palette** remain accessible.
+- Overlay panels (settings, command palette, theme editor) work normally.
+
+---
+
+## 5. Detachable Panels
 
 For developers using multi-monitor setups, Quantum supports **Detachable Panels**:
 * **How to Detach:** Click the "Pop Out" icon in the header of any tool panel (e.g., Git Graph, Terminal, or Outline View).

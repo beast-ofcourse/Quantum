@@ -5,6 +5,7 @@ import {
 	createDirectory as fsCreateDirectory,
 	createFile as fsCreateFile,
 	deleteEntry as fsDeleteEntry,
+	listFiles,
 	pathExists,
 	readDirectory,
 	renameEntry as fsRenameEntry,
@@ -24,6 +25,7 @@ import {
 	applyCustomOrder,
 	findCommonParent,
 } from "@/lib/pathUtils";
+import { useToastStore } from "@/stores/toastStore";
 import type {
 	FileEntry,
 	FileNode,
@@ -34,36 +36,57 @@ import type {
 } from "@/types/file";
 import FileTreeWorker from "@/workers/fileTree.worker?worker";
 
-export const DEFAULT_TREE_DEPTH = 10;
+// Shallow depth: only load immediate children on open.
+// Subdirectories are lazy-loaded when the user expands them.
+const SHALLOW_DEPTH = 1;
 
-interface FileState {
-	rootPath: string | null;
-	rootName: string;
-	fileTree: FileNode[];
-	expanded: Record<string, boolean>;
-	selectedFile: string | null;
-	loading: boolean;
-	error: string | null;
-	showHidden: boolean;
-	lastRefreshed: number;
-	customOrder: Record<string, string[]>;
+// ── Flat file index ──────────────────────────────────────────────────────────
+// Used by QuickOpen / SearchBar for instant file search without traversing the
+// in-memory tree. Updated lazily in the background after folder open.
 
-	openFolder: (path: string) => Promise<void>;
-	openFiles: (paths: string[]) => Promise<string | null>;
-	closeFolder: () => void;
-	refreshTree: () => Promise<void>;
-	toggleHidden: () => void;
-	toggleExpand: (path: string, force?: boolean) => void;
-	expandAncestors: (path: string) => void;
-	selectFile: (path: string | null) => void;
-	createFile: (parentPath: string, name: string) => Promise<string>;
-	createFolder: (parentPath: string, name: string) => Promise<string>;
-	rename: (oldPath: string, newName: string) => Promise<void>;
-	remove: (path: string) => Promise<void>;
-	resolveTilde: (path: string) => Promise<string>;
-	reorderItems: (parentPath: string, orderedNames: string[]) => void;
-	moveItem: (sourcePath: string, targetDirPath: string) => Promise<void>;
+export interface FlatFileEntry {
+	/** Relative path from root, e.g. "src/components/Button.tsx" */
+	rel: string;
+	/** Basename, e.g. "Button.tsx" */
+	name: string;
+	/** Absolute path */
+	path: string;
 }
+
+let flatFileCache: FlatFileEntry[] = [];
+let flatFileCacheRoot: string | null = null;
+let flatFileCacheTimer: ReturnType<typeof setTimeout> | null = null;
+
+async function rebuildFlatFileIndex(root: string): Promise<void> {
+	try {
+		const [relPaths] = await listFiles(root, 8);
+		const sep = root.includes("\\") ? "\\" : "/";
+		flatFileCache = relPaths.map((rel) => {
+			const parts = rel.split(/[/\\]/);
+			const name = parts[parts.length - 1];
+			return { rel, name, path: root + sep + rel };
+		});
+		flatFileCacheRoot = root;
+	} catch (err) {
+		console.error("[fileStore] flat index failed:", err);
+	}
+}
+
+function scheduleFlatRebuild(root: string) {
+	if (flatFileCacheTimer) clearTimeout(flatFileCacheTimer);
+	// Defer so the UI renders first, then build the index in the background.
+	flatFileCacheTimer = setTimeout(() => {
+		flatFileCacheTimer = null;
+		void rebuildFlatFileIndex(root);
+	}, 500);
+}
+
+/** Returns the flat file list for the current root (may be stale briefly). */
+export function getFlatFileIndex(): FlatFileEntry[] {
+	return flatFileCache;
+}
+
+// ── Worker pool (tree builder) ───────────────────────────────────────────────
 
 let workerInstance: Worker | null = null;
 let workerCounter = 0;
@@ -112,6 +135,8 @@ function buildTreeAsync(
 	});
 }
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
 async function filterExistingFiles(paths: string[]): Promise<string[]> {
 	const results = await Promise.all(
 		paths.map(async (path) => {
@@ -126,6 +151,25 @@ async function filterExistingFiles(paths: string[]): Promise<string[]> {
 	return results.filter((p): p is string => p !== null);
 }
 
+/** Splice new children into the tree for a given directory path. */
+function spliceChildren(
+	tree: FileNode[],
+	dirPath: string,
+	children: FileNode[],
+): FileNode[] {
+	return tree.map((node) => {
+		if (node.path === dirPath) {
+			return { ...node, children };
+		}
+		if (node.children && dirPath.startsWith(node.path)) {
+			return { ...node, children: spliceChildren(node.children, dirPath, children) };
+		}
+		return node;
+	});
+}
+
+// ── FS watcher ───────────────────────────────────────────────────────────────
+
 const fsChangeListeners = new Set<UnlistenFn>();
 let refreshDebounce: ReturnType<typeof setTimeout> | null = null;
 
@@ -134,7 +178,7 @@ function scheduleRefresh(refresh: () => Promise<void>) {
 	refreshDebounce = setTimeout(() => {
 		refreshDebounce = null;
 		void refresh();
-	}, 200);
+	}, 400);
 }
 
 async function setupWatcher(rootPath: string, refresh: () => Promise<void>) {
@@ -166,6 +210,43 @@ async function teardownWatcher() {
 	}
 }
 
+// ── Store interface ───────────────────────────────────────────────────────────
+
+interface FileState {
+	rootPath: string | null;
+	rootName: string;
+	fileTree: FileNode[];
+	expanded: Record<string, boolean>;
+	/** Paths of directories currently being lazily loaded */
+	loadingDirs: Set<string>;
+	selectedFile: string | null;
+	loading: boolean;
+	error: string | null;
+	treeTruncated: boolean;
+	showHidden: boolean;
+	lastRefreshed: number;
+	customOrder: Record<string, string[]>;
+
+	openFolder: (path: string) => Promise<void>;
+	openFiles: (paths: string[]) => Promise<string | null>;
+	closeFolder: () => void;
+	refreshTree: () => Promise<void>;
+	toggleHidden: () => void;
+	/** Toggle or force-set expansion. Lazy-loads children when opening a dir. */
+	toggleExpand: (path: string, force?: boolean) => void;
+	/** Load children of `dirPath` on demand (called by toggleExpand). */
+	expandDir: (dirPath: string) => Promise<void>;
+	expandAncestors: (path: string) => void;
+	selectFile: (path: string | null) => void;
+	createFile: (parentPath: string, name: string) => Promise<string>;
+	createFolder: (parentPath: string, name: string) => Promise<string>;
+	rename: (oldPath: string, newName: string) => Promise<void>;
+	remove: (path: string) => Promise<void>;
+	resolveTilde: (path: string) => Promise<string>;
+	reorderItems: (parentPath: string, orderedNames: string[]) => void;
+	moveItem: (sourcePath: string, targetDirPath: string) => Promise<void>;
+}
+
 export const useFileStore = create<FileState>()(
 	persist(
 		(set, get) => ({
@@ -173,13 +254,18 @@ export const useFileStore = create<FileState>()(
 			rootName: "",
 			fileTree: [],
 			expanded: {},
+			loadingDirs: new Set(),
 			selectedFile: null,
 			loading: false,
 			error: null,
+			treeTruncated: false,
 			showHidden: false,
 			lastRefreshed: 0,
 			customOrder: {},
 
+			// ── openFolder ─────────────────────────────────────────────────────
+			// Reads only depth-1 (immediate children) to stay instant on huge
+			// repos. The flat search index is built in the background afterwards.
 			openFolder: async (path) => {
 				if (!path) return;
 				if (!(await pathExists(path))) {
@@ -195,9 +281,10 @@ export const useFileStore = create<FileState>()(
 				try {
 					const result: ReadDirResult = await readDirectory({
 						path,
-						maxDepth: DEFAULT_TREE_DEPTH,
+						maxDepth: SHALLOW_DEPTH,
 						includeHidden: get().showHidden,
 					});
+					const truncated = result.truncated ?? false;
 					const tree = await buildTreeAsync(
 						path,
 						result.entries,
@@ -208,11 +295,19 @@ export const useFileStore = create<FileState>()(
 					set({
 						fileTree: sorted,
 						loading: false,
+						treeTruncated: truncated,
 						lastRefreshed: Date.now(),
 						expanded: { [path]: true },
 						selectedFile: null,
 					});
-					await setupWatcher(path, () => get().refreshTree());
+					// Skip recursive watcher for huge trees — it'd spam refreshes.
+					if (!truncated) {
+						await setupWatcher(path, () => get().refreshTree());
+					}
+					// Build flat search index in background only if tree is manageable.
+					if (!truncated) {
+						scheduleFlatRebuild(path);
+					}
 				} catch (err) {
 					set({
 						error: err instanceof Error ? err.message : String(err),
@@ -221,6 +316,7 @@ export const useFileStore = create<FileState>()(
 				}
 			},
 
+			// ── openFiles ───────────────────────────────────────────────────────
 			openFiles: async (paths) => {
 				if (!paths || paths.length === 0) return null;
 				const requested = paths.filter(
@@ -239,15 +335,11 @@ export const useFileStore = create<FileState>()(
 				const norm = (s: string) => (isWindows ? s.toLowerCase() : s);
 				const sep =
 					valid[0].includes("\\") && !valid[0].includes("/") ? "\\" : "/";
-				const normRoot = rootPath ? rootPath.replace(/[\\/]+$/, "") : null;
+				const normRoot = rootPath ? rootPath.replace(/[/\\]+$/, "") : null;
 				const allInside = normRoot
 					? valid.every((p) => norm(p).startsWith(norm(normRoot + sep)))
 					: false;
 
-				// ponytail: only open folder when files need a new sidebar root.
-				// Single file with no existing folder → just open the file.
-				// Multiple files sharing a common parent → open that parent.
-				// Files outside current root → expand to new root.
 				if (!allInside && valid.length > 1) {
 					const parent = findCommonParent(valid);
 					if (parent) {
@@ -273,27 +365,36 @@ export const useFileStore = create<FileState>()(
 				return last;
 			},
 
+			// ── closeFolder ─────────────────────────────────────────────────────
 			closeFolder: () => {
 				void teardownWatcher();
+				flatFileCache = [];
+				flatFileCacheRoot = null;
 				set({
 					rootPath: null,
 					rootName: "",
 					fileTree: [],
 					expanded: {},
+					loadingDirs: new Set(),
 					selectedFile: null,
 					error: null,
+					treeTruncated: false,
 				});
 			},
 
+			// ── refreshTree ─────────────────────────────────────────────────────
+			// Refreshes only the first level. Each already-expanded directory
+			// re-fetches its own children lazily via expandDir.
 			refreshTree: async () => {
-				const { rootPath, showHidden } = get();
+				const { rootPath, showHidden, expanded } = get();
 				if (!rootPath) return;
 				try {
 					const result = await readDirectory({
 						path: rootPath,
-						maxDepth: DEFAULT_TREE_DEPTH,
+						maxDepth: SHALLOW_DEPTH,
 						includeHidden: showHidden,
 					});
+					const truncated = result.truncated ?? false;
 					const tree = await buildTreeAsync(
 						rootPath,
 						result.entries,
@@ -301,36 +402,119 @@ export const useFileStore = create<FileState>()(
 						showHidden,
 					);
 					const sorted = applyCustomOrder(tree, get().customOrder);
-					set({ fileTree: sorted, lastRefreshed: Date.now() });
+					set({ fileTree: sorted, treeTruncated: truncated, lastRefreshed: Date.now() });
+
+					// Re-expand directories that were open before the refresh.
+					const expandedPaths = Object.entries(expanded)
+						.filter(([, v]) => v)
+						.map(([k]) => k)
+						.filter((k) => k !== rootPath);
+					for (const dirPath of expandedPaths) {
+						try {
+							await get().expandDir(dirPath);
+						} catch {
+							// Directory may have been deleted — ignore.
+						}
+					}
+
+					// Rebuild flat search index only if tree is manageable.
+					if (!truncated) {
+						scheduleFlatRebuild(rootPath);
+					}
 				} catch (err) {
 					console.error("[fileStore] refresh failed:", err);
 					set({ error: err instanceof Error ? err.message : String(err) });
 				}
 			},
 
+			// ── toggleHidden ────────────────────────────────────────────────────
 			toggleHidden: () => {
 				const next = !get().showHidden;
 				set({ showHidden: next });
 				void get().refreshTree();
 			},
 
+			// ── expandDir ────────────────────────────────────────────────────────
+			// Lazy-loads immediate children of a directory node.
+			expandDir: async (dirPath: string) => {
+				const { rootPath, showHidden, fileTree, customOrder } = get();
+				if (!rootPath) return;
+
+				// Mark as loading.
+				set((s) => ({
+					loadingDirs: new Set([...s.loadingDirs, dirPath]),
+				}));
+				try {
+					const result = await readDirectory({
+						path: dirPath,
+						maxDepth: SHALLOW_DEPTH,
+						includeHidden: showHidden,
+					});
+					const childNodes = await buildTreeAsync(
+						dirPath,
+						result.entries,
+						result.gitignore,
+						showHidden,
+					);
+					const orderedChildren = applyCustomOrder(childNodes, customOrder);
+					const updatedTree = spliceChildren(fileTree, dirPath, orderedChildren);
+					set({
+						fileTree: updatedTree,
+						loadingDirs: (() => {
+							const next = new Set(get().loadingDirs);
+							next.delete(dirPath);
+							return next;
+						})(),
+					});
+				} catch (err) {
+					console.error("[fileStore] expandDir failed:", dirPath, err);
+					set((s) => {
+						const next = new Set(s.loadingDirs);
+						next.delete(dirPath);
+						return { loadingDirs: next };
+					});
+				}
+			},
+
+			// ── toggleExpand ────────────────────────────────────────────────────
 			toggleExpand: (path, force) => {
 				const cur = get().expanded[path] ?? false;
 				const next = force === undefined ? !cur : force;
 				set((s) => ({
 					expanded: { ...s.expanded, [path]: next },
 				}));
+				// Lazy-load children when opening a directory for the first time.
+				if (next) {
+					// Check if we already have children loaded.
+					const findNode = (nodes: FileNode[], p: string): FileNode | undefined => {
+						for (const n of nodes) {
+							if (n.path === p) return n;
+							if (n.children) {
+								const found = findNode(n.children, p);
+								if (found) return found;
+							}
+						}
+						return undefined;
+					};
+					const node = findNode(get().fileTree, path);
+					// Load if the node has no children or children array is empty
+					// (shallow placeholder).
+					if (!node?.children || node.children.length === 0) {
+						void get().expandDir(path);
+					}
+				}
 			},
 
+			// ── expandAncestors ─────────────────────────────────────────────────
 			expandAncestors: (path) => {
 				const { rootPath, expanded } = get();
 				if (!rootPath) return;
-				const root = rootPath.replace(/[\\/]+$/, "");
+				const root = rootPath.replace(/[/\\]+$/, "");
 				const normalized = path;
 				if (normalized === root) return;
 				if (!normalized.startsWith(root)) return;
 				const rel = normalized.slice(root.length + 1);
-				const parts = rel.split(/[\\/]/);
+				const parts = rel.split(/[/\\]/);
 				const sep = detectSeparator(root);
 				const updates: Record<string, boolean> = {};
 				let acc = root;
@@ -339,26 +523,49 @@ export const useFileStore = create<FileState>()(
 					updates[acc] = true;
 				}
 				set({ expanded: { ...expanded, ...updates } });
+
+				// Lazy-load each ancestor that isn't yet populated.
+				const findNode = (nodes: FileNode[], p: string): FileNode | undefined => {
+					for (const n of nodes) {
+						if (n.path === p) return n;
+						if (n.children) {
+							const found = findNode(n.children, p);
+							if (found) return found;
+						}
+					}
+					return undefined;
+				};
+				for (const ancestorPath of Object.keys(updates)) {
+					const node = findNode(get().fileTree, ancestorPath);
+					if (!node?.children || node.children.length === 0) {
+						void get().expandDir(ancestorPath);
+					}
+				}
 			},
 
 			selectFile: (path) => set({ selectedFile: path }),
 
+			// ── createFile ──────────────────────────────────────────────────────
 			createFile: async (parentPath, name) => {
 				validateName(name);
 				const fullPath = joinPath(parentPath, name);
 				await fsCreateFile(fullPath);
-				await get().refreshTree();
+				await get().expandDir(parentPath);
+				scheduleFlatRebuild(get().rootPath!);
 				return fullPath;
 			},
 
+			// ── createFolder ────────────────────────────────────────────────────
 			createFolder: async (parentPath, name) => {
 				validateName(name);
 				const fullPath = joinPath(parentPath, name);
 				await fsCreateDirectory(fullPath);
-				await get().refreshTree();
+				await get().expandDir(parentPath);
+				scheduleFlatRebuild(get().rootPath!);
 				return fullPath;
 			},
 
+			// ── rename ──────────────────────────────────────────────────────────
 			rename: async (oldPath, newName) => {
 				validateName(newName);
 				const parent = parentPath(oldPath);
@@ -384,11 +591,14 @@ export const useFileStore = create<FileState>()(
 					selectedFile: selectedFile === oldPath ? newPath : selectedFile,
 					rootPath: rootPath === oldPath ? newPath : rootPath,
 				});
-				await get().refreshTree();
+				await get().expandDir(parent);
+				scheduleFlatRebuild(get().rootPath!);
 			},
 
+			// ── remove ──────────────────────────────────────────────────────────
 			remove: async (path) => {
 				const { selectedFile, expanded, rootPath } = get();
+				const parent = parentPath(path);
 				await fsDeleteEntry(path);
 				const nextExpanded: Record<string, boolean> = {};
 				for (const [k, v] of Object.entries(expanded)) {
@@ -406,9 +616,11 @@ export const useFileStore = create<FileState>()(
 					selectedFile: selectedFile === path ? null : selectedFile,
 					rootPath: rootPath === path ? null : rootPath,
 				});
-				await get().refreshTree();
+				if (parent) await get().expandDir(parent);
+				if (get().rootPath) scheduleFlatRebuild(get().rootPath!);
 			},
 
+			// ── resolveTilde ────────────────────────────────────────────────────
 			resolveTilde: async (path) => {
 				if (path === "~" || path.startsWith("~/") || path.startsWith("~\\")) {
 					const home = await resolveHome();
@@ -418,6 +630,7 @@ export const useFileStore = create<FileState>()(
 				return path;
 			},
 
+			// ── reorderItems ────────────────────────────────────────────────────
 			reorderItems: (parentPath, orderedNames) => {
 				set((s) => {
 					const next = { ...s.customOrder, [parentPath]: orderedNames };
@@ -426,6 +639,7 @@ export const useFileStore = create<FileState>()(
 				});
 			},
 
+			// ── moveItem ────────────────────────────────────────────────────────
 			moveItem: async (sourcePath, targetDirPath) => {
 				const name = basename(sourcePath);
 				const targetPath = joinPath(targetDirPath, name);
@@ -448,7 +662,10 @@ export const useFileStore = create<FileState>()(
 					expanded: nextExpanded,
 					selectedFile: selectedFile === sourcePath ? targetPath : selectedFile,
 				});
-				await get().refreshTree();
+				const srcParent = parentPath(sourcePath);
+				if (srcParent) await get().expandDir(srcParent);
+				await get().expandDir(targetDirPath);
+				if (get().rootPath) scheduleFlatRebuild(get().rootPath!);
 			},
 		}),
 		{
@@ -463,9 +680,9 @@ export const useFileStore = create<FileState>()(
 			onRehydrateStorage: () => (state) => {
 				if (!state?.rootPath) return;
 				const stalePath = state.rootPath;
-				void (async () => {
-					// openFolder swallows errors into state.error rather than rejecting,
-					// so we pre-validate the path and clear persisted state on failure.
+				const staleName = state.rootName || stalePath.split(/[/\\]/).filter(Boolean).pop() || "";
+				// Defer to next tick so the UI renders first.
+				setTimeout(async () => {
 					try {
 						if (!(await pathExists(stalePath))) {
 							useFileStore.setState({
@@ -476,7 +693,27 @@ export const useFileStore = create<FileState>()(
 							});
 							return;
 						}
-						await state.openFolder(stalePath);
+						// Lightweight head-count: if root has way too many immediate
+						// children, skip auto-reopen to avoid freeze on restart.
+						const probe = await readDirectory({
+							path: stalePath,
+							maxDepth: 1,
+							includeHidden: state.showHidden ?? false,
+						});
+						if (probe.entries.length > 10_000) {
+							useToastStore.getState().addToast(
+								"warn",
+								`"${staleName}" is very large (${probe.entries.length} items) — open manually to avoid freezing.`,
+							);
+							useFileStore.setState({
+								rootPath: null,
+								rootName: "",
+								fileTree: [],
+								error: null,
+							});
+							return;
+						}
+						await useFileStore.getState().openFolder(stalePath);
 					} catch (err) {
 						console.error("[fileStore] rehydrate failed:", err);
 						useFileStore.setState({
@@ -486,7 +723,7 @@ export const useFileStore = create<FileState>()(
 							error: err instanceof Error ? err.message : String(err),
 						});
 					}
-				})();
+				}, 0);
 			},
 		},
 	),

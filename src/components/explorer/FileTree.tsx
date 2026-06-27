@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
-import { FolderOpen, RefreshCw, Eye, EyeOff, X, FileText, FilePlus, FolderPlus, MoreHorizontal } from "lucide-react";
+import { FolderOpen, RefreshCw, Eye, EyeOff, X, FileText, FilePlus, FolderPlus, MoreHorizontal, AlertTriangle } from "lucide-react";
 import {
   DndContext,
   DragOverlay,
@@ -146,6 +146,7 @@ export function FileTree() {
   const refreshTree = useFileStore((s) => s.refreshTree);
   const toggleHidden = useFileStore((s) => s.toggleHidden);
   const expandedRecord = useFileStore((s) => s.expanded);
+  const treeTruncated = useFileStore((s) => s.treeTruncated);
   const { handleNewFile, handleNewFolder } = useExplorerActions();
   const [creating, setCreating] = useState<"file" | "folder" | null>(null);
   const [activeDragData, setActiveDragData] = useState<{ name: string; kind: FileNodeKind; path: string } | null>(null);
@@ -451,6 +452,13 @@ export function FileTree() {
       {error && (
         <div className="border-b border-destructive/30 bg-destructive/10 px-2 py-1 text-[11px] text-destructive">
           {error}
+        </div>
+      )}
+
+      {treeTruncated && (
+        <div className="flex items-center gap-1 border-b border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[11px] text-amber-600 dark:text-amber-400">
+          <AlertTriangle className="size-3 shrink-0" />
+          <span>Too many files — showing first ~20,000 entries. Use search or open a subfolder.</span>
         </div>
       )}
 

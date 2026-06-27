@@ -61,6 +61,34 @@ You can customize the terminal behavior inside the Settings panel (`Ctrl+,`) or 
 }
 ```
 
+---
+
+## 5. AI Agent Launcher
+
+Quantum includes an **AI Agent Launcher** — a Bot icon in the Activity Bar that launches supported AI coding agents directly into a new terminal session.
+
+### How it works
+
+1. Click the **Bot icon** (`🤖`) in the Activity Bar
+2. Select an agent from the dropdown (OpenCode, Claude Code, Pi Agent, Antigravity CLI, KiloCode, Aider, Cursor CLI)
+3. A new terminal session opens with the agent's command pre-executed
+
+The agent list is configurable and persisted locally. You can add, remove, or update agents programmatically via the `useAiAgentStore`.
+
+### Default agents
+
+| Agent | Command |
+|-------|---------|
+| OpenCode | `opencode` |
+| Claude Code | `claude` |
+| Pi Agent | `pi` |
+| Antigravity CLI | `agy` |
+| KiloCode | `kilocode` |
+| Aider | `aider` |
+| Cursor CLI | `cursor` |
+
+---
+
 ### Customization Options
 * **Font Customization:** Set the terminal font size and family independently from the main editor font.
 * **Default Shell:** Override the auto-detected shell by providing an absolute path to your preferred binary (e.g., pointing cmd.exe or git bash on Windows).

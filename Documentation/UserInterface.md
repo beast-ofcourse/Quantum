@@ -36,6 +36,7 @@ A slim vertical bar on the edge of the screen containing shortcuts for each prim
 * **Source Control (Git)** (`Ctrl+Shift+G`)
 * **Run and Debug** (`Ctrl+Shift+D`)
 * **Extensions Marketplace**
+* **AI Agent Launcher** — launch AI coding agents (OpenCode, Claude Code, Pi, Antigravity, etc.) in a new terminal
 * **Settings & Themes** (`Ctrl+,`)
 
 ### 3. Layout Docks (Left, Right, Bottom Docks)

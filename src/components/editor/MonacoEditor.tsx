@@ -72,25 +72,27 @@ export function MonacoEditor({
 				lineHeight: Math.round(settings.editor.fontSize * 1.5),
 				tabSize: settings.editor.tabSize,
 				insertSpaces: true,
-				wordWrap: settings.editor.wordWrap,
+				wordWrap: isLargeFile ? "off" : settings.editor.wordWrap,
+				largeFileOptimizations: isLargeFile ? true : undefined,
+				maxTokenizationLength: isLargeFile ? 50000 : undefined,
 				minimap: {
-					enabled: settings.editor.minimap,
+					enabled: isLargeFile ? false : settings.editor.minimap,
 					scale: settings.editor.minimapScale,
 					renderCharacters: false,
 					maxColumn: 120,
 				},
 				lineNumbers: settings.editor.lineNumbers,
-				glyphMargin: true,
-				folding: true,
-				renderLineHighlight: "all",
+				glyphMargin: !isLargeFile,
+				folding: !isLargeFile,
+				renderLineHighlight: isLargeFile ? "line" : "all",
 				scrollBeyondLastLine: false,
-				smoothScrolling: true,
+				smoothScrolling: !isLargeFile,
 				cursorBlinking: "smooth",
-				cursorSmoothCaretAnimation: "on",
+				cursorSmoothCaretAnimation: isLargeFile ? "off" : "on",
 				automaticLayout: true,
 				fixedOverflowWidgets: true,
-				bracketPairColorization: { enabled: true },
-				inlayHints: { enabled: settings.editor.inlayHints ? "on" : "off" },
+				bracketPairColorization: isLargeFile ? { enabled: false } : { enabled: true },
+				inlayHints: isLargeFile ? { enabled: "off" } : { enabled: settings.editor.inlayHints ? "on" : "off" },
 				definitionLinkOpensInPeek: true,
 				gotoLocation: {
 					mouseRight: "peek",
@@ -99,11 +101,11 @@ export function MonacoEditor({
 				},
 				padding: { top: 8, bottom: 8 },
 				scrollbar: { verticalScrollbarSize: 10, horizontalScrollbarSize: 10 },
-				stickyScroll: { enabled: true },
+				stickyScroll: isLargeFile ? { enabled: false } : { enabled: true },
 				links: true,
 				breadcrumbs: { enabled: settings.editor.breadcrumbs },
 			}),
-			[settings.editor],
+			[settings.editor, isLargeFile],
 		);
 
 	const handleMount: OnMount = (editor, monacoInstance) => {
@@ -113,10 +115,15 @@ export function MonacoEditor({
 		editor.onDidChangeCursorPosition((e) => {
 			setCursor(tabId, e.position.lineNumber, e.position.column);
 		});
-		initDiagnostics();
-		registerDefinitionProvider();
-		registerLanguageCompletions();
-		registerHoverProvider();
+		// ponytail: skip heavy language services + diagnostics for large files
+		const tab = useEditorStore.getState().openTabs.find((t) => t.id === tabId);
+		const isLarge = tab?.isLargeFile ?? false;
+		if (!isLarge) {
+			initDiagnostics();
+			registerDefinitionProvider();
+			registerLanguageCompletions();
+			registerHoverProvider();
+		}
 
 		// Intercept global keybindings inside Monaco and forward them to the window context
 		editor.onKeyDown((e) => {

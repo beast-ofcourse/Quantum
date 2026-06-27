@@ -127,7 +127,7 @@ export const useEditorStore = create<EditorStoreState>((set, get) => ({
       const epoch = (saveEpochs.get(id) ?? 0) + 1;
       saveEpochs.set(id, epoch);
       let content = tab.isLargeFile ? (ContentStore.get(tab.path) ?? "") : tab.currentContent;
-      if (useSettingsStore.getState().editor.formatOnSave) {
+      if (useSettingsStore.getState().editor.formatOnSave && !tab.isLargeFile) {
         const model = monaco.editor.getModel(monaco.Uri.file(tab.path));
         if (model) {
           const editors = monaco.editor.getEditors();

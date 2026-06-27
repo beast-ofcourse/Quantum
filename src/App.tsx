@@ -1,4 +1,5 @@
 import { useEffect, useMemo } from "react";
+import { invoke } from "@tauri-apps/api/core";
 import { ShellLayout } from "@/components/layout/ShellLayout";
 import { StandalonePanelShell } from "@/components/layout/StandalonePanelShell";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -8,9 +9,8 @@ import { useFileDrop } from "@/hooks/useFileDrop";
 import { useGitHotkeys } from "@/hooks/useGitHotkeys";
 import { useTerminalStore } from "@/stores/terminalStore";
 import { useFileStore } from "@/stores/fileStore";
-import { useEditorStore } from "@/stores/editorStore";
 import { useGitStore } from "@/stores/gitStore";
-import { saveSession, loadSession, addRecentFolder } from "@/lib/session";
+import { addRecentFolder } from "@/lib/session";
 import { openTerminalAtPath } from "@/lib/terminal-helpers";
 import { initExtensionHost } from "@/extensions/host";
 import { emitAppClosing } from "@/lib/multiWindowService";
@@ -33,6 +33,20 @@ function MainShell() {
     initCompletionSystem();
   }, []);
 
+  // Open folder passed via CLI arg ("Open in Quantum" context menu)
+  useEffect(() => {
+    void (async () => {
+      try {
+        const path = await invoke<string | null>("get_startup_path");
+        if (path) {
+          await useFileStore.getState().openFolder(path);
+        }
+      } catch {
+        // not on Tauri or command not registered — ignore
+      }
+    })();
+  }, []);
+
   useEffect(() => {
     let prevRoot: string | null = null;
     const unsub = useFileStore.subscribe((state) => {
@@ -49,36 +63,12 @@ function MainShell() {
   }, []);
 
   useEffect(() => {
-    const session = loadSession();
-    if (session && session.tabs.length > 0) {
-      for (const tab of session.tabs) {
-        void (async () => {
-          await useEditorStore.getState().openFile(tab.path);
-          if (tab.cursor) {
-            useEditorStore.getState().setCursor(tab.path, tab.cursor.line, tab.cursor.col);
-          }
-        })();
-      }
-    }
-  }, []);
-
-  useEffect(() => {
-    const unsub = useEditorStore.subscribe((state) => {
-      saveSession({
-        tabs: state.openTabs.map((t) => ({ path: t.path, cursor: t.cursor })),
-      });
-    });
-    return unsub;
-  }, []);
-
-  useEffect(() => {
     let prevRoot: string | null = null;
     let terminalCreated = false;
     const unsub = useFileStore.subscribe((state) => {
       if (state.rootPath && state.rootPath !== prevRoot) {
         prevRoot = state.rootPath;
         addRecentFolder(state.rootPath);
-        // Auto-open terminal at the workspace root, once per session.
         if (!terminalCreated) {
           terminalCreated = true;
           void openTerminalAtPath(state.rootPath);

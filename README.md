@@ -119,6 +119,7 @@ Quantum is a feature-rich IDE designed for local development, with deep Git inte
 - **Detachable panels** — pop out into separate windows
 - **Custom title bar** with menu bar toggle
 - **Status bar** with theme, branch, cursor position, diagnostics, toasts
+- **Zen Mode** — `Ctrl+Shift+Z` hides all chrome, centers editor, hides tabs, for distraction-free coding
 - **Unified search bar** (`Ctrl+P`) — centered in title bar, supports files/commands/symbols/goto/full-text
 - **Keyboard Shortcuts** cheat sheet (`Ctrl+Alt+K`)
 
@@ -184,6 +185,14 @@ npm run tauri build
 ```
 
 Outputs platform bundles to `src-tauri/target/release/bundle/`.
+
+### Windows context menu
+
+After installing the NSIS bundle, right-click a folder (or folder background) → **Open in Quantum**. The installer automatically registers the required registry keys at `HKCU\Software\Classes\Directory\shell\Quantum`.
+
+If Quantum was moved after install, re-run the installer to restore the context menu.
+
+> **Windows 11:** The entry appears under "Show more options" (classic context menu). The modern compact menu requires a COM shell extension, which is not yet implemented.
 
 ---
 
@@ -351,6 +360,7 @@ Single WebView (React 19)
 | `Ctrl+Shift+E` | Focus explorer |
 | `Ctrl+Shift+F` | Focus search |
 | `Ctrl+Shift+G` | Focus source control |
+| `Ctrl+Shift+Z` | Toggle Zen Mode |
 | `Ctrl+Alt+K` | Keyboard shortcuts cheat sheet |
 | `Ctrl+.` | Quick fix |
 | `Ctrl+=` / `Ctrl+-` | Zoom in / zoom out |

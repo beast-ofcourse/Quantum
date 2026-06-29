@@ -54,7 +54,6 @@ export interface FlatFileEntry {
 }
 
 let flatFileCache: FlatFileEntry[] = [];
-let flatFileCacheRoot: string | null = null;
 let flatFileCacheTimer: ReturnType<typeof setTimeout> | null = null;
 
 async function rebuildFlatFileIndex(root: string): Promise<void> {
@@ -66,7 +65,7 @@ async function rebuildFlatFileIndex(root: string): Promise<void> {
 			const name = parts[parts.length - 1];
 			return { rel, name, path: root + sep + rel };
 		});
-		flatFileCacheRoot = root;
+		void root;
 	} catch (err) {
 		console.error("[fileStore] flat index failed:", err);
 	}
@@ -162,7 +161,10 @@ function spliceChildren(
 			return { ...node, children };
 		}
 		if (node.children && dirPath.startsWith(node.path)) {
-			return { ...node, children: spliceChildren(node.children, dirPath, children) };
+			return {
+				...node,
+				children: spliceChildren(node.children, dirPath, children),
+			};
 		}
 		return node;
 	});
@@ -369,7 +371,7 @@ export const useFileStore = create<FileState>()(
 			closeFolder: () => {
 				void teardownWatcher();
 				flatFileCache = [];
-				flatFileCacheRoot = null;
+				// root cleared on rebuild
 				set({
 					rootPath: null,
 					rootName: "",
@@ -402,7 +404,11 @@ export const useFileStore = create<FileState>()(
 						showHidden,
 					);
 					const sorted = applyCustomOrder(tree, get().customOrder);
-					set({ fileTree: sorted, treeTruncated: truncated, lastRefreshed: Date.now() });
+					set({
+						fileTree: sorted,
+						treeTruncated: truncated,
+						lastRefreshed: Date.now(),
+					});
 
 					// Re-expand directories that were open before the refresh.
 					const expandedPaths = Object.entries(expanded)
@@ -457,7 +463,11 @@ export const useFileStore = create<FileState>()(
 						showHidden,
 					);
 					const orderedChildren = applyCustomOrder(childNodes, customOrder);
-					const updatedTree = spliceChildren(fileTree, dirPath, orderedChildren);
+					const updatedTree = spliceChildren(
+						fileTree,
+						dirPath,
+						orderedChildren,
+					);
 					set({
 						fileTree: updatedTree,
 						loadingDirs: (() => {
@@ -486,7 +496,10 @@ export const useFileStore = create<FileState>()(
 				// Lazy-load children when opening a directory for the first time.
 				if (next) {
 					// Check if we already have children loaded.
-					const findNode = (nodes: FileNode[], p: string): FileNode | undefined => {
+					const findNode = (
+						nodes: FileNode[],
+						p: string,
+					): FileNode | undefined => {
 						for (const n of nodes) {
 							if (n.path === p) return n;
 							if (n.children) {
@@ -525,7 +538,10 @@ export const useFileStore = create<FileState>()(
 				set({ expanded: { ...expanded, ...updates } });
 
 				// Lazy-load each ancestor that isn't yet populated.
-				const findNode = (nodes: FileNode[], p: string): FileNode | undefined => {
+				const findNode = (
+					nodes: FileNode[],
+					p: string,
+				): FileNode | undefined => {
 					for (const n of nodes) {
 						if (n.path === p) return n;
 						if (n.children) {
@@ -680,7 +696,10 @@ export const useFileStore = create<FileState>()(
 			onRehydrateStorage: () => (state) => {
 				if (!state?.rootPath) return;
 				const stalePath = state.rootPath;
-				const staleName = state.rootName || stalePath.split(/[/\\]/).filter(Boolean).pop() || "";
+				const staleName =
+					state.rootName ||
+					stalePath.split(/[/\\]/).filter(Boolean).pop() ||
+					"";
 				// Defer to next tick so the UI renders first.
 				setTimeout(async () => {
 					try {
@@ -701,10 +720,12 @@ export const useFileStore = create<FileState>()(
 							includeHidden: state.showHidden ?? false,
 						});
 						if (probe.entries.length > 10_000) {
-							useToastStore.getState().addToast(
-								"warn",
-								`"${staleName}" is very large (${probe.entries.length} items) — open manually to avoid freezing.`,
-							);
+							useToastStore
+								.getState()
+								.addToast(
+									"warn",
+									`"${staleName}" is very large (${probe.entries.length} items) — open manually to avoid freezing.`,
+								);
 							useFileStore.setState({
 								rootPath: null,
 								rootName: "",

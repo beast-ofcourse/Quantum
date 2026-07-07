@@ -3,7 +3,7 @@ import { resolveRuntime } from "./RuntimeResolver";
 import { buildCommand } from "./CommandBuilder";
 import { ProcessManager } from "./ProcessManager";
 import { TaskQueue } from "./TaskQueue";
-import { tauriSpawn } from "@/core/terminal/PtyService";
+import { tauriSpawn } from "@/core/execution/PtyService";
 import type { Language, ProcessStatus, RunRequest, Task } from "./types";
 
 export type ExecutionEventCallback = {

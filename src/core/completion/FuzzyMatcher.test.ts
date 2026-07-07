@@ -1,34 +1,37 @@
+import { describe, it, expect } from "vitest";
 import { fuzzyMatch } from "./FuzzyMatcher";
 
-function testFuzzy(query: string, target: string, expectedMinScore: number) {
-  const result = fuzzyMatch(query, target);
-  if (!result) throw new Error(`"${query}" should match "${target}"`);
-  if (result.score < expectedMinScore) {
-    throw new Error(`"${query}" vs "${target}": expected >= ${expectedMinScore}, got ${result.score}`);
-  }
-}
+describe("FuzzyMatcher", () => {
+  it("matches prefix with high score", () => {
+    const r1 = fuzzyMatch("con", "console");
+    expect(r1).toBeTruthy();
+    expect(r1!.score).toBeGreaterThanOrEqual(100);
 
-function testNoMatch(query: string, target: string) {
-  const result = fuzzyMatch(query, target);
-  if (result) throw new Error(`"${query}" should NOT match "${target}"`);
-}
+    const r2 = fuzzyMatch("cons", "console");
+    expect(r2).toBeTruthy();
+    expect(r2!.score).toBeGreaterThanOrEqual(100);
+  });
 
-// Prefix
-testFuzzy("con", "console", 100);
-testFuzzy("cons", "console", 100);
+  it("matches substring", () => {
+    const r = fuzzyMatch("sole", "console");
+    expect(r).toBeTruthy();
+    expect(r!.score).toBeGreaterThanOrEqual(90);
+  });
 
-// Substring
-testFuzzy("sole", "console", 90);
+  it("matches subsequence", () => {
+    const r = fuzzyMatch("rd", "readFile");
+    expect(r).toBeTruthy();
+    expect(r!.score).toBeGreaterThanOrEqual(50);
+  });
 
-// Subsequence
-testFuzzy("rd", "readFile", 50);
-testFuzzy("rd", "readFile", 50);
+  it("matches camelCase boundary", () => {
+    const r = fuzzyMatch("rf", "readFile");
+    expect(r).toBeTruthy();
+    expect(r!.score).toBeGreaterThanOrEqual(80);
+  });
 
-// CamelCase boundary
-testFuzzy("rf", "readFile", 80);
-
-// No match
-testNoMatch("xyz", "console");
-testNoMatch("abc", "");
-
-console.log("All fuzzy match tests passed");
+  it("rejects non-matching queries", () => {
+    expect(fuzzyMatch("xyz", "console")).toBeNull();
+    expect(fuzzyMatch("abc", "")).toBeNull();
+  });
+});

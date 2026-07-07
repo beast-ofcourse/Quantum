@@ -1,8 +1,7 @@
 **GOLDEN RULE**
-- ALways write minimal and qualtiy code , production level and robust.
+- Code Quality Matters the most , Fix every error, warnings if you see so , Never Ignore Code Quality
+- follow everything as planned , Never assume anything.
+- Leave check marks to track the progress and double check the implementataion
 - ALways use caveman at maximum mode.
-- After every tasks Always update README and docs ,  README.md and C:\Users\Bhavin\Videos\WEB        dev\Code-editor\Documentation.
-
 - Do not ever push anything to main branch.
 - Always review  and run tests after completion.
-- Commit only after a clean pass 

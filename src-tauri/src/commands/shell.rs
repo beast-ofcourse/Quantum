@@ -5,13 +5,18 @@ use std::process::Command;
 #[cfg(target_os = "windows")]
 use std::os::windows::process::CommandExt;
 
+#[cfg(target_os = "windows")]
 const CREATE_NO_WINDOW: u32 = 0x08000000;
 
 fn cmd(program: &str) -> Command {
-    let mut c = Command::new(program);
     #[cfg(target_os = "windows")]
-    c.creation_flags(CREATE_NO_WINDOW);
-    c
+    {
+        let mut c = Command::new(program);
+        c.creation_flags(CREATE_NO_WINDOW);
+        c
+    }
+    #[cfg(not(target_os = "windows"))]
+    Command::new(program)
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]

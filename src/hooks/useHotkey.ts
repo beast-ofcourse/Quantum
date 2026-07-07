@@ -21,9 +21,8 @@ export function useHotkey(options: UseHotkeyOptions) {
   const enabled = options.enabled ?? true;
   const handlerRef = useRef<HotkeyHandler>(options.handler);
 
-  const override = options.commandId
-    ? useKeybindingStore((s) => s.overrides[options.commandId!])
-    : undefined;
+  const overrides = useKeybindingStore((s) => s.overrides);
+  const override = options.commandId ? overrides[options.commandId] : undefined;
   const effectiveCombo =
     override ?? (options.commandId ? getDefaultCombo(options.commandId) : options.combo);
 

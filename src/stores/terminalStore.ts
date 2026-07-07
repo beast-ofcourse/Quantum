@@ -1,3 +1,10 @@
+// ────────────────────────────────────────────────────────────
+// Single source of truth for the integrated terminal.
+// Do NOT create parallel adapters, event emitters, or worker
+// abstractions that duplicate this store's functionality.
+// If you need terminal I/O, use this store — not a new one.
+// ────────────────────────────────────────────────────────────
+
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { listen, type UnlistenFn } from "@tauri-apps/api/event";

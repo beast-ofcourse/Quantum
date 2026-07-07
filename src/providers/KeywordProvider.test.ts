@@ -1,27 +1,33 @@
+import { describe, it, expect } from "vitest";
 import { KeywordProvider } from "./KeywordProvider";
 import type { ProviderContext } from "../core/completion/types";
 
 const provider = new KeywordProvider();
 
 const ctx = (lang: string, prefix: string): ProviderContext => ({
-  text: "", position: { lineNumber: 1, column: prefix.length + 1 } as any,
-  prefix, triggerChar: null, uri: "test.ts", language: lang, manual: false,
+  text: "",
+  position: { lineNumber: 1, column: prefix.length + 1 } as any,
+  prefix,
+  triggerChar: null,
+  uri: "test.ts",
+  language: lang,
+  manual: false,
 });
 
-// Typescript keywords
-async function test() {
-  let items = await provider.provide(ctx("typescript", "if"));
-  if (!items.find(i => i.label === "if")) throw new Error("missing 'if'");
-  if (!items.find(i => i.label === "for")) throw new Error("missing 'for'");
+describe("KeywordProvider", () => {
+  it("provides TypeScript keywords", async () => {
+    const items = await provider.provide(ctx("typescript", "if"));
+    expect(items.find((i) => i.label === "if")).toBeTruthy();
+    expect(items.find((i) => i.label === "for")).toBeTruthy();
+  });
 
-  // Python keywords
-  items = await provider.provide(ctx("python", "def"));
-  if (!items.find(i => i.label === "def")) throw new Error("missing 'def'");
+  it("provides Python keywords", async () => {
+    const items = await provider.provide(ctx("python", "def"));
+    expect(items.find((i) => i.label === "def")).toBeTruthy();
+  });
 
-  // Unknown language — empty
-  items = await provider.provide(ctx("unknown_lang", "x"));
-  if (items.length !== 0) throw new Error("unknown language should return empty");
-
-  console.log("All keyword provider tests passed");
-}
-test();
+  it("returns empty for unknown language", async () => {
+    const items = await provider.provide(ctx("unknown_lang", "x"));
+    expect(items).toHaveLength(0);
+  });
+});

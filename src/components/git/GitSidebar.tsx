@@ -96,7 +96,7 @@ export function GitSidebar() {
 
   const handleOpenFile = (path: string) => {
     const fullPath = repoRoot
-      ? `${repoRoot.replace(/[\\\/]+$/, "")}/${path.replace(/^[\\\/]+/, "")}`
+      ? `${repoRoot.replace(/[\\/]+$/, "")}/${path.replace(/^[\\/]+/, "")}`
       : path;
     void openFile(fullPath);
   };

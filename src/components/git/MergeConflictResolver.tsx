@@ -221,17 +221,14 @@ export function MergeConflictResolver({ path }: Props) {
 		const block = conflicts[blockIndex];
 		if (!block) return;
 
-		let resolvedText = "";
-		if (side === "ours") {
-			resolvedText = block.oursText;
-		} else if (side === "theirs") {
-			resolvedText = block.theirsText;
-		} else {
-			resolvedText =
-				block.oursText +
-				(block.oursText && block.theirsText ? "\n" : "") +
-				block.theirsText;
-		}
+		const resolvedText =
+			side === "ours"
+				? block.oursText
+				: side === "theirs"
+					? block.theirsText
+					: block.oursText +
+						(block.oursText && block.theirsText ? "\n" : "") +
+						block.theirsText;
 
 		editor.executeEdits("merge-conflict-resolver", [
 			{
@@ -251,17 +248,14 @@ export function MergeConflictResolver({ path }: Props) {
 		const conflicts = parseConflicts(model);
 		// Apply edits in reverse order to ensure line shifting doesn't disrupt ranges
 		const edits = conflicts.map((block) => {
-			let resolvedText = "";
-			if (side === "ours") {
-				resolvedText = block.oursText;
-			} else if (side === "theirs") {
-				resolvedText = block.theirsText;
-			} else {
-				resolvedText =
-					block.oursText +
-					(block.oursText && block.theirsText ? "\n" : "") +
-					block.theirsText;
-			}
+			const resolvedText =
+				side === "ours"
+					? block.oursText
+					: side === "theirs"
+						? block.theirsText
+						: block.oursText +
+							(block.oursText && block.theirsText ? "\n" : "") +
+							block.theirsText;
 
 			return {
 				range: block.fullRange,

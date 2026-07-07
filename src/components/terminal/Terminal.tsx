@@ -1,3 +1,10 @@
+// ────────────────────────────────────────────────────────────
+// Single source of truth for the integrated terminal xterm
+// instance. Do NOT create parallel adapters, worker-only
+// abstractions, or alternative render paths for terminal I/O.
+// Terminal state & data flow is owned by terminalStore.ts.
+// ────────────────────────────────────────────────────────────
+
 import { useEffect, useRef } from "react";
 import type { RefObject } from "react";
 import { FitAddon } from "@xterm/addon-fit";

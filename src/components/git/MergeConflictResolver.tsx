@@ -91,11 +91,32 @@ export function MergeConflictResolver({ path }: Props) {
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
 
-	const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
-	const monacoRef = useRef<typeof monaco | null>(null);
-	const decorationsCollectionRef =
-		useRef<monaco.editor.IEditorDecorationsCollection | null>(null);
-	const providerRef = useRef<monaco.IDisposable | null>(null);
+  const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
+  const monacoRef = useRef<typeof monaco | null>(null);
+  const decorationsCollectionRef = useRef<monaco.editor.IEditorDecorationsCollection | null>(null);
+  const providerRef = useRef<monaco.IDisposable | null>(null);
+  const conflictContainerRef = useRef<HTMLDivElement>(null);
+  const [containerReady, setContainerReady] = useState(false);
+
+  useEffect(() => {
+    const el = conflictContainerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+          setContainerReady(true);
+          ro.disconnect();
+          break;
+        }
+      }
+    });
+    ro.observe(el);
+    if (el.offsetWidth > 0 && el.offsetHeight > 0) {
+      setContainerReady(true);
+      ro.disconnect();
+    }
+    return () => ro.disconnect();
+  }, []);
 
 	useEffect(() => {
 		setLoading(true);
@@ -138,38 +159,28 @@ export function MergeConflictResolver({ path }: Props) {
 		const conflicts = parseConflicts(model);
 		const newDecorations: monaco.editor.IModelDeltaDecoration[] = [];
 
-		conflicts.forEach((conflict) => {
-			// Ours block lines decoration
-			if (conflict.splitLine > conflict.startLine + 1) {
-				newDecorations.push({
-					range: new monacoInstance.Range(
-						conflict.startLine + 1,
-						1,
-						conflict.splitLine - 1,
-						model.getLineMaxColumn(conflict.splitLine - 1),
-					),
-					options: {
-						className: "conflict-ours-bg",
-						isWholeLine: true,
-					},
-				});
-			}
+    conflicts.forEach((conflict) => {
+      // Ours block lines decoration
+      if (conflict.splitLine > conflict.startLine + 1) {
+        newDecorations.push({
+          range: new monacoInstance.Range(conflict.startLine + 1, 1, conflict.splitLine - 1, model.getLineMaxColumn(conflict.splitLine - 1)),
+          options: {
+            className: "conflict-ours-bg",
+            isWholeLine: true,
+          }
+        });
+      }
 
-			// Theirs block lines decoration
-			if (conflict.endLine > conflict.splitLine + 1) {
-				newDecorations.push({
-					range: new monacoInstance.Range(
-						conflict.splitLine + 1,
-						1,
-						conflict.endLine - 1,
-						model.getLineMaxColumn(conflict.endLine - 1),
-					),
-					options: {
-						className: "conflict-theirs-bg",
-						isWholeLine: true,
-					},
-				});
-			}
+      // Theirs block lines decoration
+      if (conflict.endLine > conflict.splitLine + 1) {
+        newDecorations.push({
+          range: new monacoInstance.Range(conflict.splitLine + 1, 1, conflict.endLine - 1, model.getLineMaxColumn(conflict.endLine - 1)),
+          options: {
+            className: "conflict-theirs-bg",
+            isWholeLine: true,
+          }
+        });
+      }
 
 			// Ours header line decoration
 			newDecorations.push({
@@ -248,20 +259,17 @@ export function MergeConflictResolver({ path }: Props) {
 		const model = editor.getModel();
 		if (!model) return;
 
-		const conflicts = parseConflicts(model);
-		// Apply edits in reverse order to ensure line shifting doesn't disrupt ranges
-		const edits = conflicts.map((block) => {
-			let resolvedText = "";
-			if (side === "ours") {
-				resolvedText = block.oursText;
-			} else if (side === "theirs") {
-				resolvedText = block.theirsText;
-			} else {
-				resolvedText =
-					block.oursText +
-					(block.oursText && block.theirsText ? "\n" : "") +
-					block.theirsText;
-			}
+    const conflicts = parseConflicts(model);
+    // Apply edits in reverse order to ensure line shifting doesn't disrupt ranges
+    const edits = conflicts.map((block) => {
+      let resolvedText = "";
+      if (side === "ours") {
+        resolvedText = block.oursText;
+      } else if (side === "theirs") {
+        resolvedText = block.theirsText;
+      } else {
+        resolvedText = block.oursText + (block.oursText && block.theirsText ? "\n" : "") + block.theirsText;
+      }
 
 			return {
 				range: block.fullRange,
@@ -296,14 +304,14 @@ export function MergeConflictResolver({ path }: Props) {
 		if (model) {
 			updateDecorations(editor, monacoInstance);
 
-			// Register CodeLens Provider for this model URI
-			providerRef.current = monacoInstance.languages.registerCodeLensProvider(
-				getLanguageFromPath(path),
-				{
-					provideCodeLenses: (m: monaco.editor.ITextModel) => {
-						if (m.uri.toString() !== model.uri.toString()) return;
-						const conflicts = parseConflicts(m);
-						const lenses: monaco.languages.CodeLens[] = [];
+      // Register CodeLens Provider for this model URI
+      providerRef.current = monacoInstance.languages.registerCodeLensProvider(
+        getLanguageFromPath(path),
+        {
+          provideCodeLenses: (m: monaco.editor.ITextModel) => {
+            if (m.uri.toString() !== model.uri.toString()) return;
+            const conflicts = parseConflicts(m);
+            const lenses: monaco.languages.CodeLens[] = [];
 
 						conflicts.forEach((conflict, index) => {
 							lenses.push({
@@ -377,82 +385,77 @@ export function MergeConflictResolver({ path }: Props) {
 		);
 	}
 
-	if (error) {
-		return (
-			<div className="flex h-full items-center justify-center p-4 text-sm text-red-500">
-				{error}
-			</div>
-		);
-	}
-
-	return (
-		<div className="flex h-full flex-col">
-			<div className="flex h-9 shrink-0 items-center justify-between border-b border-border px-3 bg-muted/20">
-				<div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-red-500">
-					<AlertCircle className="size-4" />
-					Conflict Resolver
-					<Badge
-						variant="destructive"
-						className="text-[10px] h-4 px-1.5 font-bold"
-					>
-						{conflictCount} Remaining
-					</Badge>
-				</div>
-				<div className="flex items-center gap-1.5">
-					<Button
-						variant="ghost"
-						size="xs"
-						onClick={() => handleAcceptAll("ours")}
-						disabled={conflictCount === 0}
-						className="h-6 text-[11px]"
-					>
-						Accept All Ours
-					</Button>
-					<Button
-						variant="ghost"
-						size="xs"
-						onClick={() => handleAcceptAll("theirs")}
-						disabled={conflictCount === 0}
-						className="h-6 text-[11px]"
-					>
-						Accept All Theirs
-					</Button>
-					<Button
-						size="xs"
-						onClick={handleStage}
-						disabled={conflictCount > 0}
-						className="h-6 text-[11px]"
-					>
-						<Check className="mr-1 size-3" />
-						Mark Resolved
-					</Button>
-				</div>
-			</div>
-			<div className="flex-1 min-h-0 relative">
-				<Editor
-					path={path}
-					defaultLanguage={getLanguageFromPath(path)}
-					defaultValue={initialContent}
-					theme={ThemeService.toMonacoThemeId(theme)}
-					onMount={handleMount}
-					onChange={handleEditorChange}
-					options={{
-						minimap: { enabled: false },
-						lineNumbers: "on",
-						glyphMargin: true,
-						folding: true,
-						smoothScrolling: true,
-						automaticLayout: true,
-						fixedOverflowWidgets: true,
-						codeLens: true,
-					}}
-					loading={
-						<div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-							Loading editor…
-						</div>
-					}
-				/>
-			</div>
-		</div>
-	);
+  return (
+    <div className="flex h-full flex-col">
+      <div className="flex h-9 shrink-0 items-center justify-between border-b border-border px-3 bg-muted/20">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide text-red-500">
+          <AlertCircle className="size-4" />
+          Conflict Resolver
+          <Badge variant="destructive" className="text-[10px] h-4 px-1.5 font-bold">
+            {conflictCount} Remaining
+          </Badge>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Button
+            variant="ghost"
+            size="xs"
+            onClick={() => handleAcceptAll("ours")}
+            disabled={conflictCount === 0}
+            className="h-6 text-[11px]"
+          >
+            Accept All Ours
+          </Button>
+          <Button
+            variant="ghost"
+            size="xs"
+            onClick={() => handleAcceptAll("theirs")}
+            disabled={conflictCount === 0}
+            className="h-6 text-[11px]"
+          >
+            Accept All Theirs
+          </Button>
+          <Button
+            size="xs"
+            onClick={handleStage}
+            disabled={conflictCount > 0}
+            className="h-6 text-[11px]"
+          >
+            <Check className="mr-1 size-3" />
+            Mark Resolved
+          </Button>
+        </div>
+      </div>
+      <div ref={conflictContainerRef} className="flex-1 min-h-0 relative">
+        {containerReady ? (
+          <Editor
+            path={path}
+            defaultLanguage={getLanguageFromPath(path)}
+            defaultValue={initialContent}
+            theme={ThemeService.toMonacoThemeId(theme)}
+            onMount={handleMount}
+            onChange={handleEditorChange}
+            options={{
+              minimap: { enabled: false },
+              lineNumbers: "on",
+              glyphMargin: true,
+              folding: true,
+              smoothScrolling: true,
+              automaticLayout: true,
+              fixedOverflowWidgets: true,
+              codeLens: true,
+            }}
+            loading={
+              <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+                Loading editor…
+              </div>
+            }
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+            Loading editor…
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }

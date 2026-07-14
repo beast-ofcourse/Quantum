@@ -51,6 +51,36 @@ export function MonacoEditor({
 	const [showBlame, setShowBlame] = useState(false);
 	useGitBlameDecorations(path, showBlame);
 
+	// Defer Monaco mount until container has non-zero dimensions to avoid
+	// RenderService race condition where _viewLayout is null on init.
+	const editorContainerRef = useRef<HTMLDivElement>(null);
+	const [containerReady, setContainerReady] = useState(false);
+
+	useEffect(() => {
+		const el = editorContainerRef.current;
+		if (!el) return;
+
+		const ro = new ResizeObserver((entries) => {
+			for (const entry of entries) {
+				if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+					setContainerReady(true);
+					ro.disconnect();
+					break;
+				}
+			}
+		});
+
+		ro.observe(el);
+
+		// Also check synchronously in case layout is already settled
+		if (el.offsetWidth > 0 && el.offsetHeight > 0) {
+			setContainerReady(true);
+			ro.disconnect();
+		}
+
+		return () => ro.disconnect();
+	}, []);
+
 	// Resolve effective content — large files bypass Zustand via ContentStore
 	const effectiveValue = isLargeFile
 		? (ContentStore.get(path) ?? value)
@@ -222,22 +252,28 @@ export function MonacoEditor({
 					</span>
 				</div>
 			)}
-			<div className="min-h-0 flex-1">
-				<Editor
-					key={tabId}
-					path={path}
-					defaultLanguage={language || getLanguageFromPath(path)}
-					defaultValue={effectiveValue}
-					theme={ThemeService.toMonacoThemeId(theme)}
-					onMount={handleMount}
-					onChange={(v) => updateContent(tabId, v ?? "")}
-					options={editorOptions}
-					loading={
-						<div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-							Loading editor…
-						</div>
-					}
-				/>
+			<div ref={editorContainerRef} className="min-h-0 flex-1">
+				{containerReady ? (
+					<Editor
+						key={tabId}
+						path={path}
+						defaultLanguage={language || getLanguageFromPath(path)}
+						defaultValue={effectiveValue}
+						theme={ThemeService.toMonacoThemeId(theme)}
+						onMount={handleMount}
+						onChange={(v) => updateContent(tabId, v ?? "")}
+						options={editorOptions}
+						loading={
+							<div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+								Loading editor…
+							</div>
+						}
+					/>
+				) : (
+					<div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+						Loading editor…
+					</div>
+				)}
 			</div>
 		</div>
 	);

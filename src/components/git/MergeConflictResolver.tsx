@@ -86,6 +86,28 @@ export function MergeConflictResolver({ path }: Props) {
   const monacoRef = useRef<typeof monaco | null>(null);
   const decorationsCollectionRef = useRef<monaco.editor.IEditorDecorationsCollection | null>(null);
   const providerRef = useRef<monaco.IDisposable | null>(null);
+  const conflictContainerRef = useRef<HTMLDivElement>(null);
+  const [containerReady, setContainerReady] = useState(false);
+
+  useEffect(() => {
+    const el = conflictContainerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+          setContainerReady(true);
+          ro.disconnect();
+          break;
+        }
+      }
+    });
+    ro.observe(el);
+    if (el.offsetWidth > 0 && el.offsetHeight > 0) {
+      setContainerReady(true);
+      ro.disconnect();
+    }
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     setLoading(true);
@@ -133,7 +155,6 @@ export function MergeConflictResolver({ path }: Props) {
           options: {
             className: "conflict-ours-bg",
             isWholeLine: true,
-            gutterClassName: "conflict-ours-gutter"
           }
         });
       }
@@ -145,7 +166,6 @@ export function MergeConflictResolver({ path }: Props) {
           options: {
             className: "conflict-theirs-bg",
             isWholeLine: true,
-            gutterClassName: "conflict-theirs-gutter"
           }
         });
       }
@@ -212,7 +232,7 @@ export function MergeConflictResolver({ path }: Props) {
 
     const conflicts = parseConflicts(model);
     // Apply edits in reverse order to ensure line shifting doesn't disrupt ranges
-    const edits = conflicts.map((block, index) => {
+    const edits = conflicts.map((block) => {
       let resolvedText = "";
       if (side === "ours") {
         resolvedText = block.oursText;
@@ -259,7 +279,7 @@ export function MergeConflictResolver({ path }: Props) {
       providerRef.current = monacoInstance.languages.registerCodeLensProvider(
         getLanguageFromPath(path),
         {
-          provideCodeLenses: (m) => {
+          provideCodeLenses: (m: monaco.editor.ITextModel) => {
             if (m.uri.toString() !== model.uri.toString()) return;
             const conflicts = parseConflicts(m);
             const lenses: monaco.languages.CodeLens[] = [];
@@ -369,30 +389,36 @@ export function MergeConflictResolver({ path }: Props) {
           </Button>
         </div>
       </div>
-      <div className="flex-1 min-h-0 relative">
-        <Editor
-          path={path}
-          defaultLanguage={getLanguageFromPath(path)}
-          defaultValue={initialContent}
-          theme={ThemeService.toMonacoThemeId(theme)}
-          onMount={handleMount}
-          onChange={handleEditorChange}
-          options={{
-            minimap: { enabled: false },
-            lineNumbers: "on",
-            glyphMargin: true,
-            folding: true,
-            smoothScrolling: true,
-            automaticLayout: true,
-            fixedOverflowWidgets: true,
-            codeLens: true,
-          }}
-          loading={
-            <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
-              Loading editor…
-            </div>
-          }
-        />
+      <div ref={conflictContainerRef} className="flex-1 min-h-0 relative">
+        {containerReady ? (
+          <Editor
+            path={path}
+            defaultLanguage={getLanguageFromPath(path)}
+            defaultValue={initialContent}
+            theme={ThemeService.toMonacoThemeId(theme)}
+            onMount={handleMount}
+            onChange={handleEditorChange}
+            options={{
+              minimap: { enabled: false },
+              lineNumbers: "on",
+              glyphMargin: true,
+              folding: true,
+              smoothScrolling: true,
+              automaticLayout: true,
+              fixedOverflowWidgets: true,
+              codeLens: true,
+            }}
+            loading={
+              <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+                Loading editor…
+              </div>
+            }
+          />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+            Loading editor…
+          </div>
+        )}
       </div>
     </div>
   );

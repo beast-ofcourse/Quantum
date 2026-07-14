@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Columns2, AlignJustify, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DiffEditor } from "@monaco-editor/react";
@@ -67,6 +67,30 @@ export function GitDiffView({ path, staged, onClose }: Props) {
     };
   }, [path, staged, showFile]);
 
+  // Defer Monaco mount until container has dimensions to avoid RenderService race condition
+  const diffContainerRef = useRef<HTMLDivElement>(null);
+  const [containerReady, setContainerReady] = useState(false);
+
+  useEffect(() => {
+    const el = diffContainerRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+          setContainerReady(true);
+          ro.disconnect();
+          break;
+        }
+      }
+    });
+    ro.observe(el);
+    if (el.offsetWidth > 0 && el.offsetHeight > 0) {
+      setContainerReady(true);
+      ro.disconnect();
+    }
+    return () => ro.disconnect();
+  }, []);
+
   if (error) {
     return (
       <div className="flex h-full items-center justify-center text-sm text-red-500 p-4">
@@ -106,10 +130,10 @@ export function GitDiffView({ path, staged, onClose }: Props) {
           </Button>
         </div>
       </div>
-      <div className="flex-1 min-h-0 relative">
+      <div ref={diffContainerRef} className="flex-1 min-h-0 relative">
         {diffLoading ? (
           <DiffSkeleton />
-        ) : (
+        ) : containerReady ? (
           <DiffEditor
             original={originalContent}
             modified={modifiedContent}
@@ -130,6 +154,10 @@ export function GitDiffView({ path, staged, onClose }: Props) {
               </div>
             }
           />
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-xs text-muted-foreground">
+            Loading diff editor…
+          </div>
         )}
       </div>
     </div>
